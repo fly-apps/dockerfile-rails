@@ -17,8 +17,14 @@ ENV RAILS_ENV="production" \
 FROM base as build
 
 # Install packages need to build gems<%= using_node? ? " and node modules" : "" %>
+<% if options.cache? %>
+RUN --mount=type=cache,id=dev-apt-cache,sharing=locked,target=/var/cache/apt \
+    --mount=type=cache,id=dev-apt-lib,sharing=locked,target=/var/lib/apt \
+    apt-get update -qq && \
+<% else -%>
 RUN apt-get update -qq && \
     apt-get install -y <%= build_packages.join(" ") %>
+<% end -%>
 
 <% if using_node? -%>
 # Install JavaScript dependencies
@@ -31,12 +37,28 @@ RUN curl https://get.volta.sh | bash && \
 <% end -%>
 # Install application gems
 COPY Gemfile Gemfile.lock ./
+<% if options.cache? -%>
+RUN --mount=type=cache,id=bld-gem-cache,sharing=locked,target=/srv/vendor \
+    bundle config set app_config .bundle && \
+    bundle config set path /srv/vendor && \
+    bundle install && \
+    bundle clean && \
+    mkdir -p vendor && \
+    bundle config set path vendor && \
+    cp -ar /srv/vendor .
+<% else -%>
 RUN bundle install
+<% end -%>
 
 <% if using_node? -%>
 # Install node modules
 COPY package.json yarn.lock ./
+<% if options.cache? -%>
+RUN --mount=type=cache,id=bld-yarn-cache,target=/root/.yarn \
+    YARN_CACHE_FOLDER=/root/.yarn yarn install
+<% else -%>
 RUN yarn install
+<% end -%>
 
 <% end -%>
 # Copy application code
@@ -63,9 +85,16 @@ FROM base
 <% unless deploy_packages.empty? -%>
 
 # Install packages need for deployment
+<% if options.cache? -%>
+RUN --mount=type=cache,id=dev-apt-cache,sharing=locked,target=/var/cache/apt \
+    --mount=type=cache,id=dev-apt-lib,sharing=locked,target=/var/lib/apt \
+    apt-get update -qq && \
+    apt-get install --no-install-recommends -y <%= deploy_packages.join(" ") %>
+<% else -%>
 RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y <%= deploy_packages.join(" ") %> && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
+<% end -%>
 <% end -%>
 
 # Copy built application from second stage

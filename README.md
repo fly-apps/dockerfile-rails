@@ -13,6 +13,7 @@ General options:
 
 * `--force` - overwrite existing files
 * `--ci` - include test gems in bundle
+* `--cache` - use build caching to speed up builds
 
 Dependencies:
 

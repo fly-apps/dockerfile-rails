@@ -4,6 +4,9 @@ class DockerfileGenerator < Rails::Generators::Base
   class_option :ci, type: :boolean, default: false,
     desc: 'include test gems in bundle'
 
+  class_option :cache, type: :boolean, default: false,
+    desc: 'use build cache to speed up installs'
+
   class_option :redit, type: :boolean, default: false,
     desc: 'include redis libraries'
 

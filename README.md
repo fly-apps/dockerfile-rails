@@ -10,5 +10,17 @@ bin/rails generate dockerfile
 ```
 
 General options:
-  `--force` - overwrite existing files
-  `--ci` - include test gems in bundle
+
+* `--force` - overwrite existing files
+* `--ci` - include test gems in bundle
+
+Dependencies:
+
+Generally the dockerfile generator will be able to determine what dependencies you
+are actually using.  But should you be using DATABASE_URL, for example, at runtime
+additional support may be needed:
+
+* `--mysql` - add mysql libraries
+* `--posgresql` - add posgresql libraries
+* `--redis` - add redis libraries
+* `--sqlite3` - add sqlite3 libraries

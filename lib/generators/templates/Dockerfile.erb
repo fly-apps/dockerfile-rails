@@ -60,11 +60,13 @@ RUN SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile
 
 # Final stage for app image
 FROM base
+<% unless deploy_packages.empty? -%>
 
 # Install packages need for deployment
 RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y <%= deploy_packages.join(" ") %> && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
+<% end -%>
 
 # Copy built application from second stage
 <% if options.ci? -%>

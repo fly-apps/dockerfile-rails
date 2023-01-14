@@ -1,7 +1,20 @@
 class DockerfileGenerator < Rails::Generators::Base
   include DockerfileRails::Scanner
 
-  class_option :ci, type: :boolean, default: false
+  class_option :ci, type: :boolean, default: false,
+    desc: 'include test gems in bundle'
+
+  class_option :redit, type: :boolean, default: false,
+    desc: 'include redis libraries'
+
+  class_option :sqlite3, aliases: '--sqlite', type: :boolean, default: false,
+    desc: 'include sqlite3 libraries'
+
+  class_option :postgresql, aliases: '--postgres', type: :boolean, default: false,
+    desc: 'include postgresql libraries'
+
+  class_option :mysql, type: :boolean, default: false,
+    desc: 'include mysql libraries'
 
   def generate_app
     source_paths.push File.expand_path('./templates', __dir__)
@@ -33,17 +46,19 @@ private
     packages = %w(build-essential)
 
     # add databases: sqlite3, postgres, mysql
-    packages += %w(pkg-config libpq-dev default-libmysqlclient-dev)
+    packages << 'pkg-config' if options.sqlite3? or @sqlite3
+    packages << 'libpq-dev' if options.postgresql? or @postgresql
+    packages << 'default-libmysqlclient-dev' if options.mysql or @mysql
 
     # add redis in case Action Cable, caching, or sidekiq are added later
-    packages << "redis"
+    packages << "redis" if options.redis? or @redis
 
     # ActiveStorage preview support
     packages << "libvips" if @gemfile.include? 'ruby-vips'
 
     # node support, including support for building native modules
     if using_node?
-      packages += %w(curl node-gyp) # pkg-config already listed above
+      packages += %w(curl node-gyp pkg-config)
 
       # module build process depends on Python, and debian changed
       # how python is installed with the bullseye release.  Below
@@ -65,15 +80,19 @@ private
       end
     end
 
-    packages.sort
+    packages.sort.uniq
   end
 
   def deploy_packages
+    packages = []
+
     # start with databases: sqlite3, postgres, mysql
-    packages = %w(libsqlite3-0 postgresql-client default-mysql-client)
+    packages << 'libsqlite3-0' if options.sqlite3? or @sqlite3
+    packages << 'postgresql-client' if options.postgresql? or @postgresql
+    packages << 'default-mysql-client' if options.mysql or @mysql
 
     # add redis in case Action Cable, caching, or sidekiq are added later
-    packages << "redis"
+    packages << "redis" if options.redis? or @redis
 
     # ActiveStorage preview support
     packages << "libvips" if @gemfile.include? 'ruby-vips'

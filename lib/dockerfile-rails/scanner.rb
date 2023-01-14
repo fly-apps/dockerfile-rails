@@ -62,14 +62,6 @@ module DockerfileRails
       end
 
       @redis = @redis_cable || @redis_cache || @sidekiq
-
-      ### api-only ###
-
-      @apionly = Rails.application.config.api_only
-
-      ### db:prepare ###
-
-      @dbprep = (Rails::VERSION::MAJOR >= 6) ? 'db:prepare' : 'db:migrate'
     end
   end
 end

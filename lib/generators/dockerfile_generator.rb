@@ -127,4 +127,12 @@ private
   def api_only?
     Rails.application.config.api_only
   end
+
+  def dbprep_command
+    if Rails::VERSION::MAJOR >= 6
+      'db:prepare'
+    else
+      'db:migrate'
+    end
+  end
 end

@@ -56,6 +56,7 @@ EOF
 bundle add dockerfile-rails --group development
 bin/rails generate dockerfile --compose
 
+export RAILS_MASTER_KEY=$(cat config/master.key)
 docker compose build
 docker compose up
 ```

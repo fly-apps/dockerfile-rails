@@ -1,6 +1,8 @@
 class DockerfileGenerator < Rails::Generators::Base
   include DockerfileRails::Scanner
 
+  class_option :ci, type: :boolean, default: false
+
   def generate_app
     source_paths.push File.expand_path('./templates', __dir__)
 

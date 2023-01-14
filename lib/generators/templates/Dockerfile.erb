@@ -10,7 +10,7 @@ WORKDIR /rails
 # Set production environment
 ENV RAILS_ENV="production" \
     BUNDLE_PATH="vendor/bundle" \
-    BUNDLE_WITHOUT="development:test"
+    BUNDLE_WITHOUT="<%= options.ci? ? 'test' : 'development:test' %>"
 
 
 # Throw-away build stage to reduce size of final image
@@ -67,6 +67,9 @@ RUN apt-get update -qq && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 # Copy built application from second stage
+<% if options.ci? -%>
+COPY --from=build /usr/local/bundle /usr/local/bundle
+<% end -%>
 COPY --from=build /rails /rails
 
 # Deployment options

@@ -18,6 +18,7 @@ module DockerfileRails
       ### ruby gems ###
 
       @gemfile = []
+      @git = false
 
       if File.exist? 'Gemfile.lock'
         parser = Bundler::LockfileParser.new(Bundler.read_file('Gemfile.lock'))
@@ -25,7 +26,9 @@ module DockerfileRails
       end
       
       if File.exist? 'Gemfile'
-        @gemfile += Bundler::Definition.build('Gemfile', nil, []).dependencies.map(&:name)
+        gemfile_definition = Bundler::Definition.build('Gemfile', nil, [])
+        @gemfile += gemfile_definition.dependencies.map(&:name)
+        @git = !gemfile_definition.spec_git_paths.empty?
       end
 
       @sidekiq = @gemfile.include? 'sidekiq'

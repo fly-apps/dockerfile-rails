@@ -10,6 +10,9 @@ class DockerfileGenerator < Rails::Generators::Base
   class_option :parallel, type: :boolean, default: false,
     desc: 'use build stages to install gems and node modules in parallel'
 
+  class_option :compose, type: :boolean, default: false,
+    desc: 'generate a docker-compose.yml file'
+
   class_option :redit, type: :boolean, default: false,
     desc: 'include redis libraries'
 
@@ -34,6 +37,8 @@ class DockerfileGenerator < Rails::Generators::Base
 
     template 'docker-entrypoint.erb', 'bin/docker-entrypoint'
     chmod "bin/docker-entrypoint", 0755 & ~File.umask, verbose: false
+
+    template 'docker-compose.yml.erb', 'docker-compose.yml'
   end
 
 private
@@ -41,6 +46,10 @@ private
   def using_node?
     return @using_node if @using_node != nil
     @using_node = File.exist? 'package.json'
+  end
+
+  def using_redis?
+    options.redis? or @redis
   end
 
   def parallel?
@@ -61,8 +70,11 @@ private
     packages << 'libpq-dev' if options.postgresql? or @postgresql
     packages << 'default-libmysqlclient-dev' if options.mysql or @mysql
 
+    # add git if needed to install gems
+    packages << 'git' if @git
+
     # add redis in case Action Cable, caching, or sidekiq are added later
-    packages << "redis" if options.redis? or @redis
+    packages << "redis" if using_redis?
 
     # ActiveStorage preview support
     packages << "libvips" if @gemfile.include? 'ruby-vips'
@@ -103,7 +115,7 @@ private
     packages << 'default-mysql-client' if options.mysql or @mysql
 
     # add redis in case Action Cable, caching, or sidekiq are added later
-    packages << "redis" if options.redis? or @redis
+    packages << "redis" if using_redis?
 
     # ActiveStorage preview support
     packages << "libvips" if @gemfile.include? 'ruby-vips'
@@ -138,6 +150,16 @@ private
     end
 
     binfixups
+  end
+
+  def deploy_database
+    if options.postgresql? or @postgresql
+      'postgresql'
+    elsif options.mysql or @mysql
+      'mysql'
+    else
+      'sqlite3'
+    end
   end
 
   def node_version

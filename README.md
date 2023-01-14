@@ -15,6 +15,7 @@ General options:
 * `--ci` - include test gems in deployed image
 * `--cache` - use build caching to speed up builds
 * `--parallel` - use multi-stage builds to install gems and node modules in parallel
+* `--compose` - generate a `docker-compose.yml` file
 
 Dependencies:
 

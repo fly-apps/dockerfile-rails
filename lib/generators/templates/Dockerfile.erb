@@ -101,7 +101,7 @@ RUN bundle exec bootsnap precompile --gemfile app/ lib/
 <% end -%>
 <% unless api_only? -%>
 # Precompiling assets for production without requiring secret RAILS_MASTER_KEY
-RUN SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile
+RUN SECRET_KEY_BASE<%= Rails::VERSION::MAJOR<7 || Rails::VERSION::STRING.start_with?('7.0') ? '=DUMMY' : '_DUMMY=1' %> ./bin/rails assets:precompile
 
 <% end -%>
 

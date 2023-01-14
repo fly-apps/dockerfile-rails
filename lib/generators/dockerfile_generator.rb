@@ -7,6 +7,9 @@ class DockerfileGenerator < Rails::Generators::Base
   class_option :cache, type: :boolean, default: false,
     desc: 'use build cache to speed up installs'
 
+  class_option :parallel, type: :boolean, default: false,
+    desc: 'use build stages to install gems and node modules in parallel'
+
   class_option :redit, type: :boolean, default: false,
     desc: 'include redis libraries'
 
@@ -36,7 +39,12 @@ class DockerfileGenerator < Rails::Generators::Base
 private
    
   def using_node?
-    File.exist? 'package.json'
+    return @using_node if @using_node != nil
+    @using_node = File.exist? 'package.json'
+  end
+
+  def parallel?
+    using_node? && options.parallel
   end
 
   def keeps?

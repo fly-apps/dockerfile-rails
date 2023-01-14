@@ -13,8 +13,8 @@ ENV RAILS_ENV="production" \
     BUNDLE_WITHOUT="<%= options.ci? ? 'test' : 'development:test' %>"
 
 
-# Throw-away build stage to reduce size of final image
-FROM base as build
+# Throw-away build stage<%= parallel? ? 's' : '' %> to reduce size of final image
+FROM base as <%= parallel? ? 'pre' : '' %>build
 
 # Install packages need to build gems<%= using_node? ? " and node modules" : "" %>
 <% if options.cache? %>
@@ -23,9 +23,14 @@ RUN --mount=type=cache,id=dev-apt-cache,sharing=locked,target=/var/cache/apt \
     apt-get update -qq && \
 <% else -%>
 RUN apt-get update -qq && \
-    apt-get install -y <%= build_packages.join(" ") %>
 <% end -%>
+    apt-get install -y <%= build_packages.join(" ") %>
 
+<% if parallel? -%>
+
+FROM prebuild as node
+
+<% end -%>
 <% if using_node? -%>
 # Install JavaScript dependencies
 ARG NODE_VERSION=<%= node_version %>
@@ -33,6 +38,20 @@ ARG YARN_VERSION=<%= yarn_version %>
 ENV VOLTA_HOME="/usr/local"
 RUN curl https://get.volta.sh | bash && \
     volta install node@$NODE_VERSION yarn@$YARN_VERSION
+
+<% end -%>
+<% if parallel? -%>
+# Install node modules
+COPY package.json yarn.lock ./
+<% if options.cache? -%>
+RUN --mount=type=cache,id=bld-yarn-cache,target=/root/.yarn \
+    YARN_CACHE_FOLDER=/root/.yarn yarn install
+<% else -%>
+RUN yarn install
+<% end -%>
+
+
+FROM prebuild as build
 
 <% end -%>
 # Install application gems
@@ -50,7 +69,9 @@ RUN --mount=type=cache,id=bld-gem-cache,sharing=locked,target=/srv/vendor \
 RUN bundle install
 <% end -%>
 
-<% if using_node? -%>
+<% if parallel? -%>
+asdf
+<% elsif using_node? -%>
 # Install node modules
 COPY package.json yarn.lock ./
 <% if options.cache? -%>

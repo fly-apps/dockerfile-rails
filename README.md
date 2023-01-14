@@ -14,6 +14,7 @@ General options:
 * `--force` - overwrite existing files
 * `--ci` - include test gems in bundle
 * `--cache` - use build caching to speed up builds
+* `--parallel` - use multi-stage builds to install gems and node modules in parallel
 
 Dependencies:
 

@@ -12,6 +12,10 @@ ENV RAILS_ENV="production" \
     BUNDLE_PATH="vendor/bundle" \
     BUNDLE_WITHOUT="<%= options.ci? ? 'test' : 'development:test' %>"
 
+ARG BUNDLER_VERSION=<%= Bundler::VERSION %>
+RUN gem update --system --no-document && \
+    gem install -N bundler -v ${BUNDLER_VERSION}
+
 
 # Throw-away build stage<%= parallel? ? 's' : '' %> to reduce size of final image
 FROM base as <%= parallel? ? 'pre' : '' %>build
@@ -60,13 +64,13 @@ COPY Gemfile Gemfile.lock ./
 RUN --mount=type=cache,id=bld-gem-cache,sharing=locked,target=/srv/vendor \
     bundle config set app_config .bundle && \
     bundle config set path /srv/vendor && \
-    bundle install && \
+    bundle _${BUNDLER_VERSION}_ install && \
     bundle clean && \
     mkdir -p vendor && \
     bundle config set path vendor && \
     cp -ar /srv/vendor .
 <% else -%>
-RUN bundle install
+RUN bundle _${BUNDLER_VERSION}_ install
 <% end -%>
 
 <% if parallel? -%>

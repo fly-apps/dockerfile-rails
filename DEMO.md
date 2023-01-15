@@ -1,4 +1,8 @@
+If you have Rails and Docker installed on your machine, running each of these demos is a matter of opening a terminal window, navigating to an empty directory, and copy/pasting a block of instructions into that window.  Once started, navigate to http://localhost:3000/ to see the results. 
+
 # Demo 1 - Minimal
+
+Rails provides a _smoke test_ for new applications that makes sure that you have your software configured correctly enough to serve a page.  The following deploys that smoke test in production.  Once done take a look at the `Dockerfile` file produced.
 
 ```
 rails new welcome --minimal
@@ -11,6 +15,8 @@ docker run -p 3000:3000 -e RAILS_MASTER_KEY=$(cat config/master.key) rails-welco
 ```
 
 # Demo 2 - Action Cable and Active Record
+
+Real applications involve a network of services.  The following demo makes use of PostgreSQL and Redis to display a welcome screen with a live, updating, visitors counter. Once done, take a look at the 'docker-compose.yml` file produced.
 
 ```
 rails new welcome --database postgresql
@@ -88,6 +94,9 @@ docker compose up
 ```
 
 # Demo 3 - API only
+
+This demo deploys a [Create React App](https://create-react-app.dev/) client and a Rails API-only server.  Ruby and Rails version information is retrieved from the server and displayed below a spinning React logo.  Note that the build process installs the
+node moddules and ruby gems in parallel.
 
 ```
 rails new welcome --api

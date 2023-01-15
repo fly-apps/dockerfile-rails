@@ -64,7 +64,7 @@ fill="#fff"/>
 </svg>
 </div>
 
-<div style="position: absolute; font-size: 20vh; font-weight: bold; font-family: Calibre sans-serif; color: white; top: 60vh; left: 0; width: 100%; text-align: center">
+<div style="position: absolute; font-size: 25vh; font-weight: bold; font-family: Calibre sans-serif; color: white; top: 65vh; left: 0; width: 100%; text-align: center">
 <%= render "counter", visitor: @visitor %>
 </div>
 EOF

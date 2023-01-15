@@ -1,7 +1,7 @@
-# Demo1
+# Demo1 - Minimal
 
 ```
-rails new welcome
+rails new welcome --minimal
 cd welcome
 echo 'Rails.application.routes.draw { root "rails/welcome#index" }' > config/routes.rb
 bundle add dockerfile-rails --group development
@@ -10,7 +10,7 @@ docker buildx build . -t rails-welcome
 docker run -p 3000:3000 -e RAILS_MASTER_KEY=$(cat config/master.key) rails-welcome
 ```
 
-# Demo 2
+# Demo 2 - Action Cable and Active Record
 
 ```
 rails new welcome --css tailwind --database postgresql

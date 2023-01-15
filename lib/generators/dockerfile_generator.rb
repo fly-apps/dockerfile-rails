@@ -38,7 +38,7 @@ class DockerfileGenerator < Rails::Generators::Base
     template 'docker-entrypoint.erb', 'bin/docker-entrypoint'
     chmod "bin/docker-entrypoint", 0755 & ~File.umask, verbose: false
 
-    template 'docker-compose.yml.erb', 'docker-compose.yml'
+    template 'docker-compose.yml.erb', 'docker-compose.yml' if options.compose
   end
 
 private

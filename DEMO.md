@@ -153,3 +153,123 @@ bin/rails generate dockerfile
 docker buildx build . -t rails-welcome
 docker run -p 3000:3000 -e RAILS_MASTER_KEY=$(cat config/master.key) rails-welcome
 ```
+
+# Demo 4 - Bunding Javascript (esbuild)
+
+While optional, bundling Javascript is a popular choice, and starting with
+Rails 7 there are three options: esbuild, rollup, and webpack.  The
+the following demonstrates Rails 7 with esbuild:
+
+```
+rails new welcome --javascript esbuild
+cd welcome
+
+yarn add react react-dom
+bin/rails generate controller Time index
+
+cat <<-"EOF" >> app/javascript/application.js 
+import "./components/counter"
+EOF
+
+mkdir app/javascript/components
+
+cat <<-"EOF" > app/javascript/components/counter.jsx
+import React, { useState, useEffect, useRef } from 'react';
+import { createRoot } from 'react-dom/client';
+
+const Counter = ({ arg }) => {
+  const [count, setCount] = useState(0);
+  const countRef = useRef(count);
+  countRef.current = count;
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCount(countRef.current + 1);
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  return <div>{`${arg} - counter = ${count}!`}</div>;
+};
+
+document.addEventListener("DOMContentLoaded", () => {
+  const container = document.getElementById("root");
+  const root = createRoot(container);
+  root.render(<Counter arg={`
+    Ruby ${container.getAttribute('ruby')}
+    Rails ${container.getAttribute('rails')}`} />);
+});
+EOF
+
+cat <<-"EOF" > app/views/time/index.html.erb
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+body {
+  margin: 0;
+}
+
+svg {
+  height: 40vmin;
+  pointer-events: none;
+  margin-bottom: 1em;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  svg {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+main {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+</style>
+</head>
+<body>
+<main>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-11.5 -10.23174 23 20.46348">
+  <title>React Logo</title>
+  <circle cx="0" cy="0" r="2.05" fill="#61dafb"/>
+  <g stroke="#61dafb" stroke-width="1" fill="none">
+    <ellipse rx="11" ry="4.2"/>
+    <ellipse rx="11" ry="4.2" transform="rotate(60)"/>
+    <ellipse rx="11" ry="4.2" transform="rotate(120)"/>
+  </g>
+</svg>
+<div id="root"
+  ruby=<%= RUBY_VERSION %>
+  rails=<%= Rails::VERSION::STRING %>>
+</div>
+</main>
+</body>
+</html>
+EOF
+
+cat <<-"EOF" > config/routes.rb
+Rails.application.routes.draw { root "time#index" }
+EOF
+
+bundle add dockerfile-rails --group development
+bin/rails generate dockerfile
+
+docker buildx build . -t rails-welcome
+docker run -p 3000:3000 -e RAILS_MASTER_KEY=$(cat config/master.key) rails-welcome
+```

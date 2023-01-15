@@ -1,7 +1,40 @@
 # syntax = docker/dockerfile:1
 
-# Make sure it matches the Ruby version in .ruby-version and Gemfile
+# Make sure RUBY_VERSION matches the Ruby version in .ruby-version and Gemfile
 ARG RUBY_VERSION=<%= Gem.ruby_version %>
+<% if api_client_dir -%>
+ARG NODE_VERSION=<%= node_version %>
+
+FROM node:$NODE_VERSION-slim as client
+
+WORKDIR /rails/<%= api_client_dir %>
+
+ENV NODE_ENV=production
+
+# Install node modules
+COPY <%= api_client_files.join(' ') %> .
+<% if api_client_files.join.include? 'yarn' -%>
+<% if options.cache? -%>
+RUN --mount=type=cache,id=bld-yarn-cache,target=/root/.yarn \
+    YARN_CACHE_FOLDER=/root/.yarn yarn install
+<% else -%>
+RUN yarn install
+<% end -%>
+<% else -%>
+<% if options.cache? -%>
+RUN --mount=type=cache,id=bld-yarn-cache,target=/root/.npm \
+    npm install
+<% else -%>
+RUN npm install
+<% end -%>
+<% end -%>
+
+# build client application
+COPY <%= api_client_dir %> .
+RUN npm run build
+
+
+<% end -%>
 FROM ruby:$RUBY_VERSION-slim as base
 
 # Rails app lives here
@@ -122,11 +155,16 @@ RUN apt-get update -qq && \
 <% end -%>
 <% end -%>
 
-# Copy built application from second stage
+# Copy built application from previous stage
 <% if options.ci? -%>
 COPY --from=build /usr/local/bundle /usr/local/bundle
 <% end -%>
 COPY --from=build /rails /rails
+<% if api_client_dir -%>
+
+# Copy built client
+COPY --from=client /rails/<%= api_client_dir %>/build /rails/public
+<% end -%>
 
 # Deployment options
 ENV RAILS_LOG_TO_STDOUT="1" \

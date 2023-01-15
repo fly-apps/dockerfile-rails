@@ -60,3 +60,58 @@ export RAILS_MASTER_KEY=$(cat config/master.key)
 docker compose build
 docker compose up
 ```
+
+# Demo 3 - API only
+
+```
+rails new welcome --api
+cd welcome
+npx create-react-app client
+
+bin/rails generate controller Api versions
+
+cat << 'EOF' > app/controllers/api_controller.rb
+class ApiController < ApplicationController
+  def versions
+    render json: {
+      ruby: RUBY_VERSION,
+      rails: Rails::VERSION::STRING
+    }
+  end
+end
+EOF
+
+cat << 'EOF' > client/src/App.js
+import logo from './logo.svg';
+import './App.css';
+import React, { useState, useEffect } from 'react';
+
+function App() {
+  let [versions, setVersions] = useState('loading...');
+
+  useEffect(() => {
+    fetch('api/versions')
+    .then(response => response.json())
+    .then(versions => {
+      setVersions(Object.entries(versions)
+        .map(([name, version]) => `${name}: ${version}`).join(', ')
+      )
+    });
+  });
+
+  return (
+    <div className="App">
+      <header className="App-header">
+        <img src={logo} className="App-logo" alt="logo" />
+        <p>{ versions }</p>
+      </header>
+    </div>
+  );
+}
+
+export default App;
+EOF
+
+docker buildx build . -t rails-welcome
+docker run -p 3000:3000 -e RAILS_MASTER_KEY=$(cat config/master.key) rails-welcome
+```

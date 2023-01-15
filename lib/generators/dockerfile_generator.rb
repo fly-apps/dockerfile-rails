@@ -163,13 +163,13 @@ private
   end
 
   def node_version
-    using_node? and `node --version`[/\d+\.\d+\.\d+/]
+    `node --version`[/\d+\.\d+\.\d+/]
   rescue
     "lts" 
   end
 
   def yarn_version
-    using_node? and `yarn --version`[/\d+\.\d+\.\d+/]
+    `yarn --version`[/\d+\.\d+\.\d+/]
   rescue
     "latest"
   end
@@ -180,6 +180,23 @@ private
 
   def api_only?
     Rails.application.config.api_only
+  end
+
+  def api_client_dir
+    return unless api_only?
+
+    file = Dir['*/package.json'].find do |file|
+      JSON.load_file(file).dig('scripts', 'build')
+    end
+
+    file && File.dirname(file)
+  end
+
+  def api_client_files
+    client = api_client_dir
+    return unless client
+
+    Dir["#{client}/{package.json,package-lock.json,yarn.lock}"]
   end
 
   def dbprep_command

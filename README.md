@@ -5,7 +5,7 @@ Provide Rails generators to produce Dockerfiles and related files.
 ## Usage
 
 ```
-bundle add dockerfile-rails
+bundle add dockerfile-rails --group development
 bin/rails generate dockerfile
 ```
 
@@ -27,3 +27,9 @@ additional support may be needed:
 * `--posgresql` - add posgresql libraries
 * `--redis` - add redis libraries
 * `--sqlite3` - add sqlite3 libraries
+
+Links:
+
+* [Demos](./DEMO.md)
+* [Preparations for Rails 7.1](https://community.fly.io/t/preparations-for-rails-7-1/9512)
+* [Rails Dockerfile futures](https://discuss.rubyonrails.org/t/rails-dockerfile-futures/82091/1)

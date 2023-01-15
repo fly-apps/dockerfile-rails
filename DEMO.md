@@ -1,4 +1,4 @@
-# Demo1 - Minimal
+# Demo 1 - Minimal
 
 ```
 rails new welcome --minimal

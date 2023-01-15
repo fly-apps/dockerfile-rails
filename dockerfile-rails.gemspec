@@ -13,7 +13,7 @@ Gem::Specification.new do |spec|
     "homepage_uri" => spec.homepage,
   }
 
-  spec.files = Dir["{app,lib}/**/*", "MIT-LICENSE", "Rakefile", "README.md"]
+  spec.files = Dir["lib/**/*", "MIT-LICENSE", "Rakefile", "*.md"]
 
   spec.add_dependency "rails"
 end

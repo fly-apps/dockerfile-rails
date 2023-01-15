@@ -72,9 +72,10 @@ FROM prebuild as node
 # Install JavaScript dependencies
 ARG NODE_VERSION=<%= node_version %>
 ARG YARN_VERSION=<%= yarn_version %>
-ENV VOLTA_HOME="/usr/local"
-RUN curl https://get.volta.sh | bash && \
-    volta install node@$NODE_VERSION yarn@$YARN_VERSION
+RUN curl -fsSL https://fnm.vercel.app/install | bash && \
+    /root/.local/share/fnm/fnm install $NODE_VERSION
+ENV PATH=/root/.local/share/fnm/aliases/default/bin/:$PATH
+RUN npm install -g yarn@$YARN_VERSION
 
 <% end -%>
 <% if parallel? -%>

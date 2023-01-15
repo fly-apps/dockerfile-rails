@@ -81,7 +81,7 @@ private
 
     # node support, including support for building native modules
     if using_node?
-      packages += %w(curl node-gyp pkg-config)
+      packages += %w(curl unzip node-gyp pkg-config)
 
       # module build process depends on Python, and debian changed
       # how python is installed with the bullseye release.  Below

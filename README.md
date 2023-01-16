@@ -1,6 +1,10 @@
-## Purpose
+## Overview
 
-Provide Rails generators to produce Dockerfiles and related files.
+Provides Rails generators to produce Dockerfiles and related files.  This is being proposed as the generator to be included in Rails 7.1, and a substantial number of pull requests along those lines have already been merged.  This repository contains fixes and features beyond those pull requests.  Highlights:
+
+  * Supports all [Rails supported releases](https://guides.rubyonrails.org/maintenance_policy.html), not just Rails 7.1, and likely works with a number of previous releases.
+  * Can be customized using flags on the `generate dockerfile` command, and rerun to produce a custom tailored dockerfile based on detecting the actual features used by your application.
+  * Can produce a `docker-compose.yml` file for locally testing your configuration before deploying.
 
 ## Usage
 

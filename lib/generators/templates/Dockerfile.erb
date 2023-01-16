@@ -1,7 +1,7 @@
 # syntax = docker/dockerfile:1
 
 # Make sure RUBY_VERSION matches the Ruby version in .ruby-version and Gemfile
-ARG RUBY_VERSION=<%= Gem.ruby_version %>
+ARG RUBY_VERSION=<%= RUBY_VERSION %>
 <% if api_client_dir -%>
 ARG NODE_VERSION=<%= node_version %>
 

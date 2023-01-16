@@ -1,6 +1,6 @@
 Gem::Specification.new do |spec|
   spec.name        = "dockerfile-rails"
-  spec.version     = '0.3.0'
+  spec.version     = '0.3.1'
   spec.authors     = [ 
     "Sam Ruby",
   ]

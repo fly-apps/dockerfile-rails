@@ -28,6 +28,12 @@ additional support may be needed:
 * `--redis` - add redis libraries
 * `--sqlite3` - add sqlite3 libraries
 
+Optimizations:
+
+* `--fullstaq` - use [fullstaq](https://fullstaqruby.org/) [images](https://github.com/evilmartians/fullstaq-ruby-docker) on [quay.io](https://quay.io/repository/evl.ms/fullstaq-ruby?tab=tags&tag=latest)
+* `--jemalloc` - use [jemalloc](https://jemalloc.net/) memory allocator
+* `--yjit` - enable [YJIT](https://github.com/ruby/ruby/blob/master/doc/yjit/yjit.md) optimizing compiler.
+
 Links:
 
 * [Demos](./DEMO.md)

@@ -210,7 +210,7 @@ private
   end
 
   def depend_on_bootsnap?
-    @gemfile.include? 'bootstrap'
+    @gemfile.include? 'bootsnap'
   end
 
   def api_only?

@@ -13,7 +13,7 @@ class DockerfileGenerator < Rails::Generators::Base
   class_option :compose, type: :boolean, default: false,
     desc: 'generate a docker-compose.yml file'
 
-  class_option :redit, type: :boolean, default: false,
+  class_option :redis, type: :boolean, default: false,
     desc: 'include redis libraries'
 
   class_option :sqlite3, aliases: '--sqlite', type: :boolean, default: false,

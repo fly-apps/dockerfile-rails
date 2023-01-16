@@ -1,3 +1,5 @@
+require 'erb'
+
 class DockerfileGenerator < Rails::Generators::Base
   include DockerfileRails::Scanner
 
@@ -52,6 +54,30 @@ class DockerfileGenerator < Rails::Generators::Base
 
 private
    
+  def render(options)
+    scope = (Class.new do
+      def initialize(obj, locals)
+        @_obj = obj
+        @_locals = OpenStruct.new(locals)
+      end
+
+      def method_missing(method, *args, &block)
+        if @_locals.respond_to? method
+          @_locals.send method, *args, &block
+        else
+          @_obj.send method, *args, &block
+        end
+      end
+
+      def get_binding
+        binding
+      end
+    end).new(self, options[:locals] || {})
+
+    template = IO.read(File.join(source_paths.last, "_#{options[:partial]}.erb"))
+    ERB.new(template.strip, trim_mode: '-').result(scope.get_binding)
+  end
+
   def using_node?
     return @using_node if @using_node != nil
     @using_node = File.exist? 'package.json'

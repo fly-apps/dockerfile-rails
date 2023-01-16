@@ -25,6 +25,15 @@ class DockerfileGenerator < Rails::Generators::Base
   class_option :mysql, type: :boolean, default: false,
     desc: 'include mysql libraries'
 
+  class_option :jemalloc, type: :boolean, default: false,
+    desc: 'use jemalloc alternative malloc implementation'
+  
+  class_option :fullstaq, type: :boolean, default: false,
+    descr: 'use Fullstaq Ruby image from Quay.io'
+
+  class_option :yjit, type: :boolean, default: false,
+    desc: 'enable YJIT optimizing compiler'
+
   def generate_app
     source_paths.push File.expand_path('./templates', __dir__)
 

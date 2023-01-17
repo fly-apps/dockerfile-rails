@@ -30,6 +30,9 @@ class DockerfileGenerator < Rails::Generators::Base
   class_option :mysql, type: :boolean, default: false,
     desc: 'include mysql libraries'
 
+  class_option :platform, type: :string, default: nil,
+    desc: 'image platform (example: linux/arm64)'
+
   class_option :jemalloc, type: :boolean, default: false,
     desc: 'use jemalloc alternative malloc implementation'
   
@@ -79,6 +82,14 @@ private
 
     template = IO.read(File.join(source_paths.last, "_#{options[:partial]}.erb"))
     ERB.new(template, trim_mode: '-').result(scope.get_binding).strip
+  end
+
+  def platform
+    if options.platform
+      "--platform #{options.platform} "
+    else
+      ""
+    end
   end
 
   def using_node?

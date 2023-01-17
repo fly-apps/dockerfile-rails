@@ -25,6 +25,22 @@ ARG BUNDLER_VERSION=<%= Bundler::VERSION %>
 RUN gem update --system --no-document && \
     gem install -N bundler -v ${BUNDLER_VERSION}
 
+<% if using_execjs? -%>
+# Install packages need to install nodejs
+<% if options.cache? -%>
+RUN --mount=type=cache,id=dev-apt-cache,sharing=locked,target=/var/cache/apt \
+    --mount=type=cache,id=dev-apt-lib,sharing=locked,target=/var/lib/apt \
+    apt-get update -qq && \
+    apt-get install --no-install-recommends -y curl unzip %>
+<% else -%>
+RUN apt-get update -qq && \
+    apt-get install --no-install-recommends -y curl unzip && \
+    rm -rf /var/lib/apt/lists /var/cache/apt/archives
+<% end -%>
+
+<%= render partial: 'install_node', locals: {yarn_version: nil} %>
+
+<% end -%>
 
 # Throw-away build stage<%= parallel? ? 's' : '' %> to reduce size of final image
 FROM base as <%= parallel? ? 'pre' : '' %>build
@@ -45,13 +61,7 @@ FROM prebuild as node
 
 <% end -%>
 <% if using_node? -%>
-# Install JavaScript dependencies
-ARG NODE_VERSION=<%= node_version %>
-ARG YARN_VERSION=<%= yarn_version %>
-RUN curl -fsSL https://fnm.vercel.app/install | bash && \
-    /root/.local/share/fnm/fnm install $NODE_VERSION
-ENV PATH=/root/.local/share/fnm/aliases/default/bin/:$PATH
-RUN npm install -g yarn@$YARN_VERSION
+<%= render partial: 'install_node', locals: {node_version: using_execjs? ? nil : node_version} %>
 
 <% end -%>
 <% if parallel? -%>

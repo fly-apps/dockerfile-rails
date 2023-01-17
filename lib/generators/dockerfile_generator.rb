@@ -75,7 +75,7 @@ private
     end).new(self, options[:locals] || {})
 
     template = IO.read(File.join(source_paths.last, "_#{options[:partial]}.erb"))
-    ERB.new(template.strip, trim_mode: '-').result(scope.get_binding)
+    ERB.new(template, trim_mode: '-').result(scope.get_binding).strip
   end
 
   def using_node?
@@ -85,6 +85,10 @@ private
 
   def using_redis?
     options.redis? or @redis
+  end
+
+  def using_execjs?
+    @gemfile.include? 'execjs'
   end
 
   def parallel?
@@ -116,7 +120,8 @@ private
 
     # node support, including support for building native modules
     if using_node?
-      packages += %w(curl unzip node-gyp pkg-config)
+      packages += %w(node-gyp pkg-config)
+      packages += %w(curl unzip) unless using_execjs?
 
       # module build process depends on Python, and debian changed
       # how python is installed with the bullseye release.  Below

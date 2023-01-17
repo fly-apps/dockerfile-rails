@@ -1,0 +1,21 @@
+<% if node_version and yarn_version -%>
+# Install JavaScript dependencies
+<% elsif node_version -%>
+# Install Node.js
+<% elsif yarn_version -%>
+# Install yarn
+<% end -%>
+<% if node_version -%>
+ARG NODE_VERSION=<%= node_version %>
+<% end -%>
+<% if yarn_version -%>
+ARG YARN_VERSION=<%= yarn_version %>
+<% end -%>
+<% if node_version -%>
+RUN curl -fsSL https://fnm.vercel.app/install | bash && \
+    /root/.local/share/fnm/fnm install $NODE_VERSION
+ENV PATH=/root/.local/share/fnm/aliases/default/bin/:$PATH
+<% end -%>
+<% if yarn_version -%>
+RUN npm install -g yarn@$YARN_VERSION
+<% end -%>

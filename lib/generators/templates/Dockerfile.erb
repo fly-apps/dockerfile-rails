@@ -26,17 +26,8 @@ RUN gem update --system --no-document && \
     gem install -N bundler -v ${BUNDLER_VERSION}
 
 <% if using_execjs? -%>
-# Install packages need to install nodejs
-<% if options.cache? -%>
-RUN --mount=type=cache,id=dev-apt-cache,sharing=locked,target=/var/cache/apt \
-    --mount=type=cache,id=dev-apt-lib,sharing=locked,target=/var/lib/apt \
-    apt-get update -qq && \
-    apt-get install --no-install-recommends -y curl unzip %>
-<% else -%>
-RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y curl unzip && \
-    rm -rf /var/lib/apt/lists /var/cache/apt/archives
-<% end -%>
+# Install packages needed to install nodejs
+<%= render partial: 'apt_install', locals: {packages: %w(curl unzip), clean: true} %>
 
 <%= render partial: 'install_node', locals: {yarn_version: nil} %>
 
@@ -45,15 +36,8 @@ RUN apt-get update -qq && \
 # Throw-away build stage<%= parallel? ? 's' : '' %> to reduce size of final image
 FROM base as <%= parallel? ? 'pre' : '' %>build
 
-# Install packages need to build gems<%= using_node? ? " and node modules" : "" %>
-<% if options.cache? %>
-RUN --mount=type=cache,id=dev-apt-cache,sharing=locked,target=/var/cache/apt \
-    --mount=type=cache,id=dev-apt-lib,sharing=locked,target=/var/lib/apt \
-    apt-get update -qq && \
-<% else -%>
-RUN apt-get update -qq && \
-<% end -%>
-    apt-get install -y <%= build_packages.join(" ") %>
+# Install packages needed to build gems<%= using_node? ? " and node modules" : "" %>
+<%= render partial: 'apt_install', locals: {packages: build_packages, clean: false} %>
 
 <% if parallel? -%>
 
@@ -134,17 +118,8 @@ RUN SECRET_KEY_BASE<%= Rails::VERSION::MAJOR<7 || Rails::VERSION::STRING.start_w
 FROM base
 <% unless deploy_packages.empty? -%>
 
-# Install packages need for deployment
-<% if options.cache? -%>
-RUN --mount=type=cache,id=dev-apt-cache,sharing=locked,target=/var/cache/apt \
-    --mount=type=cache,id=dev-apt-lib,sharing=locked,target=/var/lib/apt \
-    apt-get update -qq && \
-    apt-get install --no-install-recommends -y <%= deploy_packages.join(" ") %>
-<% else -%>
-RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y <%= deploy_packages.join(" ") %> && \
-    rm -rf /var/lib/apt/lists /var/cache/apt/archives
-<% end -%>
+# Install packages needed for deployment
+<%= render partial: 'apt_install', locals: {packages: deploy_packages, clean: true} %>
 <% end -%>
 
 # Copy built application from previous stage

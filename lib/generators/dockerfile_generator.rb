@@ -12,6 +12,9 @@ class DockerfileGenerator < Rails::Generators::Base
   class_option :parallel, type: :boolean, default: false,
     desc: 'use build stages to install gems and node modules in parallel'
 
+  class_option :swap, type: :string, default: nil,
+    desc: 'allocate swapspace'
+
   class_option :compose, type: :boolean, default: false,
     desc: 'generate a docker-compose.yml file'
 

@@ -118,6 +118,9 @@ private
     # ActiveStorage preview support
     packages << "libvips" if @gemfile.include? 'ruby-vips'
 
+    # Rmagick gem
+    packages += %w[pkg-config libmagickwand-dev] if @gemfile.include? 'rmagick'
+
     # node support, including support for building native modules
     if using_node?
       packages += %w(node-gyp pkg-config)
@@ -159,6 +162,9 @@ private
 
     # ActiveStorage preview support
     packages << "libvips" if @gemfile.include? 'ruby-vips'
+
+    # Rmagick gem
+    packages << 'imagemagick' if @gemfile.include? 'rmagick'
 
     packages.sort
   end

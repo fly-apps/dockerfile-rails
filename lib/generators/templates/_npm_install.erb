@@ -1,0 +1,17 @@
+# Install node modules
+COPY <%=sources.join(' ') %> .
+<% if sources.join.include? 'yarn' -%>
+<% if options.cache? -%>
+RUN --mount=type=cache,id=bld-yarn-cache,target=/root/.yarn \
+    YARN_CACHE_FOLDER=/root/.yarn yarn install
+<% else -%>
+RUN yarn install
+<% end -%>
+<% else -%>
+<% if options.cache? -%>
+RUN --mount=type=cache,id=bld-npm-cache,target=/root/.npm \
+    npm install
+<% else -%>
+RUN npm install
+<% end -%>
+<% end -%>

@@ -26,9 +26,13 @@ module DockerfileRails
       end
       
       if File.exist? 'Gemfile'
-        gemfile_definition = Bundler::Definition.build('Gemfile', nil, [])
-        @gemfile += gemfile_definition.dependencies.map(&:name)
-        @git = !gemfile_definition.spec_git_paths.empty?
+        begin
+          gemfile_definition = Bundler::Definition.build('Gemfile', nil, [])
+          @gemfile += gemfile_definition.dependencies.map(&:name)
+          @git = !gemfile_definition.spec_git_paths.empty?
+        rescue => error
+          STDERR.puts error.message
+        end
       end
 
       @sidekiq = @gemfile.include? 'sidekiq'

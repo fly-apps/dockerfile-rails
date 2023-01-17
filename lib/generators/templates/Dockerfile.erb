@@ -21,6 +21,7 @@ ENV RAILS_ENV="production" \
     BUNDLE_PATH="vendor/bundle" \
     BUNDLE_WITHOUT="<%= options.ci? ? 'test' : 'development:test' %>"
 
+# Update gems and preinstall the desired version of bundler
 ARG BUNDLER_VERSION=<%= Bundler::VERSION %>
 RUN gem update --system --no-document && \
     gem install -N bundler -v ${BUNDLER_VERSION}

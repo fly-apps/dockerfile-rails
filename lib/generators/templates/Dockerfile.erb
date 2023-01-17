@@ -49,14 +49,7 @@ FROM prebuild as node
 
 <% end -%>
 <% if parallel? -%>
-# Install node modules
-COPY package.json yarn.lock ./
-<% if options.cache? -%>
-RUN --mount=type=cache,id=bld-yarn-cache,target=/root/.yarn \
-    YARN_CACHE_FOLDER=/root/.yarn yarn install
-<% else -%>
-RUN yarn install
-<% end -%>
+<%= render partial: 'npm_install', locals: {sources: %w(package.json yarn.lock)} %>
 
 
 FROM prebuild as build
@@ -85,14 +78,7 @@ RUN bundle _${BUNDLER_VERSION}_ install<% if depend_on_bootsnap? -%> && \
 <% if parallel? -%>
 asdf
 <% elsif using_node? -%>
-# Install node modules
-COPY package.json yarn.lock ./
-<% if options.cache? -%>
-RUN --mount=type=cache,id=bld-yarn-cache,target=/root/.yarn \
-    YARN_CACHE_FOLDER=/root/.yarn yarn install
-<% else -%>
-RUN yarn install
-<% end -%>
+<%= render partial: 'npm_install', locals: {sources: %w(package.json yarn.lock)} %>
 
 <% end -%>
 # Copy application code

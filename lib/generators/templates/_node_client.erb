@@ -6,23 +6,7 @@ WORKDIR /rails/<%= api_client_dir %>
 
 ENV NODE_ENV=production
 
-# Install node modules
-COPY <%= api_client_files.join(' ') %> .
-<% if api_client_files.join.include? 'yarn' -%>
-<% if options.cache? -%>
-RUN --mount=type=cache,id=bld-yarn-cache,target=/root/.yarn \
-    YARN_CACHE_FOLDER=/root/.yarn yarn install
-<% else -%>
-RUN yarn install
-<% end -%>
-<% else -%>
-<% if options.cache? -%>
-RUN --mount=type=cache,id=bld-yarn-cache,target=/root/.npm \
-    npm install
-<% else -%>
-RUN npm install
-<% end -%>
-<% end -%>
+<%= render partial: 'npm_install', locals: {sources: api_client_files} %>
 
 # build client application
 COPY <%= api_client_dir %> .

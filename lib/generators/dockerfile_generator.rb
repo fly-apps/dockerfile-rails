@@ -242,8 +242,14 @@ private
     Rails.application.config.api_only
   end
 
+  # scan for node clients.  Do a wide scan if api_only?, otherwise look
+  # for specific directories.
   def api_client_dir
-    return unless api_only?
+    if api_only?
+      scan = '*/package.json'
+    else
+      scan = '{client,frontend}/package.json'
+    end
 
     file = Dir['*/package.json'].find do |file|
       JSON.load_file(file).dig('scripts', 'build')

@@ -251,7 +251,7 @@ private
       scan = '{client,frontend}/package.json'
     end
 
-    file = Dir['*/package.json'].find do |file|
+    file = Dir[scan].find do |file|
       JSON.load_file(file).dig('scripts', 'build')
     end
 

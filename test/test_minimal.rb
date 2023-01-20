@@ -3,13 +3,13 @@ require 'test/unit'
 class TestMinimal < Test::Unit::TestCase
   def test_minimal
     Dir.chdir 'test/tmp' do
-      Bundler.with_original_env do
-	system 'rails new --minimal minimal'
+      system 'bundle exec rails new --minimal minimal'
 
-	Dir.chdir 'minimal' do
-	  system 'bundle add dockerfile-rails --group development'
-	  system 'bin/rails generate dockerfile'
-	end
+      Bundler.with_original_env do
+        Dir.chdir 'minimal' do
+          system 'bundle add dockerfile-rails --group development'
+          system 'bin/rails generate dockerfile'
+        end
       end
 
       results = IO.read('minimal/Dockerfile')

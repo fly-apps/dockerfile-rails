@@ -2,3 +2,5 @@
 
 /test/tmp/*
 !/test/tmp/.keep
+
+Gemfile.lock

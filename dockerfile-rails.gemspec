@@ -5,7 +5,7 @@ Gem::Specification.new do |spec|
     "Sam Ruby",
   ]
   spec.email       = "rubys@intertwingly.net"
-  spec.homepage    = "https://github.com/rubys/docker-rails"
+  spec.homepage    = "https://github.com/rubys/dockerfile-rails"
   spec.summary     = "Dockerfile generator for Rails"
   spec.license     = "MIT"
 

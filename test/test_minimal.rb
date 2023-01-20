@@ -1,6 +1,9 @@
-require 'test/unit'
+require "bundler/setup"
+require "minitest/autorun"
 
-class TestMinimal < Test::Unit::TestCase
+class TestMinimal < Minitest::Test
+  make_my_diffs_pretty! 
+
   def test_minimal
     Dir.chdir 'test/tmp' do
       system 'bundle exec rails new --minimal minimal'

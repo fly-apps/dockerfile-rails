@@ -240,6 +240,13 @@ private
     else
       version = `yarn --version`[/\d+\.\d+\.\d+/]
       system "yarn set version #{version}"
+
+      # apparently not all versions of yarn will update package.json
+      package = JSON.parse(IO.read('package.json'))
+      unless package['packageManager']
+        package['packageManager'] = "yarn@#{version}"
+        IO.write('package.json', JSON.pretty_generate(package))
+      end
     end
 
     version

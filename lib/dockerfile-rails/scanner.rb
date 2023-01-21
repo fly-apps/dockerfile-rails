@@ -13,6 +13,8 @@ module DockerfileRails
         @postgresql = true
       elsif database == 'mysql' or database == 'mysql2'
         @mysql = true
+      elsif database == 'sqlserver'
+        @sqlserver = true
       end
 
       ### ruby gems ###

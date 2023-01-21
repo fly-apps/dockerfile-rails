@@ -1,4 +1,3 @@
-require "bundler/setup"
 require "minitest/autorun"
 
 class TestMinimal < Minitest::Test
@@ -6,13 +5,11 @@ class TestMinimal < Minitest::Test
 
   def test_minimal
     Dir.chdir 'test/tmp' do
-      system 'bundle exec rails new --minimal minimal'
+      system 'rails new --minimal minimal'
 
-      Bundler.with_original_env do
-        Dir.chdir 'minimal' do
-          system 'bundle add dockerfile-rails --group development'
-          system 'bin/rails generate dockerfile'
-        end
+      Dir.chdir 'minimal' do
+	system 'bundle add dockerfile-rails --group development'
+	system 'bin/rails generate dockerfile'
       end
 
       results = IO.read('minimal/Dockerfile')

@@ -28,7 +28,11 @@ class TestBase < Minitest::Test
 
     app_setup
 
-    system 'bundle add dockerfile-rails --group development'
+    system 'bundle config disable_local_branch_check true'
+    system "bundle config set --local local.dockerfile-rails #{File.expand_path('..', __dir__)}"
+    system "bundle add dockerfile-rails --git https://github.com/rubys/dockerfile-rails.git --group development"
+
+    ENV['RAILS_ENV'] = 'test'
     system "bin/rails generate dockerfile #{self.class.generate_options}"
   end
 

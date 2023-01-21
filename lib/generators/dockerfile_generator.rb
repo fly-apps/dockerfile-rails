@@ -1,4 +1,5 @@
 require 'erb'
+require_relative '../dockerfile-rails/scanner.rb'
 
 class DockerfileGenerator < Rails::Generators::Base
   include DockerfileRails::Scanner
@@ -229,9 +230,16 @@ private
   end
 
   def yarn_version
-    `yarn --version`[/\d+\.\d+\.\d+/]
-  rescue
-    "latest"
+    version = `yarn --version`[/\d+\.\d+\.\d+/]
+
+    package = JSON.parse(IO.read('package.json'))
+    unless package['packageManager'] == "yarn@#{version}"
+      system "yarn set version #{version}"
+    end
+
+    version
+  # rescue
+  #  "latest"
   end
 
   def depend_on_bootsnap?

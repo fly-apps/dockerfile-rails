@@ -1,4 +1,5 @@
 require_relative 'base'
+require 'json'
 
 class TestEsbuild < TestBase
   @rails_options = '--javascript esbuild'
@@ -7,5 +8,8 @@ class TestEsbuild < TestBase
   def test_esbuild
     check_dockerfile
     check_compose
+
+    package = JSON.parse(IO.read('package.json'))
+    assert_includes package['packageManager'], 'yarn@'
   end
 end

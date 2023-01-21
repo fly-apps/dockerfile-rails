@@ -54,6 +54,16 @@ class TestBase < Minitest::Test
     assert_equal expected, results
   end
 
+  def check_entrypoint
+    results = IO.read('bin/docker-entrypoint')
+
+    IO.write("#{@results}/docker-entrypoint", results) if @capture
+
+    expected = IO.read("#{@results}/docker-entrypoint")
+    
+    assert_equal expected, results
+  end
+
   def teardown
     Dir.chdir '..'
     FileUtils.rm_rf @appname

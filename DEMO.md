@@ -1,16 +1,16 @@
-If you have Rails and Docker installed on your machine, running each of these demos is a matter of opening a terminal window, navigating to an empty directory, and copy/pasting a block of instructions into that window.  Once started, navigate to http://localhost:3000/ to see the results. 
+If you have Rails and Docker installed on your machine, running each of these demos is a matter of opening a terminal window, navigating to an empty directory, and copy/pasting a block of instructions into that window.  Once started, navigate to http://localhost:3000/ to see the results.
 
 # Demo 1 - Minimal
 
 Rails provides a _smoke test_ for new applications that makes sure that you have your software configured correctly enough to serve a page.  The following deploys that smoke test in production.  Once done take a look at the `Dockerfile` file produced.
 
-```
+```bash
 rails new welcome --minimal
 cd welcome
 echo 'Rails.application.routes.draw { root "rails/welcome#index" }' > config/routes.rb
 bundle add dockerfile-rails --group development
 bin/rails generate dockerfile
-docker buildx build . -t rails-welcome
+docker buildx build . -t rails-welcome # add --load to save the image to local Docker
 docker run -p 3000:3000 -e RAILS_MASTER_KEY=$(cat config/master.key) rails-welcome
 ```
 
@@ -18,7 +18,7 @@ docker run -p 3000:3000 -e RAILS_MASTER_KEY=$(cat config/master.key) rails-welco
 
 Real applications involve a network of services.  The following demo makes use of PostgreSQL and Redis to display a welcome screen with a live, updating, visitors counter. Once done, take a look at the `docker-compose.yml` file produced.
 
-```
+```bash
 rails new welcome --database postgresql
 cd welcome
 
@@ -98,7 +98,7 @@ docker compose up
 This demo deploys a [Create React App](https://create-react-app.dev/) client and a Rails API-only server.  Ruby and Rails version information is retrieved from the server and displayed below a spinning React logo.  Note that the build process installs the
 node moddules and ruby gems in parallel.
 
-```
+```bash
 rails new welcome --api
 cd welcome
 npx create-react-app client
@@ -160,14 +160,14 @@ While optional, bundling Javascript is a popular choice, and starting with
 Rails 7 there are three options: esbuild, rollup, and webpack.  The
 the following demonstrates Rails 7 with esbuild:
 
-```
+```bash
 rails new welcome --javascript esbuild
 cd welcome
 
 yarn add react react-dom
 bin/rails generate controller Time index
 
-cat <<-"EOF" >> app/javascript/application.js 
+cat <<-"EOF" >> app/javascript/application.js
 import "./components/counter"
 EOF
 

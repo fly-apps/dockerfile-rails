@@ -29,7 +29,7 @@ are actually using.  But should you be using DATABASE_URL, for example, at runti
 additional support may be needed:
 
 * `--mysql` - add mysql libraries
-* `--posgresql` - add posgresql libraries
+* `--postgresql` - add postgresql libraries
 * `--redis` - add redis libraries
 * `--sqlite3` - add sqlite3 libraries
 

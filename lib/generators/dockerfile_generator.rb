@@ -224,22 +224,27 @@ private
   end
 
   def node_version
-    `node --version`[/\d+\.\d+\.\d+/]
+    if File.exist? '.node_version'
+      IO.read('.node_version')[/\d+\.\d+\.\d+/]
+    else
+      `node --version`[/\d+\.\d+\.\d+/]
+    end
   rescue
     "lts" 
   end
 
   def yarn_version
-    version = `yarn --version`[/\d+\.\d+\.\d+/]
-
     package = JSON.parse(IO.read('package.json'))
-    unless package['packageManager'] == "yarn@#{version}"
+    if package['packageManager'].to_s.start_with? "yarn@"
+      version = package['packageManager'].sub('yarn@', '')
+    else
+      version = `yarn --version`[/\d+\.\d+\.\d+/]
       system "yarn set version #{version}"
     end
 
     version
-  # rescue
-  #  "latest"
+  rescue
+    "latest"
   end
 
   def depend_on_bootsnap?

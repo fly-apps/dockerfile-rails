@@ -1,5 +1,8 @@
 require "minitest/autorun"
 
+require "active_support"
+require "active_support/core_ext/string/inflections"
+
 class TestBase < Minitest::Test
   make_my_diffs_pretty! 
 
@@ -7,11 +10,14 @@ class TestBase < Minitest::Test
     attr_accessor :rails_options, :generate_options
   end
 
+  def app_setup
+  end
+
   def setup
     @capture = ENV['TEST_CAPTURE']
 
-    @appname = self.class.name.sub(/^Test([A-Z])/) {$1.downcase}
-    @results = File.expand_path(@appname, 'test/results')
+    @appname = self.class.name.underscore
+    @results = File.expand_path(@appname.sub('test_', ''), 'test/results')
     FileUtils.mkdir_p @results if @capture
 
     Dir.chdir 'test/tmp'
@@ -19,6 +25,8 @@ class TestBase < Minitest::Test
     system "rails new #{self.class.rails_options} #{@appname}"
 
     Dir.chdir @appname
+
+    app_setup
 
     system 'bundle add dockerfile-rails --group development'
     system "bin/rails generate dockerfile #{self.class.generate_options}"

@@ -2,7 +2,7 @@ require_relative 'base'
 
 class TestJemalloc < TestBase
   @rails_options = '--minimal'
-  @generate_options = '--jemalloc'
+  @generate_options = '--jemalloc --platform=linux/amd64'
 
   def test_jemalloc
     check_dockerfile

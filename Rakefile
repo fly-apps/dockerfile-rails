@@ -8,3 +8,10 @@ Rake::TestTask.new do |t|
   t.test_files = FileList['test/test*.rb']
   t.verbose = true
 end
+
+namespace :test do
+  task :capture do
+    ENV['TEST_CAPTURE'] = 'true'
+    Rake::Task[:test].invoke
+  end
+end

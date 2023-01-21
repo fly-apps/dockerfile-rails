@@ -1,7 +1,7 @@
 # syntax = docker/dockerfile:1
 
 # Make sure RUBY_VERSION matches the Ruby version in .ruby-version and Gemfile
-ARG RUBY_VERSION=3.2.0
+ARG RUBY_VERSION=xxx
 FROM ruby:$RUBY_VERSION-slim as base
 
 # Rails app lives here
@@ -13,7 +13,7 @@ ENV RAILS_ENV="production" \
     BUNDLE_WITHOUT="development:test"
 
 # Update gems and preinstall the desired version of bundler
-ARG BUNDLER_VERSION=2.4.2
+ARG BUNDLER_VERSION=xxx
 RUN gem update --system --no-document && \
     gem install -N bundler -v ${BUNDLER_VERSION}
 

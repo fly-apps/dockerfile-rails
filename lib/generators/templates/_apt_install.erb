@@ -8,3 +8,12 @@ RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y <%= packages.join(" ") %><% if clean %> && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives<% end %>
 <% end -%>
+<% if @sqlserver -%>
+ # install freetds required by tiny_tds gem
+ RUN wget ftp://ftp.freetds.org/pub/freetds/stable/freetds-1.3.16.tar.gz && \
+ 		tar -xzf freetds-1.3.16.tar.gz && \
+ 		cd freetds-1.3.16 && \
+ 		./configure --prefix=/usr/local --with-tdsver=7.3 && \
+ 		make && \
+ 		make install
+ <% end -%>

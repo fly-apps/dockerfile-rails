@@ -42,7 +42,7 @@ Optimizations:
 
 ## Testing
 
-The current testing strategy is to run `rails new` with `generate dockerfile` with various configurations and compare the generated artifacts (with `ARG` values in `Dockerfiles` masked) with expected results.
+The current testing strategy is to run `rails new` and `generate dockerfile` with various configurations and compare the generated artifacts (with `ARG` values in `Dockerfiles` masked) with expected results.
 
 Running all tests, or even a single individual test can be done as follows:
 

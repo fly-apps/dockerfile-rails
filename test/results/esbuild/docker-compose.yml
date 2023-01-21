@@ -1,0 +1,10 @@
+version: "3.8"
+services:
+  web:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - RAILS_MASTER_KEY=$RAILS_MASTER_KEY
+    volumes:
+      - ./db:/rails/db

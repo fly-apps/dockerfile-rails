@@ -8,7 +8,7 @@ class TestAPI < TestBase
     system 'npx -y nano-react-app my-app'
   end 
 
-  def test_redis
+  def test_api
     check_dockerfile
     check_compose
   end

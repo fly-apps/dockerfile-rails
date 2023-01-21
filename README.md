@@ -58,7 +58,7 @@ rake test:capture
 TEST_CAPTURE=1 ruby test/test_minimal.rb
 ```
 
-Links:
+## Links
 
 Many of the following links relate to the current development status with respect to Rails 7.1 and will be removed once that is resolved.
 

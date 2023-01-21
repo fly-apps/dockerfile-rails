@@ -40,10 +40,31 @@ Optimizations:
 * `--yjit` - enable [YJIT](https://github.com/ruby/ruby/blob/master/doc/yjit/yjit.md) optimizing compiler
 * `--swap=n` - allocate swap space.  See [falloc options](https://man7.org/linux/man-pages/man1/fallocate.1.html#OPTIONS) for suffixes
 
+## Testing
+
+The current testing strategy is to run `rails new` with `generate dockerfile` with various configurations and compare the generated artifacts (with `ARG` values in `Dockerfiles` masked) with expected results.
+
+Running all tests, or even a single individual test can be done as follows:
+
+```
+rake test
+ruby test/test_minimal.rb
+```
+
+To assis with this process, outputs of tests can be captured automatically.  This is useful when adding new tests and when making a change that affects many tests.  Be sure to inspect the output (e.g., by using `git diff`) before committing.
+
+```
+rake test:capture
+TEST_CAPTURE=1 ruby test/test_minimal.rb
+```
+
 Links:
 
-* [Demos](./DEMO.md)
-* [Preparations for Rails 7.1](https://community.fly.io/t/preparations-for-rails-7-1/9512)
-* [Rails Dockerfile futures](https://discuss.rubyonrails.org/t/rails-dockerfile-futures/82091/1)
-* [Fly Cookbooks](https://fly.io/docs/rails/cookbooks/)
-* [app/templates/Dockerfile.tt](https://github.com/rails/rails/blob/main/railties/lib/rails/generators/rails/app/templates/Dockerfile.tt)
+Many of the following links relate to the current development status with respect to Rails 7.1 and will be removed once that is resolved.
+
+* [Demos](./DEMO.md) - scripts to copy and paste into an empty directory to launch demo apps
+* [Test Results](./test/results) - expected outputs for each test
+* [Preparations for Rails 7.1](https://community.fly.io/t/preparations-for-rails-7-1/9512) - [Fly.io](https://fly.io/)'s plans and initial discussions with DHH
+* [Rails Dockerfile futures](https://discuss.rubyonrails.org/t/rails-dockerfile-futures/82091/1) - rationale for a generator
+* [Fly Cookbooks](https://fly.io/docs/rails/cookbooks/) - deeper dive into Dockerfile design choices
+* [app/templates/Dockerfile.tt](https://github.com/rails/rails/blob/main/railties/lib/rails/generators/rails/app/templates/Dockerfile.tt) - current Rails 7.1 template

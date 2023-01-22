@@ -235,18 +235,22 @@ private
 
   def yarn_version
     package = JSON.parse(IO.read('package.json'))
-    if package['packageManager'].to_s.start_with? "yarn@"
+
+    if ENV['RAILS_ENV'] == 'test'
+      # yarn install instructions changed in v2
+      version = '1.22.19'
+    elsif package['packageManager'].to_s.start_with? "yarn@"
       version = package['packageManager'].sub('yarn@', '')
     else
-      version = `yarn --version`[/\d+\.\d+\.\d+/]
+      version = `yarn --version`[/\d+\.\d+\.\d+/] || '1.22.19'
       system "yarn set version #{version}"
-
-      # apparently not all versions of yarn will update package.json
       package = JSON.parse(IO.read('package.json'))
-      unless package['packageManager']
-        package['packageManager'] = "yarn@#{version}"
-        IO.write('package.json', JSON.pretty_generate(package))
-      end
+      # apparently not all versions of yarn will update package.json...
+    end
+
+    unless package['packageManager']
+      package['packageManager'] = "yarn@#{version}"
+      IO.write('package.json', JSON.pretty_generate(package))
     end
 
     version

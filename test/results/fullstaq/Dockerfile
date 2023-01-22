@@ -28,6 +28,7 @@ RUN apt-get update -qq && \
 # Install application gems
 COPY Gemfile Gemfile.lock ./
 RUN bundle _${BUNDLER_VERSION}_ install
+
 # Copy application code
 COPY . .
 

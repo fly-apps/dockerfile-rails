@@ -95,7 +95,7 @@ RUN bundle exec bootsnap precompile app/ lib/
 <%= "RUN " + binfile_fixups.join(" && \\\n    ") %>
 
 <% end -%>
-<% if Dir.exist?('assets') and !api_only? -%>
+<% if Dir.exist?('app/assets') and !api_only? -%>
 # Precompiling assets for production without requiring secret RAILS_MASTER_KEY
 RUN SECRET_KEY_BASE<%= Rails::VERSION::MAJOR<7 || Rails::VERSION::STRING.start_with?('7.0') ? '=DUMMY' : '_DUMMY=1' %> ./bin/rails assets:precompile
 

@@ -22,6 +22,7 @@ class TestBase < Minitest::Test
 
     Dir.chdir 'test/tmp'
 
+    FileUtils.rm_rf @appname
     system "rails new #{self.class.rails_options} #{@appname}"
 
     Dir.chdir @appname
@@ -69,6 +70,7 @@ class TestBase < Minitest::Test
   end
 
   def teardown
+    return if ENV['TEST_KEEP']
     Dir.chdir '..'
     FileUtils.rm_rf @appname
     Dir.chdir '../..'

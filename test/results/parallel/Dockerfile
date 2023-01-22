@@ -48,7 +48,9 @@ COPY Gemfile Gemfile.lock ./
 RUN bundle _${BUNDLER_VERSION}_ install && \
     bundle exec bootsnap precompile --gemfile
 
-asdf
+# Copy node modules
+COPY --from=node /rails/node_modules /rails/node_modules
+
 # Copy application code
 COPY . .
 

@@ -70,14 +70,17 @@ RUN --mount=type=cache,id=bld-gem-cache,sharing=locked,target=/srv/vendor \
     mkdir -p vendor && \
     bundle config set path vendor && \
     cp -ar /srv/vendor .
+
 <% else -%>
 RUN bundle _${BUNDLER_VERSION}_ install<% if depend_on_bootsnap? -%> && \
     bundle exec bootsnap precompile --gemfile
 <% end -%>
-<% end -%>
 
+<% end -%>
 <% if parallel? -%>
-asdf
+# Copy node modules
+COPY --from=node /rails/node_modules /rails/node_modules
+
 <% elsif using_node? -%>
 <%= render partial: 'npm_install', locals: {sources: %w(package.json yarn.lock)} %>
 

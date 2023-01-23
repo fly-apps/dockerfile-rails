@@ -55,8 +55,13 @@ To assis with this process, outputs of tests can be captured automatically.  Thi
 
 ```
 rake test:capture
-TEST_CAPTURE=1 ruby test/test_minimal.rb
 ```
+
+If you are running a single test, the following environment variables settings may be helpful:
+
+ * `RAILS_ENV=TEST` will match the environment used to produce the captured outputs.
+ * `TEST_CAPTURE=1` will capture test results.
+ * `TEST_KEEP=1` will leave the test app behind for inspection after the test completes.
 
 ## Links
 

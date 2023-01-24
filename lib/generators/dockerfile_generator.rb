@@ -4,53 +4,85 @@ require_relative '../dockerfile-rails/scanner.rb'
 class DockerfileGenerator < Rails::Generators::Base
   include DockerfileRails::Scanner
 
-  class_option :ci, type: :boolean, default: false,
+  OPTION_DEFAULTS = OpenStruct.new(
+    'bin-cd' => false,
+    'cache' => false,
+    'ci' => false,
+    'compose' => false,
+    'fullstaq' => false,
+    'jemalloc' => false,
+    'mysql' => false,
+    'parallel' => false,
+    'platform' => nil,
+    'prepare' => true,
+    'redis' => false,
+    'swap' => nil,
+    'yjit' => false,
+  )
+
+  # load defaults from config file
+  if File.exist? 'config/dockerfile.yml'
+    options = YAML.safe_load_file('config/dockerfile.yml', symbolize_names: true)[:options]
+    if options
+      OPTION_DEFAULTS.to_h.each do |option, value|
+        OPTION_DEFAULTS[option] = options[option] if options.include? option 
+      end
+    end
+  end
+
+  class_option :ci, type: :boolean, default: OPTION_DEFAULTS.ci,
     desc: 'include test gems in bundle'
 
-  class_option 'bin-cd', type: :boolean, default: false,
+  class_option 'bin-cd', type: :boolean, default: OPTION_DEFAULTS['bin-cd'],
     desc: 'modify binstubs to set working directory'
 
-  class_option :cache, type: :boolean, default: false,
+  class_option :cache, type: :boolean, default: OPTION_DEFAULTS.cache,
     desc: 'use build cache to speed up installs'
 
-  class_option :prepare, type: :boolean, default: true,
+  class_option :prepare, type: :boolean, default: OPTION_DEFAULTS.prepare,
     desc: 'include db:prepare step'
 
-  class_option :parallel, type: :boolean, default: false,
+  class_option :parallel, type: :boolean, default: OPTION_DEFAULTS.parallel,
     desc: 'use build stages to install gems and node modules in parallel'
 
-  class_option :swap, type: :string, default: nil,
+  class_option :swap, type: :string, default: OPTION_DEFAULTS.swap,
     desc: 'allocate swapspace'
 
-  class_option :compose, type: :boolean, default: false,
+  class_option :compose, type: :boolean, default: OPTION_DEFAULTS.compose,
     desc: 'generate a docker-compose.yml file'
 
-  class_option :redis, type: :boolean, default: false,
+  class_option :redis, type: :boolean, default: OPTION_DEFAULTS.redis,
     desc: 'include redis libraries'
 
-  class_option :sqlite3, aliases: '--sqlite', type: :boolean, default: false,
+  class_option :sqlite3, aliases: '--sqlite', type: :boolean, default: OPTION_DEFAULTS.sqlite3,
     desc: 'include sqlite3 libraries'
 
-  class_option :postgresql, aliases: '--postgres', type: :boolean, default: false,
+  class_option :postgresql, aliases: '--postgres', type: :boolean, default: OPTION_DEFAULTS.postgresql,
     desc: 'include postgresql libraries'
 
-  class_option :mysql, type: :boolean, default: false,
+  class_option :mysql, type: :boolean, default: OPTION_DEFAULTS.mysql,
     desc: 'include mysql libraries'
 
-  class_option :platform, type: :string, default: nil,
+  class_option :platform, type: :string, default: OPTION_DEFAULTS.platform,
     desc: 'image platform (example: linux/arm64)'
 
-  class_option :jemalloc, type: :boolean, default: false,
+  class_option :jemalloc, type: :boolean, default: OPTION_DEFAULTS.jemalloc,
     desc: 'use jemalloc alternative malloc implementation'
   
-  class_option :fullstaq, type: :boolean, default: false,
+  class_option :fullstaq, type: :boolean, default: OPTION_DEFAULTS.fullstaq,
     descr: 'use Fullstaq Ruby image from Quay.io'
 
-  class_option :yjit, type: :boolean, default: false,
+  class_option :yjit, type: :boolean, default: OPTION_DEFAULTS.yjit,
     desc: 'enable YJIT optimizing compiler'
 
   def generate_app
     source_paths.push File.expand_path('./templates', __dir__)
+
+    # gather up options for config file
+    @dockerfile_config = OPTION_DEFAULTS.dup.to_h.stringify_keys
+    options.to_h.each do |option, value|
+      @dockerfile_config[option] = value if @dockerfile_config.include? option
+    end
 
     scan_rails_app
 
@@ -63,6 +95,8 @@ class DockerfileGenerator < Rails::Generators::Base
     chmod "bin/docker-entrypoint", 0755 & ~File.umask, verbose: false
 
     template 'docker-compose.yml.erb', 'docker-compose.yml' if options.compose
+
+    template 'dockerfile.yml.erb', 'config/dockerfile.yml'
   end
 
 private

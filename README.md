@@ -1,6 +1,6 @@
 ## Overview
 
-Provides Rails generators to produce Dockerfiles and related files.  This is being proposed as the generator to be included in Rails 7.1, and a substantial number of pull requests along those lines have already been merged.  This repository contains fixes and features beyond those pull requests.  Highlights:
+Provides a Rails generator to produce Dockerfiles and related files.  This is being proposed as the generator to be included in Rails 7.1, and a substantial number of pull requests along those lines have already been merged.  This repository contains fixes and features beyond those pull requests.  Highlights:
 
   * Supports all [Rails supported releases](https://guides.rubyonrails.org/maintenance_policy.html), not just Rails 7.1, and likely works with a number of previous releases.
   * Can be customized using flags on the `generate dockerfile` command, and rerun to produce a custom tailored dockerfile based on detecting the actual features used by your application.
@@ -41,6 +41,8 @@ Runtime Optimizations:
 * `--jemalloc` - use [jemalloc](https://jemalloc.net/) memory allocator
 * `--yjit` - enable [YJIT](https://github.com/ruby/ruby/blob/master/doc/yjit/yjit.md) optimizing compiler
 * `--swap=n` - allocate swap space.  See [falloc options](https://man7.org/linux/man-pages/man1/fallocate.1.html#OPTIONS) for suffixes
+
+Options are saved between runs into `config/database.yml`.  To invert a boolean options, add or remove a `no-` prefix from the option name.
 
 ## Testing
 

@@ -93,7 +93,11 @@ RUN bundle exec bootsnap precompile app/ lib/
 
 <% end -%>
 <% unless binfile_fixups.empty? -%>
-# Adjust binfiles to be executable on Linux
+<% if options['bin-cd'] and binfile_fixups.length == 1 -%>
+# Adjust binfiles to set current working directory
+<% else -%>
+# Adjust binfiles to be executable on Linux<%= options['bin-cd'] ? ' and set current working directory' : '' %>
+<% end -%>
 <%= "RUN " + binfile_fixups.join(" && \\\n    ") %>
 
 <% end -%>

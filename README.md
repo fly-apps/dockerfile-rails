@@ -17,6 +17,7 @@ General options:
 
 * `--force` - overwrite existing files
 * `--ci` - include test gems in deployed image
+* `--bin-cd` - adjust binstubs to set current working directory
 * `--platform=s` - specify target platform.  See [FROM](https://docs.docker.com/engine/reference/builder/#from) for details.
 * `--cache` - use build caching to speed up builds
 * `--parallel` - use multi-stage builds to install gems and node modules in parallel

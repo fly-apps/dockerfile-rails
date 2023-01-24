@@ -7,6 +7,9 @@ class DockerfileGenerator < Rails::Generators::Base
   class_option :ci, type: :boolean, default: false,
     desc: 'include test gems in bundle'
 
+  class_option 'bin-cd', type: :boolean, default: false,
+    desc: 'modify binstubs to set working directory'
+
   class_option :cache, type: :boolean, default: false,
     desc: 'use build cache to speed up installs'
 
@@ -208,6 +211,11 @@ private
     # In such cases, fix up during the build.
     unless Dir["bin/*"].all? { |file| File.executable? file }
       binfixups.unshift "chmod +x bin/*"
+    end
+
+    # optionally, adjust cwd
+    if options['bin-cd']
+      binfixups.push %{sed -i '/^#!/aDir.chdir File.expand_path("..", __dir__)' /app/bin/*}
     end
 
     binfixups

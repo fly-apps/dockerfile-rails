@@ -137,7 +137,11 @@ ENV RAILS_LOG_TO_STDOUT="1" \
 <% end -%>
     MALLOC_CONF="dirty_decay_ms:1000,narenas:2,background_thread:true"<% end %>
 
+<% if options.prepare -%>
 # Entrypoint prepares the database.
+<% else -%>
+# Entrypoint sets up the container.
+<% end -%>
 ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 
 # Start the server by default, this can be overwritten at runtime

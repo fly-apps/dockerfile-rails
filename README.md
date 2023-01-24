@@ -18,6 +18,7 @@ General options:
 * `--force` - overwrite existing files
 * `--ci` - include test gems in deployed image
 * `--bin-cd` - adjust binstubs to set current working directory
+* `--no-prepare` - omit `db:prepare`.  Useful for cloud platforms with [release](https://devcenter.heroku.com/articles/release-phase) phases.
 * `--platform=s` - specify target platform.  See [FROM](https://docs.docker.com/engine/reference/builder/#from) for details.
 * `--cache` - use build caching to speed up builds
 * `--parallel` - use multi-stage builds to install gems and node modules in parallel
@@ -34,7 +35,7 @@ additional support may be needed:
 * `--redis` - add redis libraries
 * `--sqlite3` - add sqlite3 libraries
 
-Optimizations:
+Runtime Optimizations:
 
 * `--fullstaq` - use [fullstaq](https://fullstaqruby.org/) [images](https://github.com/evilmartians/fullstaq-ruby-docker) on [quay.io](https://quay.io/repository/evl.ms/fullstaq-ruby?tab=tags&tag=latest)
 * `--jemalloc` - use [jemalloc](https://jemalloc.net/) memory allocator

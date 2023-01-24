@@ -13,6 +13,9 @@ class DockerfileGenerator < Rails::Generators::Base
   class_option :cache, type: :boolean, default: false,
     desc: 'use build cache to speed up installs'
 
+  class_option :prepare, type: :boolean, default: true,
+    desc: 'include db:prepare step'
+
   class_option :parallel, type: :boolean, default: false,
     desc: 'use build stages to install gems and node modules in parallel'
 

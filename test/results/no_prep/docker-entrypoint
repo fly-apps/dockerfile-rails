@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# Add any container initialization steps here
+
+exec "${@}"

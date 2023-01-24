@@ -10,9 +10,14 @@ swapon /swapfile
 echo 1 > /proc/sys/vm/overcommit_memory
 
 <% end -%>
+<% if options.prepare -%>
 # If running the rails server then create or migrate existing database
 if [ "${*}" == "./bin/rails server" ]; then
   ./bin/rails <%= dbprep_command %>
 fi
 
+<% elsif !options.swap -%>
+# Add any container initialization steps here
+
+<% end -%>
 exec "${@}"

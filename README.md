@@ -42,7 +42,7 @@ Runtime Optimizations:
 * `--yjit` - enable [YJIT](https://github.com/ruby/ruby/blob/master/doc/yjit/yjit.md) optimizing compiler
 * `--swap=n` - allocate swap space.  See [falloc options](https://man7.org/linux/man-pages/man1/fallocate.1.html#OPTIONS) for suffixes
 
-Options are saved between runs into `config/database.yml`.  To invert a boolean options, add or remove a `no-` prefix from the option name.
+Options are saved between runs into `config/dockerfile.yml`.  To invert a boolean options, add or remove a `no-` prefix from the option name.
 
 ## Testing
 

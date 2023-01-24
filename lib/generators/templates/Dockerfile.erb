@@ -19,7 +19,7 @@ WORKDIR /rails
 # Set production environment
 ENV RAILS_ENV="production" \
     BUNDLE_PATH="vendor/bundle" \
-    BUNDLE_WITHOUT="<%= options.ci? ? 'test' : 'development:test' %>"
+    BUNDLE_WITHOUT="<%= options.ci? ? 'development' : 'development:test' %>"
 
 # Update gems and preinstall the desired version of bundler
 ARG BUNDLER_VERSION=<%= Bundler::VERSION %>

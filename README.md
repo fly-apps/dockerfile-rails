@@ -77,3 +77,4 @@ Many of the following links relate to the current development status with respec
 * [Rails Dockerfile futures](https://discuss.rubyonrails.org/t/rails-dockerfile-futures/82091/1) - rationale for a generator
 * [Fly Cookbooks](https://fly.io/docs/rails/cookbooks/) - deeper dive into Dockerfile design choices
 * [app/templates/Dockerfile.tt](https://github.com/rails/rails/blob/main/railties/lib/rails/generators/rails/app/templates/Dockerfile.tt) - current Rails 7.1 template
+* Fly.io [Cut over to Rails Dockerfile Generator on Sunday 29 Jan 2023](https://community.fly.io/t/cut-over-to-rails-dockerfile-generator-on-sunday-29-jan-2023/10350)

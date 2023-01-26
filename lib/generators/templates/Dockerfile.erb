@@ -126,17 +126,11 @@ COPY --from=build /rails /rails
 COPY --from=client /rails/<%= api_client_dir %>/build /rails/public
 <% end -%>
 
+<% unless deploy_env.empty? -%>
 # Deployment options
-ENV RAILS_LOG_TO_STDOUT="1"<% if Rails::VERSION::MAJOR<7 || Rails::VERSION::STRING.start_with?('7.0') %> \
-    RAILS_SERVE_STATIC_FILES="true"<% end %><% if options.yjit %> \
-    RUBY_YJIT_ENABLE="1"<% end %><% if options.jemalloc and not options.fullstaq %> \
-<% if (options.platform || Gem::Platform::local.cpu).include? 'arm' -%>
-    LD_PRELOAD="/usr/lib/aarch64-linux-gnu/libjemalloc.so.2" \
-<% else -%>
-    LD_PRELOAD="/usr/lib/x86_64-linux-gnu/libjemalloc.so.2" \
-<% end -%>
-    MALLOC_CONF="dirty_decay_ms:1000,narenas:2,background_thread:true"<% end %>
+ENV <%= deploy_env.join(" \\\n    ") %>
 
+<% end -%>
 <% if options.prepare -%>
 # Entrypoint prepares the database.
 <% else -%>

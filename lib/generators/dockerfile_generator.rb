@@ -14,6 +14,7 @@ class DockerfileGenerator < Rails::Generators::Base
     'mysql' => false,
     'parallel' => false,
     'platform' => nil,
+    'postgresql' => false,
     'prepare' => true,
     'redis' => false,
     'swap' => nil,
@@ -222,6 +223,31 @@ private
     packages << 'imagemagick' if @gemfile.include? 'rmagick'
 
     packages.sort
+  end
+
+  def deploy_env
+    env = []
+
+    if Rails::VERSION::MAJOR<7 || Rails::VERSION::STRING.start_with?('7.0')
+      env << 'RAILS_LOG_TO_STDOUT="1"'
+      env << 'RAILS_SERVE_STATIC_FILES="true"'
+    end
+
+    if options.yjit
+      env << 'RUBY_YJIT_ENABLE="1"'
+    end
+
+    if options.jemalloc and not options.fullstaq
+      if (options.platform || Gem::Platform::local.cpu).include? 'arm'
+        env << 'LD_PRELOAD="/usr/lib/aarch64-linux-gnu/libjemalloc.so.2"'
+      else
+        env << 'LD_PRELOAD="/usr/lib/x86_64-linux-gnu/libjemalloc.so.2"'
+      end
+
+      env << 'MALLOC_CONF="dirty_decay_ms:1000,narenas:2,background_thread:true"'
+    end
+
+    env
   end
 
   def binfile_fixups

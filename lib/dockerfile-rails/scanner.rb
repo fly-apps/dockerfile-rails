@@ -4,7 +4,7 @@ module DockerfileRails
 
       ### database ###
 
-      database = YAML.load_file('config/database.yml').
+      database = YAML.load_file('config/database.yml', aliases: true).
         dig('production', 'adapter') rescue nil
 
       if database == 'sqlite3'

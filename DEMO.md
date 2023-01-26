@@ -103,7 +103,7 @@ node moddules and ruby gems in parallel.
 ```bash
 rails new welcome --api
 cd welcome
-npx create-react-app client
+npx -y create-react-app client
 
 bin/rails generate controller Api versions
 

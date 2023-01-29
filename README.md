@@ -4,6 +4,7 @@ Provides a Rails generator to produce Dockerfiles and related files.  This is be
 
   * Supports all [Rails supported releases](https://guides.rubyonrails.org/maintenance_policy.html), not just Rails 7.1, and likely works with a number of previous releases.
   * Can be customized using flags on the `generate dockerfile` command, and rerun to produce a custom tailored dockerfile based on detecting the actual features used by your application.
+  * Will set `.node_version`, `packageManager` and install gems if needed to deploy your application.
   * Can produce a `docker-compose.yml` file for locally testing your configuration before deploying.
 
 ## Usage

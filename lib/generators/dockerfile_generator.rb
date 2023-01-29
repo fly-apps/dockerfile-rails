@@ -87,6 +87,8 @@ class DockerfileGenerator < Rails::Generators::Base
 
     scan_rails_app
 
+    Bundler.with_original_env { install_gems }
+
     template 'Dockerfile.erb', 'Dockerfile'
     template 'dockerignore.erb', '.dockerignore'
 
@@ -97,7 +99,7 @@ class DockerfileGenerator < Rails::Generators::Base
 
     template 'docker-compose.yml.erb', 'docker-compose.yml' if options.compose
 
-    template 'dockerfile.yml.erb', 'config/dockerfile.yml'
+    template 'dockerfile.yml.erb', 'config/dockerfile.yml', force: true
   end
 
 private
@@ -156,6 +158,20 @@ private
     @keeps = !Dir['**/.keep']
   end
 
+  def install_gems
+    if options.postgresql? or @postgresql
+      system "bundle add pg" unless @gemfile.include? 'pg'
+    end
+
+    if options.mysql? or @mysql
+      system "bundle add mysql2" unless @gemfile.include? 'mysql2'
+    end
+
+    if options.redis? or using_redis?
+      system "bundle add redis" unless @gemfile.include? 'redis'
+    end
+  end
+
   def build_packages
     # start with the essentials
     packages = %w(build-essential)
@@ -163,13 +179,13 @@ private
     # add databases: sqlite3, postgres, mysql
     packages << 'pkg-config' if options.sqlite3? or @sqlite3
     packages << 'libpq-dev' if options.postgresql? or @postgresql
-    packages << 'default-libmysqlclient-dev' if options.mysql or @mysql
+    packages << 'default-libmysqlclient-dev' if options.mysql? or @mysql
 
     # add git if needed to install gems
     packages << 'git' if @git
 
     # add redis in case Action Cable, caching, or sidekiq are added later
-    packages << "redis" if using_redis?
+    packages << "redis" if options.redis? or using_redis?
 
     # ActiveStorage preview support
     packages << "libvips" if @gemfile.include? 'ruby-vips'

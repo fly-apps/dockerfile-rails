@@ -146,7 +146,11 @@ private
   end
 
   def using_execjs?
-    @gemfile.include? 'execjs'
+    @gemfile.include?('execjs') or @gemfile.include?('grover')
+  end
+
+  def using_puppeteer?
+    @gemfile.include?('grover')
   end
 
   def parallel?
@@ -238,7 +242,28 @@ private
     # Rmagick gem
     packages << 'imagemagick' if @gemfile.include? 'rmagick'
 
+    # Puppeteer
+    packages << 'google-chrome-stable' if using_puppeteer?
+
     packages.sort
+  end
+
+  def deploy_repos
+    repos = []
+
+    if using_puppeteer?
+      repos += [
+       "curl https://dl-ssl.google.com/linux/linux_signing_key.pub |",
+       "gpg --dearmor > /etc/apt/trusted.gpg.d/google-archive.gpg &&",
+       'echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
+      ]
+    end
+
+    if repos.empty?
+      ''
+    else
+      repos.join(" \\\n    ") + " && \\\n    "
+    end
   end
 
   def deploy_env
@@ -261,6 +286,11 @@ private
       end
 
       env << 'MALLOC_CONF="dirty_decay_ms:1000,narenas:2,background_thread:true"'
+    end
+
+    if using_puppeteer?
+      env << 'GROVER_NO_SANDBOX="true"' if @gemfile.include? 'grover'
+      env << 'PUPPETEER_EXECUTABLE_PATH="/usr/bin/google-chrome"'
     end
 
     env

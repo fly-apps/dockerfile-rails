@@ -27,8 +27,13 @@ RUN gem update --system --no-document && \
     gem install -N bundler -v ${BUNDLER_VERSION}
 
 <% if using_execjs? -%>
+<% if using_puppeteer? -%>
+# Install packages needed to install nodejs and chrome
+<%= render partial: 'apt_install', locals: {packages: %w(curl gnupg unzip), clean: true, repos: ''} %>
+<% else -%>
 # Install packages needed to install nodejs
-<%= render partial: 'apt_install', locals: {packages: %w(curl unzip), clean: true} %>
+<%= render partial: 'apt_install', locals: {packages: %w(curl unzip), clean: true, repos: ''} %>
+<% end -%>
 
 <%= render partial: 'install_node', locals: {yarn_version: nil} %>
 
@@ -38,15 +43,15 @@ RUN gem update --system --no-document && \
 FROM base as <%= parallel? ? 'pre' : '' %>build
 
 # Install packages needed to build gems<%= using_node? ? " and node modules" : "" %>
-<%= render partial: 'apt_install', locals: {packages: build_packages, clean: false} %>
+<%= render partial: 'apt_install', locals: {packages: build_packages, clean: false, repos: ''} %>
 
 <% if parallel? -%>
 
 FROM prebuild as node
 
 <% end -%>
-<% if using_node? -%>
-<%= render partial: 'install_node', locals: {node_version: using_execjs? ? nil : node_version} %>
+<% if using_node? and (!using_execjs? || File.exist?('yarn.lock')) -%>
+<%= render partial: 'install_node', locals: {node_version: using_execjs? ? nil : node_version, yarn_version: File.exist?('yarn.lock') ? yarn_version : nil} %>
 
 <% end -%>
 <% if parallel? -%>
@@ -81,7 +86,7 @@ RUN bundle _${BUNDLER_VERSION}_ install<% if depend_on_bootsnap? -%> && \
 COPY --from=node /rails/node_modules /rails/node_modules
 
 <% elsif using_node? -%>
-<%= render partial: 'npm_install', locals: {sources: %w(package.json yarn.lock)} %>
+<%= render partial: 'npm_install', locals: {sources: Dir[*%w(package.json package-lock.json yarn.lock)]} %>
 
 <% end -%>
 # Copy application code
@@ -112,7 +117,7 @@ FROM base
 <% unless deploy_packages.empty? -%>
 
 # Install packages needed for deployment
-<%= render partial: 'apt_install', locals: {packages: deploy_packages, clean: true} %>
+<%= render partial: 'apt_install', locals: {packages: deploy_packages, clean: true, repos: deploy_repos} %>
 <% end -%>
 
 # Copy built application from previous stage

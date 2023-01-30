@@ -275,3 +275,31 @@ bin/rails generate dockerfile
 docker buildx build . -t rails-welcome
 docker run -p 3000:3000 -e RAILS_MASTER_KEY=$(cat config/master.key) rails-welcome
 ```
+
+# Demo 5 - Grover / puppeteer / Chrome
+
+This demo runs only on Intel hardware as Google doesn't supply Chrome
+binaries for Linux on ARM.
+
+```bash
+rails new welcome --minimal
+cd welcome
+bundle add grover
+npm install puppeteer
+
+echo 'Rails.application.routes.draw { root "grover#pdf" }' > config/routes.rb
+
+cat << 'EOF' > app/controllers/grover_controller.rb
+class GroverController < ApplicationController
+  def pdf
+    grover = Grover.new('https://google.com', format: 'A4')
+    send_data grover.to_pdf, filename: 'google.pdf', type: :pdf
+  end
+end
+EOF
+
+bundle add dockerfile-rails --group development
+bin/rails generate dockerfile
+docker buildx build . -t rails-welcome
+docker run -p 3000:3000 -e RAILS_MASTER_KEY=$(cat config/master.key) rails-welcome
+```

@@ -69,3 +69,26 @@ services:
   redis-db:
     image: redis
 <% end -%>
+<% if using_sidekiq? and deploy_database != 'sqlite3' -%>
+
+  sidekiq:
+    build: .
+    environment:
+      - RAILS_MASTER_KEY=$RAILS_MASTER_KEY
+      - REDIS_URL=redis://redis-db:6379
+<% if deploy_database == 'postgresql' -%>
+      - DATABASE_URL=postgres://root:password@postgres-db/
+<% elsif deploy_database == 'mysql' -%>
+      - DATABASE_URL=mysql2://root:password@mysql-db/
+<% end -%>
+    depends_on:
+      redis-db:
+        condition: service_started
+<% if deploy_database == 'postgresql' -%>
+      postgres-db:
+        condition: service_healthy
+<% elsif deploy_database == 'mysql' -%>
+      mysql-db:
+        condition: service_healthy
+<% end -%>
+<% end -%>

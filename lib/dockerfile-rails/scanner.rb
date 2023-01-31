@@ -40,7 +40,6 @@ module DockerfileRails
         end
       end
 
-      @sidekiq = @gemfile.include? 'sidekiq'
       @anycable = @gemfile.include? 'anycable-rails'
       @rmagick = @gemfile.include? 'rmagick'
       @vips = @gemfile.include? 'ruby-vips'
@@ -73,7 +72,7 @@ module DockerfileRails
         @redis_cache = true
       end
 
-      @redis = @redis_cable || @redis_cache || @sidekiq
+      @redis = @redis_cable || @redis_cache
     end
   end
 end

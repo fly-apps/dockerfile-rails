@@ -142,7 +142,7 @@ private
   end
 
   def using_redis?
-    options.redis? or @redis
+    options.redis? or @redis or @gemfile.include?('sidekiq')
   end
 
   def using_execjs?
@@ -151,6 +151,10 @@ private
 
   def using_puppeteer?
     @gemfile.include?('grover') or @gemfile.include?('puppeteer-ruby')
+  end
+
+  def using_sidekiq?
+    @gemfile.include?('sidekiq')
   end
 
   def parallel?
@@ -209,7 +213,7 @@ private
     # add git if needed to install gems
     packages << 'git' if @git
 
-    # add redis in case Action Cable, caching, or sidekiq are added later
+    # add redis if Action Cable, caching, or sidekiq are used
     packages << "redis" if options.redis? or using_redis?
 
     # ActiveStorage preview support

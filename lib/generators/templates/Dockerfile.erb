@@ -26,15 +26,12 @@ ARG BUNDLER_VERSION=<%= Bundler::VERSION %>
 RUN gem update --system --no-document && \
     gem install -N bundler -v ${BUNDLER_VERSION}
 
-<% if using_execjs? -%>
-<% if using_puppeteer? -%>
-# Install packages needed to install nodejs and chrome
-<%= render partial: 'apt_install', locals: {packages: %w(curl gnupg unzip), clean: true, repos: ''} %>
-<% else -%>
-# Install packages needed to install nodejs
-<%= render partial: 'apt_install', locals: {packages: %w(curl unzip), clean: true, repos: ''} %>
-<% end -%>
+<% unless base_requirements.empty? -%>
+# Install packages needed to install <%= base_requirements %>
+<%= render partial: 'apt_install', locals: {packages: base_packages, clean: true, repos: ''} %>
 
+<% end -%>
+<% if using_execjs? -%>
 <%= render partial: 'install_node', locals: {yarn_version: nil} %>
 
 <% end -%>

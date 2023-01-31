@@ -150,7 +150,7 @@ private
   end
 
   def using_puppeteer?
-    @gemfile.include?('grover')
+    @gemfile.include?('grover') or @gemfile.include?('puppeteer-ruby')
   end
 
   def parallel?
@@ -174,6 +174,27 @@ private
     if options.redis? or using_redis?
       system "bundle add redis" unless @gemfile.include? 'redis'
     end
+  end
+
+  def base_packages
+    packages = []
+
+    if using_execjs?
+      packages += %w(curl unzip)
+    end
+
+    if using_puppeteer?
+      packages += %w(curl gnupg)
+    end
+
+    packages.sort.uniq
+  end
+
+  def base_requirements
+    requirements = []
+    requirements << 'nodejs' if using_execjs?
+    requirements << 'chrome' if using_puppeteer?
+    requirements.join(' and ')
   end
 
   def build_packages
@@ -200,7 +221,7 @@ private
     # node support, including support for building native modules
     if using_node?
       packages += %w(node-gyp pkg-config)
-      packages += %w(curl unzip) unless using_execjs?
+      packages += %w(curl unzip) unless using_execjs? or using_puppeteer?
 
       # module build process depends on Python, and debian changed
       # how python is installed with the bullseye release.  Below

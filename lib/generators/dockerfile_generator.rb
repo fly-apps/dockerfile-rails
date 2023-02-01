@@ -19,15 +19,21 @@ class DockerfileGenerator < Rails::Generators::Base
     'redis' => false,
     'swap' => nil,
     'yjit' => false,
+    'label' => {},
   )
+
+  @@labels = {}
 
   # load defaults from config file
   if File.exist? 'config/dockerfile.yml'
     options = YAML.safe_load_file('config/dockerfile.yml', symbolize_names: true)[:options]
+
     if options
       OPTION_DEFAULTS.to_h.each do |option, value|
         OPTION_DEFAULTS[option] = options[option] if options.include? option 
       end
+
+      @@labels = options[:label].stringify_keys if options.include? :label
     end
   end
 
@@ -76,8 +82,14 @@ class DockerfileGenerator < Rails::Generators::Base
   class_option :yjit, type: :boolean, default: OPTION_DEFAULTS.yjit,
     desc: 'enable YJIT optimizing compiler'
 
+  class_option :label, type: :hash, default: {},
+    desc: 'Add Docker label(s)'
+
   def generate_app
     source_paths.push File.expand_path('./templates', __dir__)
+
+    # merge options
+    options.label.replace(@@labels.merge(options.label).select {|key, value| value != ''})
 
     # gather up options for config file
     @dockerfile_config = OPTION_DEFAULTS.dup.to_h.stringify_keys

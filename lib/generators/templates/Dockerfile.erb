@@ -13,6 +13,12 @@ FROM <%= platform %>quay.io/evl.ms/fullstaq-ruby:${RUBY_VERSION}-<%= @options.je
 FROM <%= platform %>ruby:$RUBY_VERSION-slim as base
 <% end -%>
 
+<% unless options.label.empty? -%>
+<% options.label.each do |key, value| -%>
+LABEL <%= key =~ /^\w[.\w]*$/ ? key : key.inspect %>=<%= value.inspect %>
+<% end -%>
+
+<% end -%>
 # Rails app lives here
 WORKDIR /rails
 

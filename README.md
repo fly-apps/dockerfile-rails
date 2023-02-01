@@ -10,7 +10,7 @@ Provides a Rails generator to produce Dockerfiles and related files.  This is be
 ## Usage
 
 ```
-bundle add dockerfile-rails --version ">= 1.0.0" --group development
+bundle add dockerfile-rails --optimistic --group development
 bin/rails generate dockerfile
 ```
 

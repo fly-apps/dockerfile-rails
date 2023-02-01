@@ -25,7 +25,7 @@ module DockerfileRails
       if File.exist? 'Gemfile.lock'
         parser = Bundler::LockfileParser.new(Bundler.read_file('Gemfile.lock'))
         @gemfile += parser.specs.map { |spec, version| spec.name }
-        @git ||= parser.specs.any? do |spec|
+        @git ||= ENV['RAILS_ENV'] != 'test' && parser.specs.any? do |spec|
           spec.source.instance_of? Bundler::Source::Git
         end
       end

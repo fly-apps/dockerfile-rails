@@ -265,7 +265,9 @@ private
     packages << "libvips" if @gemfile.include? 'ruby-vips'
 
     # Rmagick gem
-    packages << 'imagemagick' if @gemfile.include? 'rmagick'
+    if @gemfile.include?('rmagick') or @gemfile.include?('mini_magick')
+      packages << 'imagemagick'
+    end
 
     # Puppeteer
     packages << 'google-chrome-stable' if using_puppeteer?

@@ -41,7 +41,6 @@ module DockerfileRails
       end
 
       @anycable = @gemfile.include? 'anycable-rails'
-      @rmagick = @gemfile.include? 'rmagick'
       @vips = @gemfile.include? 'ruby-vips'
       @bootstrap = @gemfile.include? 'bootstrap'
       @puppeteer = @gemfile.include? 'puppeteer'

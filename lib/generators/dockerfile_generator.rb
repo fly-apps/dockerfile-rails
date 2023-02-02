@@ -329,6 +329,7 @@ private
 
     if using_puppeteer?
       env << 'GROVER_NO_SANDBOX="true"' if @gemfile.include? 'grover'
+      env << 'PUPPETEER_RUBY_NO_SANDBOX="1"' if @gemfile.include? 'puppeteer-ruby'
       env << 'PUPPETEER_EXECUTABLE_PATH="/usr/bin/google-chrome"'
     end
 

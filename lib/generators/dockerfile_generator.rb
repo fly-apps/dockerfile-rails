@@ -380,12 +380,16 @@ private
   end
 
   def node_version
-    if File.exist? '.node_version'
-      IO.read('.node_version')[/\d+\.\d+\.\d+/]
-    elsif File.exist? 'package.json'
-      JSON.parse(IO.read('package.json')).dig("engines", "node")
+    if File.exist? '.node-version'
+      IO.read('.node-version')[/\d+\.\d+\.\d+/]
     else
-      `node --version`[/\d+\.\d+\.\d+/]
+      version = nil
+
+      if File.exist? 'package.json'
+        version = JSON.parse(IO.read('package.json')).dig("engines", "node")
+      end
+
+      version || `node --version`[/\d+\.\d+\.\d+/]
     end
   rescue
     "lts" 

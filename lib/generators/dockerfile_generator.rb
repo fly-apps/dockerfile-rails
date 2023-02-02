@@ -382,6 +382,8 @@ private
   def node_version
     if File.exist? '.node_version'
       IO.read('.node_version')[/\d+\.\d+\.\d+/]
+    elsif File.exist? 'package.json'
+      JSON.parse(IO.read('package.json')).dig("engines", "node")
     else
       `node --version`[/\d+\.\d+\.\d+/]
     end

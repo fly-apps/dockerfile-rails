@@ -104,7 +104,9 @@ class DockerfileGenerator < Rails::Generators::Base
     template 'Dockerfile.erb', 'Dockerfile'
     template 'dockerignore.erb', '.dockerignore'
 
-    template 'node-version.erb', '.node-version' if using_node?
+    if using_node? and node_version =~ /\A\d+\.\d+\.\d+\z/
+      template 'node-version.erb', '.node-version' 
+    end
 
     template 'docker-entrypoint.erb', 'bin/docker-entrypoint'
     chmod "bin/docker-entrypoint", 0755 & ~File.umask, verbose: false

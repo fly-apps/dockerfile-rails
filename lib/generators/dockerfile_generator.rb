@@ -104,7 +104,9 @@ class DockerfileGenerator < Rails::Generators::Base
     template 'Dockerfile.erb', 'Dockerfile'
     template 'dockerignore.erb', '.dockerignore'
 
-    template 'node-version.erb', '.node-version' if using_node?
+    if using_node? and node_version =~ /\A\d+\.\d+\.\d+\z/
+      template 'node-version.erb', '.node-version' 
+    end
 
     template 'docker-entrypoint.erb', 'bin/docker-entrypoint'
     chmod "bin/docker-entrypoint", 0755 & ~File.umask, verbose: false
@@ -386,10 +388,17 @@ private
   end
 
   def node_version
-    if File.exist? '.node_version'
-      IO.read('.node_version')[/\d+\.\d+\.\d+/]
+    if File.exist? '.node-version'
+      IO.read('.node-version')[/\d+\.\d+\.\d+/]
     else
-      `node --version`[/\d+\.\d+\.\d+/]
+      version = nil
+
+      if File.exist? 'package.json'
+        version = JSON.parse(IO.read('package.json')).dig("engines", "node")
+        version = nil unless version =~ /\A(\d+\.)+(\d+|x)\z/
+      end
+
+      version || `node --version`[/\d+\.\d+\.\d+/]
     end
   rescue
     "lts" 

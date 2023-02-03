@@ -203,6 +203,10 @@ private
       packages += %w(curl gnupg)
     end
 
+    # charlock_holmes.  Placed here as the library itself is
+    # libicu63 in buster, libicu67 in bullseye, libiclu72 in bookworm...
+    packages << "libicu-dev" if @gemfile.include? 'charlock_holmes'
+
     packages.sort.uniq
   end
 
@@ -210,6 +214,7 @@ private
     requirements = []
     requirements << 'nodejs' if using_execjs?
     requirements << 'chrome' if using_puppeteer?
+    requirements << "charlock_holmes" if @gemfile.include? 'charlock_holmes'
     requirements.join(' and ')
   end
 

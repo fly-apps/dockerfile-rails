@@ -389,6 +389,7 @@ private
 
       if File.exist? 'package.json'
         version = JSON.parse(IO.read('package.json')).dig("engines", "node")
+        version = nil unless version =~ /\A(\d+\.)+(\d+|x)\z/
       end
 
       version || `node --version`[/\d+\.\d+\.\d+/]

@@ -402,6 +402,8 @@ private
 
       version || `node --version`[/\d+\.\d+\.\d+/]
     end
+
+    version
   rescue
     "lts" 
   end

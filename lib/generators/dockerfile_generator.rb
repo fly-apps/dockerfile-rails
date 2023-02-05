@@ -394,16 +394,12 @@ private
       version = IO.read('.node-version')[/\d+\.\d+\.\d+/]
     end
 
-    if !version
-      if File.exist? 'package.json'
-        version = JSON.parse(IO.read('package.json')).dig("engines", "node")
-        version = nil unless version =~ /\A(\d+\.)+(\d+|x)\z/
-      end
-
-      version || `node --version`[/\d+\.\d+\.\d+/]
+    if !version and File.exist? 'package.json'
+      version = JSON.parse(IO.read('package.json')).dig("engines", "node")
+      version = nil unless version =~ /\A(\d+\.)+(\d+|x)\z/
     end
 
-    version
+    version || `node --version`[/\d+\.\d+\.\d+/]
   rescue
     "lts" 
   end

@@ -388,11 +388,13 @@ private
   end
 
   def node_version
-    if File.exist? '.node-version'
-      IO.read('.node-version')[/\d+\.\d+\.\d+/]
-    else
-      version = nil
+    version = nil
 
+    if File.exist? '.node-version'
+      version = IO.read('.node-version')[/\d+\.\d+\.\d+/]
+    end
+
+    if !version
       if File.exist? 'package.json'
         version = JSON.parse(IO.read('package.json')).dig("engines", "node")
         version = nil unless version =~ /\A(\d+\.)+(\d+|x)\z/

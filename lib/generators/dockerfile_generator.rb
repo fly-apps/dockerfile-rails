@@ -20,6 +20,7 @@ class DockerfileGenerator < Rails::Generators::Base
     'swap' => nil,
     'yjit' => false,
     'label' => {},
+    'nginx' => false,
   )
 
   @@labels = {}
@@ -84,6 +85,9 @@ class DockerfileGenerator < Rails::Generators::Base
 
   class_option :label, type: :hash, default: {},
     desc: 'Add Docker label(s)'
+
+  class_option :nginx, type: :boolean, default: OPTION_DEFAULTS.nginx,
+    desc: 'Serve static files with nginx'
 
   def generate_app
     source_paths.push File.expand_path('./templates', __dir__)
@@ -297,6 +301,9 @@ private
     # Puppeteer
     packages << 'google-chrome-stable' if using_puppeteer?
 
+    # nginx
+    packages << 'nginx' if options.nginx?
+
     packages.sort
   end
 
@@ -321,16 +328,18 @@ private
   def deploy_env
     env = []
 
+    env << 'PORT="3001"' if options.nginx?
+
     if Rails::VERSION::MAJOR<7 || Rails::VERSION::STRING.start_with?('7.0')
       env << 'RAILS_LOG_TO_STDOUT="1"'
-      env << 'RAILS_SERVE_STATIC_FILES="true"'
+      env << 'RAILS_SERVE_STATIC_FILES="true"' unless options.nginx?
     end
 
-    if options.yjit
+    if options.yjit?
       env << 'RUBY_YJIT_ENABLE="1"'
     end
 
-    if options.jemalloc and not options.fullstaq
+    if options.jemalloc? and not options.fullstaq?
       if (options.platform || Gem::Platform::local.cpu).include? 'arm'
         env << 'LD_PRELOAD="/usr/lib/aarch64-linux-gnu/libjemalloc.so.2"'
       else
@@ -471,6 +480,19 @@ private
       'db:prepare'
     else
       'db:migrate'
+    end
+  end
+
+  def procfile
+    if @nginx
+      {
+        nginx: 'nginx -g "daemon off;"',
+        rails: './bin/rails server -p 3001'
+      }
+    else
+      {
+        rails: './bin/rails server'
+      }
     end
   end
 end

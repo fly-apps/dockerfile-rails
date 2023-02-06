@@ -11,8 +11,13 @@ echo 1 > /proc/sys/vm/overcommit_memory
 
 <% end -%>
 <% if options.prepare -%>
+<% if procfile.size > 1 -%>
+# If running the production procfile then create or migrate existing database
+if [ "${*}" == "foreman start --procfile=Procfile.prod" ]; then
+<% else -%>
 # If running the rails server then create or migrate existing database
 if [ "${*}" == "./bin/rails server" ]; then
+<% end -%>
   ./bin/rails <%= dbprep_command %>
 fi
 

@@ -1,0 +1,31 @@
+# configure nginx
+RUN gem install foreman && \
+    sed -i 's/access_log\s.*;/access_log \/dev\/stdout;/' /etc/nginx/nginx.conf && \
+    sed -i 's/error_log\s.*;/error_log \/dev\/stderr info;/' /etc/nginx/nginx.conf
+
+COPY <<-"EOF" /etc/nginx/sites-available/default
+server {
+  listen 3000 default_server;
+  listen [::]:3000 default_server;
+  access_log /dev/stdout;
+
+  root /rails/public;
+
+  location /cable ()
+    proxy_pass http://localhost:8082/cable;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "Upgrade";
+    proxy_set_header Host $host;
+  }
+
+  location / {
+    try_files $uri @backend;
+  }
+
+  location @backend {
+    proxy_pass http://localhost:3001;
+    proxy_set_header origin 'http://localhost:3000';
+  }
+}
+EOF

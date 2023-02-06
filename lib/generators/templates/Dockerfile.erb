@@ -123,6 +123,13 @@ FROM base
 <%= render partial: 'apt_install', locals: {packages: deploy_packages, clean: true, repos: deploy_repos} %>
 <% end -%>
 
+<% if options.nginx? -%>
+<%= render partial: 'nginx' %>
+
+<% elsif procfile.size > 1 -%>
+RUN gem install foreman
+
+<% end -%>
 # Copy built application from previous stage
 <% if options.ci? -%>
 COPY --from=build /usr/local/bundle /usr/local/bundle

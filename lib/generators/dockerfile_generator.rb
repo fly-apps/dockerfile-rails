@@ -209,6 +209,12 @@ private
     # libicu63 in buster, libicu67 in bullseye, libiclu72 in bookworm...
     packages << "libicu-dev" if @gemfile.include? 'charlock_holmes'
 
+
+    if @gemfile.include? 'webp-ffi'
+      # https://github.com/le0pard/webp-ffi#requirements
+      packages += %w(libjpeg-dev libpng-dev libtiff-dev libwebp-dev)
+    end
+
     packages.sort.uniq
   end
 

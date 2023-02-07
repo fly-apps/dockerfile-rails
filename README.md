@@ -17,13 +17,11 @@ bin/rails generate dockerfile
 General options:
 
 * `--force` - overwrite existing files
-* `--ci` - include test gems in deployed image
 * `--bin-cd` - adjust binstubs to set current working directory
 * `--no-prepare` - omit `db:prepare`.  Useful for cloud platforms with [release](https://devcenter.heroku.com/articles/release-phase) phases
 * `--platform=s` - specify target platform.  See [FROM](https://docs.docker.com/engine/reference/builder/#from) for details
 * `--cache` - use build caching to speed up builds
 * `--parallel` - use multi-stage builds to install gems and node modules in parallel
-* `--compose` - generate a `docker-compose.yml` file
 * `--label=name:value` - specify docker label.  Can be used multiple times.  See [LABEL](https://docs.docker.com/engine/reference/builder/#label) for details
 
 Dependencies:
@@ -45,6 +43,12 @@ Runtime Optimizations:
 * `--swap=n` - allocate swap space.  See [falloc options](https://man7.org/linux/man-pages/man1/fallocate.1.html#OPTIONS) for suffixes
 
 Options are saved between runs into `config/dockerfile.yml`.  To invert a boolean options, add or remove a `no-` prefix from the option name.
+
+Features:
+
+* `--ci` - include test gems in deployed image
+* `--compose` - generate a `docker-compose.yml` file
+* `--nginx` - serve static files via [nginx](https://www.nginx.com/)
 
 ## Testing
 

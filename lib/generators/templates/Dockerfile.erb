@@ -153,6 +153,19 @@ ENV <%= deploy_env.join(" \\\n    ") %>
 <% end -%>
 ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 
+<% if procfile.size > 1 -%>
+# Build a Procfile for production use
+COPY <<-"EOF" /rails/Procfile.prod
+<% procfile.each do |name, command| -%>
+<%= name %>: <%= command %>
+<% end -%>
+EOF
+
+# Start the server by default, this can be overwritten at runtime
+EXPOSE 3000
+CMD ["foreman", "start", "--procfile=Procfile.prod"]
+<% else -%>
 # Start the server by default, this can be overwritten at runtime
 EXPOSE 3000
 CMD ["./bin/rails", "server"]
+<% end -%>

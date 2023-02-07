@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# If running the production procfile then create or migrate existing database
+if [ "${*}" == "foreman start --procfile=Procfile.prod" ]; then
+  ./bin/rails db:prepare
+fi
+
+exec "${@}"

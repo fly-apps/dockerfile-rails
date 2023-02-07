@@ -484,7 +484,7 @@ private
   end
 
   def procfile
-    if @nginx
+    if options.nginx?
       {
         nginx: 'nginx -g "daemon off;"',
         rails: './bin/rails server -p 3001'

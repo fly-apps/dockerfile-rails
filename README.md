@@ -14,15 +14,27 @@ bundle add dockerfile-rails --optimistic --group development
 bin/rails generate dockerfile
 ```
 
-General options:
+General option:
 
 * `--force` - overwrite existing files
-* `--bin-cd` - adjust binstubs to set current working directory
-* `--no-prepare` - omit `db:prepare`.  Useful for cloud platforms with [release](https://devcenter.heroku.com/articles/release-phase) phases
-* `--platform=s` - specify target platform.  See [FROM](https://docs.docker.com/engine/reference/builder/#from) for details
+
+Runtime Optimizations:
+
+* `--fullstaq` - use [fullstaq](https://fullstaqruby.org/) [images](https://github.com/evilmartians/fullstaq-ruby-docker) on [quay.io](https://quay.io/repository/evl.ms/fullstaq-ruby?tab=tags&tag=latest)
+* `--jemalloc` - use [jemalloc](https://jemalloc.net/) memory allocator
+* `--yjit` - enable [YJIT](https://github.com/ruby/ruby/blob/master/doc/yjit/yjit.md) optimizing compiler
+* `--swap=n` - allocate swap space.  See [falloc options](https://man7.org/linux/man-pages/man1/fallocate.1.html#OPTIONS) for suffixes
+
+Features:
+
+* `--ci` - include test gems in deployed image
+* `--compose` - generate a `docker-compose.yml` file
+* `--nginx` - serve static files via [nginx](https://www.nginx.com/)
+
+Build:
+
 * `--cache` - use build caching to speed up builds
 * `--parallel` - use multi-stage builds to install gems and node modules in parallel
-* `--label=name:value` - specify docker label.  Can be used multiple times.  See [LABEL](https://docs.docker.com/engine/reference/builder/#label) for details
 
 Dependencies:
 
@@ -35,20 +47,14 @@ additional support may be needed:
 * `--redis` - add redis libraries
 * `--sqlite3` - add sqlite3 libraries
 
-Runtime Optimizations:
+Configuration:
 
-* `--fullstaq` - use [fullstaq](https://fullstaqruby.org/) [images](https://github.com/evilmartians/fullstaq-ruby-docker) on [quay.io](https://quay.io/repository/evl.ms/fullstaq-ruby?tab=tags&tag=latest)
-* `--jemalloc` - use [jemalloc](https://jemalloc.net/) memory allocator
-* `--yjit` - enable [YJIT](https://github.com/ruby/ruby/blob/master/doc/yjit/yjit.md) optimizing compiler
-* `--swap=n` - allocate swap space.  See [falloc options](https://man7.org/linux/man-pages/man1/fallocate.1.html#OPTIONS) for suffixes
+* `--bin-cd` - adjust binstubs to set current working directory
+* `--no-prepare` - omit `db:prepare`.  Useful for cloud platforms with [release](https://devcenter.heroku.com/articles/release-phase) phases
+* `--platform=s` - specify target platform.  See [FROM](https://docs.docker.com/engine/reference/builder/#from) for details
+* `--label=name:value` - specify docker label.  Can be used multiple times.  See [LABEL](https://docs.docker.com/engine/reference/builder/#label) for detail
 
 Options are saved between runs into `config/dockerfile.yml`.  To invert a boolean options, add or remove a `no-` prefix from the option name.
-
-Features:
-
-* `--ci` - include test gems in deployed image
-* `--compose` - generate a `docker-compose.yml` file
-* `--nginx` - serve static files via [nginx](https://www.nginx.com/)
 
 ## Testing
 

@@ -30,6 +30,9 @@ ENV RAILS_ENV="production" \
 # Update gems and preinstall the desired version of bundler
 ARG BUNDLER_VERSION=<%= Bundler::VERSION %>
 RUN gem update --system --no-document && \
+<% if options.ci? -%>
+    gem install -N irb reline && \
+<% end -%>
     gem install -N bundler -v ${BUNDLER_VERSION}
 
 <% unless base_requirements.empty? -%>
@@ -131,9 +134,6 @@ RUN gem install foreman
 
 <% end -%>
 # Copy built application from previous stage
-<% if options.ci? -%>
-COPY --from=build /usr/local/bundle /usr/local/bundle
-<% end -%>
 COPY --from=build /rails /rails
 <% if api_client_dir -%>
 

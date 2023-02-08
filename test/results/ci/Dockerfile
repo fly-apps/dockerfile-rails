@@ -15,6 +15,7 @@ ENV RAILS_ENV="production" \
 # Update gems and preinstall the desired version of bundler
 ARG BUNDLER_VERSION=xxx
 RUN gem update --system --no-document && \
+    gem install -N irb reline && \
     gem install -N bundler -v ${BUNDLER_VERSION}
 
 
@@ -45,7 +46,6 @@ RUN apt-get update -qq && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 # Copy built application from previous stage
-COPY --from=build /usr/local/bundle /usr/local/bundle
 COPY --from=build /rails /rails
 
 # Deployment options

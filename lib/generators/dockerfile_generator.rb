@@ -181,7 +181,7 @@ private
 
   def keeps?
     return @keeps if @keeps != nil
-    @keeps = !Dir['**/.keep']
+    @keeps = !!Dir['**/.keep']
   end
 
   def install_gems

@@ -49,6 +49,16 @@ class TestBase < Minitest::Test
     assert_equal expected, results
   end
 
+  def check_dockerignore
+    results = IO.read('.dockerignore')
+
+    IO.write("#{@results}/.dockerignore", results) if @capture
+
+    expected = IO.read("#{@results}/.dockerignore")
+
+    assert_equal expected, results
+  end
+
   def check_compose
     results = IO.read('docker-compose.yml')
 

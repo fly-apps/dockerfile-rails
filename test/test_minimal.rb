@@ -6,5 +6,6 @@ class TestMinimal < TestBase
 
   def test_minimal
     check_dockerfile
+    check_dockerignore
   end
 end

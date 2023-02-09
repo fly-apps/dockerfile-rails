@@ -7,6 +7,7 @@ class TestEsbuild < TestBase
 
   def test_esbuild
     check_dockerfile
+    check_dockerignore
     check_compose
 
     package = JSON.parse(IO.read('package.json'))

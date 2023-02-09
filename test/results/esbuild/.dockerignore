@@ -17,7 +17,6 @@
 # Ignore all logfiles and tempfiles.
 /log/*
 /tmp/*
-<% if keeps? -%>
 !/log/.keep
 !/tmp/.keep
 
@@ -25,23 +24,16 @@
 /tmp/pids/*
 !/tmp/pids/
 !/tmp/pids/.keep
-<% end -%>
 
 # Ignore storage (uploaded files in development and any SQLite databases).
 /storage/*
-<% if keeps? -%>
 !/storage/.keep
 /tmp/storage/*
 !/tmp/storage/
 !/tmp/storage/.keep
-<% end -%>
-<% unless options.api? -%>
 
 # Ignore assets.
 /node_modules/
 /app/assets/builds/*
-<% if keeps? -%>
 !/app/assets/builds/.keep
-<% end -%>
 /public/assets
-<% end -%>

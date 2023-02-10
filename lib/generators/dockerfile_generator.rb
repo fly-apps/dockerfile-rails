@@ -262,9 +262,9 @@ private
       # Dockerhub.
       case RUBY_VERSION
       when /^2.7/
-        bullseye = ruby_version >= "2.7.4"
+        bullseye = RUBY_VERSION >= "2.7.4"
       when /^3.0/
-        bullseye = ruby_version >= "3.0.2"
+        bullseye = RUBY_VERSION >= "3.0.2"
       else
         bullseye = true
       end

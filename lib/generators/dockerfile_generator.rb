@@ -260,7 +260,7 @@ private
       # how python is installed with the bullseye release.  Below
       # is based on debian release included with the Ruby images on
       # Dockerhub.
-      case Gem.ruby_version
+      case RUBY_VERSION
       when /^2.7/
         bullseye = ruby_version >= "2.7.4"
       when /^3.0/

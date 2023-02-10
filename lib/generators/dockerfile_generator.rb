@@ -118,6 +118,17 @@ class DockerfileGenerator < Rails::Generators::Base
     template 'docker-compose.yml.erb', 'docker-compose.yml' if options.compose
 
     template 'dockerfile.yml.erb', 'config/dockerfile.yml', force: true
+
+    if @gemfile.include?('vite_ruby')
+      package = JSON.load_file('package.json')
+      unless package.dig('scripts', 'build')
+        package['scripts'] ||= {}
+        package['scripts']['build'] = 'vite build --outDir public'
+
+        say_status :update, 'package.json'
+        IO.write('package.json', JSON.pretty_generate(package))
+      end
+    end
   end
 
 private
@@ -493,6 +504,17 @@ private
       {
         rails: './bin/rails server'
       }
+    end
+  end
+
+  def more_docker_ignores
+    more = ''
+
+    if @gemfile.include?('vite_ruby')
+      lines = IO.read('.gitignore')[/^# Vite.*?\n\n/m].to_s.chomp.lines -
+         ["node_modules\n"]
+
+      more += "\n" + lines.join
     end
   end
 end

@@ -22,19 +22,19 @@ Runtime Optimizations:
 
 * `--fullstaq` - use [fullstaq](https://fullstaqruby.org/) [images](https://github.com/evilmartians/fullstaq-ruby-docker) on [quay.io](https://quay.io/repository/evl.ms/fullstaq-ruby?tab=tags&tag=latest)
 * `--jemalloc` - use [jemalloc](https://jemalloc.net/) memory allocator
-* `--yjit` - enable [YJIT](https://github.com/ruby/ruby/blob/master/doc/yjit/yjit.md) optimizing compiler
 * `--swap=n` - allocate swap space.  See [falloc options](https://man7.org/linux/man-pages/man1/fallocate.1.html#OPTIONS) for suffixes
+* `--yjit` - enable [YJIT](https://github.com/ruby/ruby/blob/master/doc/yjit/yjit.md) optimizing compiler
+
+Build optimizations:
+
+* `--cache` - use build caching to speed up builds
+* `--parallel` - use multi-stage builds to install gems and node modules in parallel
 
 Features:
 
 * `--ci` - include test gems in deployed image
 * `--compose` - generate a `docker-compose.yml` file
 * `--nginx` - serve static files via [nginx](https://www.nginx.com/)
-
-Build:
-
-* `--cache` - use build caching to speed up builds
-* `--parallel` - use multi-stage builds to install gems and node modules in parallel
 
 Dependencies:
 
@@ -53,7 +53,7 @@ Configuration:
 * `--label=name:value` - specify docker label.  Can be used multiple times.  See [LABEL](https://docs.docker.com/engine/reference/builder/#label) for detail
 * `--no-prepare` - omit `db:prepare`.  Useful for cloud platforms with [release](https://devcenter.heroku.com/articles/release-phase) phases
 * `--platform=s` - specify target platform.  See [FROM](https://docs.docker.com/engine/reference/builder/#from) for details
-* `--precompie=defer` - may be needed when your configuration requires access to secrets that are not available at build time.  Results in larger images and slower deployments.
+* `--precompile=defer` - may be needed when your configuration requires access to secrets that are not available at build time.  Results in larger images and slower deployments.
 
 Options are saved between runs into `config/dockerfile.yml`.  To invert a boolean options, add or remove a `no-` prefix from the option name.
 

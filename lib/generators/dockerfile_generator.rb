@@ -15,6 +15,7 @@ class DockerfileGenerator < Rails::Generators::Base
     'parallel' => false,
     'platform' => nil,
     'postgresql' => false,
+    'precompile' => nil,
     'prepare' => true,
     'redis' => false,
     'swap' => nil,
@@ -40,6 +41,9 @@ class DockerfileGenerator < Rails::Generators::Base
 
   class_option :ci, type: :boolean, default: OPTION_DEFAULTS.ci,
     desc: 'include test gems in bundle'
+
+  class_option :precompile, type: :string, default: OPTION_DEFAULTS.precompile,
+    desc: 'if set to "defer", assets:precompile will be done at deploy time'
 
   class_option 'bin-cd', type: :boolean, default: OPTION_DEFAULTS['bin-cd'],
     desc: 'modify binstubs to set working directory'

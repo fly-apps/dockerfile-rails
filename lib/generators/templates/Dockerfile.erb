@@ -8,9 +8,9 @@ ARG RUBY_VERSION=<%= RUBY_VERSION %>
 
 <% end -%>
 <% if options.fullstaq -%>
-FROM <%= platform %>quay.io/evl.ms/fullstaq-ruby:${RUBY_VERSION}-<%= @options.jemalloc ? 'jemalloc-' : '' %>slim as base
+FROM <%= platform %>quay.io/evl.ms/fullstaq-ruby:${RUBY_VERSION}-<%= @options.jemalloc ? 'jemalloc-' : '' %>slim<% unless options.precompile == "defer" %> as base<% end %>
 <% else -%>
-FROM <%= platform %>ruby:$RUBY_VERSION-slim as base
+FROM <%= platform %>ruby:$RUBY_VERSION-slim<% unless options.precompile == "defer" %> as base<% end %>
 <% end -%>
 
 <% unless options.label.empty? -%>
@@ -44,10 +44,12 @@ RUN gem update --system --no-document && \
 <%= render partial: 'install_node', locals: {yarn_version: nil} %>
 
 <% end -%>
+<% unless options.precompile == "defer" -%>
 
 # Throw-away build stage<%= parallel? ? 's' : '' %> to reduce size of final image
 FROM base as <%= parallel? ? 'pre' : '' %>build
 
+<% end -%>
 # Install packages needed to build gems<%= using_node? ? " and node modules" : "" %>
 <%= render partial: 'apt_install', locals: {packages: build_packages, clean: false, repos: ''} %>
 
@@ -112,6 +114,7 @@ RUN bundle exec bootsnap precompile app/ lib/
 <%= "RUN " + binfile_fixups.join(" && \\\n    ") %>
 
 <% end -%>
+<% unless options.precompile == "defer" -%>
 <% if Dir.exist?('app/assets') and !api_only? -%>
 # Precompiling assets for production without requiring secret RAILS_MASTER_KEY
 RUN SECRET_KEY_BASE<%= Rails::VERSION::MAJOR<7 || Rails::VERSION::STRING.start_with?('7.0') ? '=DUMMY' : '_DUMMY=1' %> ./bin/rails assets:precompile
@@ -120,8 +123,9 @@ RUN SECRET_KEY_BASE<%= Rails::VERSION::MAJOR<7 || Rails::VERSION::STRING.start_w
 
 # Final stage for app image
 FROM base
-<% unless deploy_packages.empty? -%>
 
+<% end -%>
+<% unless deploy_packages.empty? -%>
 # Install packages needed for deployment
 <%= render partial: 'apt_install', locals: {packages: deploy_packages, clean: true, repos: deploy_repos} %>
 <% end -%>
@@ -133,6 +137,7 @@ FROM base
 RUN gem install foreman
 
 <% end -%>
+<% unless options.precompile == "defer" -%>
 # Copy built application from previous stage
 COPY --from=build /rails /rails
 <% if api_client_dir -%>
@@ -141,6 +146,7 @@ COPY --from=build /rails /rails
 COPY --from=client /rails/<%= api_client_dir %>/build /rails/public
 <% end -%>
 
+<% end -%>
 <% unless deploy_env.empty? -%>
 # Deployment options
 ENV <%= deploy_env.join(" \\\n    ") %>

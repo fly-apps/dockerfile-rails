@@ -50,9 +50,10 @@ additional support may be needed:
 Configuration:
 
 * `--bin-cd` - adjust binstubs to set current working directory
+* `--label=name:value` - specify docker label.  Can be used multiple times.  See [LABEL](https://docs.docker.com/engine/reference/builder/#label) for detail
 * `--no-prepare` - omit `db:prepare`.  Useful for cloud platforms with [release](https://devcenter.heroku.com/articles/release-phase) phases
 * `--platform=s` - specify target platform.  See [FROM](https://docs.docker.com/engine/reference/builder/#from) for details
-* `--label=name:value` - specify docker label.  Can be used multiple times.  See [LABEL](https://docs.docker.com/engine/reference/builder/#label) for detail
+* `--precompie=defer` - may be needed when your configuration requires access to secrets that are not available at build time.  Results in larger images and slower deployments.
 
 Options are saved between runs into `config/dockerfile.yml`.  To invert a boolean options, add or remove a `no-` prefix from the option name.
 

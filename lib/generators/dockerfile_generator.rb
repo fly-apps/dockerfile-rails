@@ -28,7 +28,7 @@ class DockerfileGenerator < Rails::Generators::Base
 
   # load defaults from config file
   if File.exist? 'config/dockerfile.yml'
-    options = YAML.safe_load_file('config/dockerfile.yml', symbolize_names: true)[:options]
+    options = YAML.safe_load(IO.read('config/dockerfile.yml'), symbolize_names: true)[:options]
 
     if options
       OPTION_DEFAULTS.to_h.each do |option, value|

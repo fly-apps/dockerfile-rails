@@ -276,10 +276,12 @@ private
       # is based on debian release included with the Ruby images on
       # Dockerhub.
       case RUBY_VERSION
-      when /^2.7/
+      when /^2\.7/
         bullseye = RUBY_VERSION >= "2.7.4"
-      when /^3.0/
+      when /^3\.0/
         bullseye = RUBY_VERSION >= "3.0.2"
+      when /^2\./
+        bullseye = false
       else
         bullseye = true
       end

@@ -2,21 +2,6 @@ module DockerfileRails
   module Scanner
     def scan_rails_app
 
-      ### database ###
-
-      database = YAML.load_file('config/database.yml', aliases: true).
-        dig('production', 'adapter') rescue nil
-
-      if database == 'sqlite3'
-        @sqlite3 = true
-      elsif database == 'postgresql'
-        @postgresql = true
-      elsif database == 'mysql' or database == 'mysql2'
-        @mysql = true
-      elsif database == 'sqlserver'
-        @sqlserver = true
-      end
-
       ### ruby gems ###
 
       @gemfile = []
@@ -48,6 +33,25 @@ module DockerfileRails
       @bootstrap = @gemfile.include? 'bootstrap'
       @puppeteer = @gemfile.include? 'puppeteer'
       @bootsnap = @gemfile.include? 'bootsnap'
+
+      ### database ###
+
+      database = YAML.load_file('config/database.yml', aliases: true).
+        dig('production', 'adapter') rescue nil
+
+      if database == 'sqlite3'
+        @sqlite3 = true
+      elsif database == 'postgresql'
+        @postgresql = true
+      elsif database == 'mysql' or database == 'mysql2'
+        @mysql = true
+      elsif database == 'sqlserver'
+        @sqlserver = true
+      end
+
+      @sqlite3 = true if @gemfile.include? 'sqlite3'
+      @postgresql = true if @gemfile.include? 'pg'
+      @mysql = true if @gemfile.include? 'mysql2'
 
       ### node modules ###
 

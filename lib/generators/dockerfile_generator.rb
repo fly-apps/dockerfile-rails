@@ -11,17 +11,18 @@ class DockerfileGenerator < Rails::Generators::Base
     'compose' => false,
     'fullstaq' => false,
     'jemalloc' => false,
+    'label' => {},
     'mysql' => false,
+    'nginx' => false,
     'parallel' => false,
     'platform' => nil,
     'postgresql' => false,
     'precompile' => nil,
     'prepare' => true,
     'redis' => false,
+    'root' => false,
     'swap' => nil,
     'yjit' => false,
-    'label' => {},
-    'nginx' => false,
   )
 
   @@labels = {}
@@ -92,6 +93,9 @@ class DockerfileGenerator < Rails::Generators::Base
 
   class_option :nginx, type: :boolean, default: OPTION_DEFAULTS.nginx,
     desc: 'Serve static files with nginx'
+
+  class_option :root, type: :boolean, default: OPTION_DEFAULTS.root,
+    desc: 'Run application as root user'
 
   def generate_app
     source_paths.push File.expand_path('./templates', __dir__)
@@ -167,6 +171,10 @@ private
     else
       ""
     end
+  end
+
+  def run_as_root?
+    options.root? || options.nginx?
   end
 
   def using_node?

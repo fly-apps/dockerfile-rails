@@ -125,6 +125,11 @@ RUN SECRET_KEY_BASE<%= Rails::VERSION::MAJOR<7 || Rails::VERSION::STRING.start_w
 FROM base
 
 <% end -%>
+<% unless run_as_root? -%>
+# add a non-root user
+RUN useradd rails
+
+<% end -%>
 <% unless deploy_packages.empty? -%>
 # Install packages needed for deployment
 <%= render partial: 'apt_install', locals: {packages: deploy_packages, clean: true, repos: deploy_repos} %>
@@ -139,11 +144,11 @@ RUN gem install foreman
 <% end -%>
 <% unless options.precompile == "defer" -%>
 # Copy built application from previous stage
-COPY --from=build /rails /rails
+COPY --from=build <% unless run_as_root? %>--chown=rails:rails <% end %>/rails /rails
 <% if api_client_dir -%>
 
 # Copy built client
-COPY --from=client /rails/<%= api_client_dir %>/build /rails/public
+COPY --from=client <% unless run_as_root? %>--chown=rails:rails <% end %>/rails/<%= api_client_dir %>/build /rails/public
 <% end -%>
 
 <% end -%>

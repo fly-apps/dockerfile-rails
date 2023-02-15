@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 
 # allocate swap space
 fallocate -l 512M /swapfile

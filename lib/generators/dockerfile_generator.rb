@@ -403,7 +403,7 @@ private
 
     # optionally, adjust cwd
     if options['bin-cd']
-      binfixups.push %{sed -i '/^#!/aDir.chdir File.expand_path("..", __dir__)' /app/bin/*}
+      binfixups.push %{sed -i '/^#!/aDir.chdir File.expand_path("..", __dir__)' /rails/bin/*}
     end
 
     binfixups

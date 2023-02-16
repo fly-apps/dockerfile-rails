@@ -27,6 +27,8 @@ class DockerfileGenerator < Rails::Generators::Base
 
   @@labels = {}
   @@packages = {"base" => [], "build" => [], "deploy" => []}
+  @@vars = {"base" => {}, "build" => {}, "deploy" => {}}
+  @@args = {"base" => {}, "build" => {}, "deploy" => {}}
 
   # load defaults from config file
   if File.exist? 'config/dockerfile.yml'
@@ -40,6 +42,18 @@ class DockerfileGenerator < Rails::Generators::Base
       if options[:packages]
         options[:packages].each do |stage, list|
           @@packages[stage.to_s] = list
+        end
+      end
+
+      if options[:env]
+        options[:env].each do |stage, vars|
+          @@envs[stage.to_s] = vars.stringify_keys
+        end
+      end
+
+      if options[:buildarg]
+        options[:buildarg].each do |stage, vars|
+          @@args[stage.to_s] = vars.stringify_keys
         end
       end
 
@@ -104,6 +118,7 @@ class DockerfileGenerator < Rails::Generators::Base
   class_option :root, type: :boolean, default: OPTION_DEFAULTS.root,
     desc: 'Run application as root user'
 
+
   class_option 'add-base', type: :array, default: [],
     desc: 'additional packages to install for both build and deploy'
 
@@ -121,6 +136,27 @@ class DockerfileGenerator < Rails::Generators::Base
 
   class_option 'remove-deploy', aliases: '--remove', type: :array, default: [],
     desc: 'remove from list of deploy packages'
+
+
+  class_option 'env-base', type: :hash, default: {},
+    desc: 'additional environment variables for both build and deploy'
+
+  class_option 'env-build', type: :hash, default: {},
+    desc: 'additional environment variables to set during build'
+
+  class_option 'env-deploy', aliases: '--env', type: :hash, default: {},
+    desc: 'additional environment variables to set for deployment'
+
+
+  class_option 'arg-base', aliases: '--arg', type: :hash, default: {},
+    desc: 'additional build arguments for both build and deploy'
+
+  class_option 'arg-build', type: :hash, default: {},
+    desc: 'additional build arguments to set during build'
+
+  class_option 'arg-deploy', type: :hash, default: {},
+    desc: 'additional build arguments to set for deployment'
+
 
   def generate_app
     source_paths.push File.expand_path('./templates', __dir__)
@@ -140,9 +176,19 @@ class DockerfileGenerator < Rails::Generators::Base
       @@packages[phase] -= options["remove-#{phase}"]
       @@packages[phase].uniq!
       @@packages.delete phase if @@packages[phase].empty?
+
+      @@vars[phase].merge! options["env-#{phase}"]
+      @@vars[phase].delete_if {|key, value| value.blank?}
+      @@vars.delete phase if @@vars[phase].empty?
+
+      @@args[phase].merge! options["arg-#{phase}"]
+      @@args[phase].delete_if {|key, value| value.blank?}
+      @@args.delete phase if @@args[phase].empty?
     end
 
     @dockerfile_config['packages'] = @@packages
+    @dockerfile_config['envs'] = @@vars
+    @dockerfile_config['args'] = @@args
 
     scan_rails_app
 
@@ -389,7 +435,7 @@ private
   end
 
   def deploy_env
-    env = []
+    env = (@@vars['deploy'] || {}).map {|key, value| "#{key}=#{value.inspect}"}
 
     env << 'PORT="3001"' if options.nginx?
 

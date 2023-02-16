@@ -51,8 +51,8 @@ class DockerfileGenerator < Rails::Generators::Base
         end
       end
 
-      if options[:buildarg]
-        options[:buildarg].each do |stage, vars|
+      if options[:args]
+        options[:args].each do |stage, vars|
           @@args[stage.to_s] = vars.stringify_keys
         end
       end
@@ -485,6 +485,30 @@ private
     end
 
     env
+  end
+
+  def base_args
+    args = {}
+
+    args.merge! @@args['base'] if @@args['base']
+
+    args.map {|key, value| "#{key}=#{value.inspect}"}
+  end
+
+  def build_args
+    args = {}
+
+    args.merge! @@args['build'] if @@args['build']
+
+    args.map {|key, value| "#{key}=#{value.inspect}"}
+  end
+
+  def deploy_args
+    args = {}
+
+    args.merge! @@args['deploy'] if @@args['deploy']
+
+    args.map {|key, value| "#{key}=#{value.inspect}"}
   end
 
   def binfile_fixups

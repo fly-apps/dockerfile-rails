@@ -25,6 +25,11 @@ WORKDIR /rails
 # Set production environment
 ENV <%= base_env.join(" \\\n    ") %>
 
+<% unless base_args.empty? -%>
+# Base build arguments
+ARG <%= base_args.join(" \\\n    ") %>
+
+<% end -%>
 # Update gems and preinstall the desired version of bundler
 ARG BUNDLER_VERSION=<%= Bundler::VERSION %>
 RUN gem update --system --no-document && \
@@ -70,6 +75,11 @@ FROM prebuild as build
 <% unless build_env.empty? -%>
 # Deployment options
 ENV <%= build_env.join(" \\\n    ") %>
+
+<% end -%>
+<% unless build_args.empty? -%>
+# Build arguments
+ARG <%= build_args.join(" \\\n    ") %>
 
 <% end -%>
 # Install application gems
@@ -126,6 +136,11 @@ RUN SECRET_KEY_BASE<%= Rails::VERSION::MAJOR<7 || Rails::VERSION::STRING.start_w
 
 # Final stage for app image
 FROM base
+
+<% end -%>
+<% unless deploy_args.empty? -%>
+# Deployment build arguments
+ARG <%= deploy_args.join(" \\\n    ") %>
 
 <% end -%>
 <% unless run_as_root? -%>

@@ -26,6 +26,7 @@ class DockerfileGenerator < Rails::Generators::Base
   )
 
   @@labels = {}
+  @@packages = {"base" => [], "build" => [], "deploy" => []}
 
   # load defaults from config file
   if File.exist? 'config/dockerfile.yml'
@@ -34,6 +35,12 @@ class DockerfileGenerator < Rails::Generators::Base
     if options
       OPTION_DEFAULTS.to_h.each do |option, value|
         OPTION_DEFAULTS[option] = options[option] if options.include? option 
+      end
+
+      if options[:packages]
+        options[:packages].each do |stage, list|
+          @@packages[stage.to_s] = list
+        end
       end
 
       @@labels = options[:label].stringify_keys if options.include? :label
@@ -97,6 +104,24 @@ class DockerfileGenerator < Rails::Generators::Base
   class_option :root, type: :boolean, default: OPTION_DEFAULTS.root,
     desc: 'Run application as root user'
 
+  class_option 'add-base', type: :array, default: [],
+    desc: 'additional packages to install for both build and deploy'
+
+  class_option 'add-build', type: :array, default: [],
+    desc: 'additional packages to install for use during build'
+
+  class_option 'add-deploy', aliases: '--add', type: :array, default: [],
+    desc: 'additional packages to install for deployment'
+
+  class_option 'remove-base', type: :array, default: [],
+    desc: 'remove from list of base packages'
+
+  class_option 'remove-build', type: :array, default: [],
+    desc: 'remove from list of build packages'
+
+  class_option 'remove-deploy', aliases: '--remove', type: :array, default: [],
+    desc: 'remove from list of deploy packages'
+
   def generate_app
     source_paths.push File.expand_path('./templates', __dir__)
 
@@ -108,6 +133,16 @@ class DockerfileGenerator < Rails::Generators::Base
     options.to_h.each do |option, value|
       @dockerfile_config[option] = value if @dockerfile_config.include? option
     end
+
+    # apply requested package changes
+    %w(base build deploy).each do |phase|
+      @@packages[phase] += options["add-#{phase}"]
+      @@packages[phase] -= options["remove-#{phase}"]
+      @@packages[phase].uniq!
+      @@packages.delete phase if @@packages[phase].empty?
+    end
+
+    @dockerfile_config['packages'] = @@packages
 
     scan_rails_app
 
@@ -223,6 +258,7 @@ private
 
   def base_packages
     packages = []
+    packages += @@packages['base'] if @@packages['base']
 
     if using_execjs?
       packages += %w(curl unzip)
@@ -256,6 +292,7 @@ private
   def build_packages
     # start with the essentials
     packages = %w(build-essential)
+    packages += @@packages['build'] if @@packages['build']
 
     # add databases: sqlite3, postgres, mysql
     packages << 'pkg-config' if options.sqlite3? or @sqlite3
@@ -306,6 +343,7 @@ private
 
   def deploy_packages
     packages = []
+    packages += @@packages['deploy'] if @@packages['deploy']
 
     # start with databases: sqlite3, postgres, mysql
     packages << 'libsqlite3-0' if options.sqlite3? or @sqlite3

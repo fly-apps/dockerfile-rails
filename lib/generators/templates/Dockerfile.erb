@@ -23,9 +23,7 @@ LABEL <%= key =~ /^\w[.\w]*$/ ? key : key.inspect %>=<%= value.inspect %>
 WORKDIR /rails
 
 # Set production environment
-ENV RAILS_ENV="production" \
-    BUNDLE_PATH="vendor/bundle" \
-    BUNDLE_WITHOUT="<%= options.ci? ? 'development' : 'development:test' %>"
+ENV <%= base_env.join(" \\\n    ") %>
 
 # Update gems and preinstall the desired version of bundler
 ARG BUNDLER_VERSION=<%= Bundler::VERSION %>
@@ -67,6 +65,11 @@ FROM prebuild as node
 
 
 FROM prebuild as build
+
+<% end -%>
+<% unless build_env.empty? -%>
+# Deployment options
+ENV <%= build_env.join(" \\\n    ") %>
 
 <% end -%>
 # Install application gems

@@ -434,6 +434,26 @@ private
     end
   end
 
+  def base_env
+    env = {
+      'RAILS_ENV' => "production",
+      'BUNDLE_PATH' => "vendor/bundle",
+      'BUNDLE_WITHOUT' => options.ci? ? 'development' : 'development:test'
+    }
+
+    env.merge! @@vars['base'] if @@vars['base']
+
+    env.map {|key, value| "#{key}=#{value.inspect}"}
+  end
+
+  def build_env
+    env = {}
+
+    env.merge! @@vars['base'] if @@vars['base']
+
+    env.map {|key, value| "#{key}=#{value.inspect}"}
+  end
+
   def deploy_env
     env = (@@vars['deploy'] || {}).map {|key, value| "#{key}=#{value.inspect}"}
 

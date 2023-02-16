@@ -209,7 +209,7 @@ private
   end
 
   def run_as_root?
-    options.root? || options.nginx?
+    true # options.root? || options.nginx?
   end
 
   def using_node?

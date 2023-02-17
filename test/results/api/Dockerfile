@@ -57,16 +57,19 @@ RUN bundle exec bootsnap precompile app/ lib/
 # Final stage for app image
 FROM base
 
+# add a non-root user
+RUN useradd rails
+
 # Install packages needed for deployment
 RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y libsqlite3-0 && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 # Copy built application from previous stage
-COPY --from=build /rails /rails
+COPY --from=build --chown=rails:rails /rails /rails
 
 # Copy built client
-COPY --from=client /rails/my-app/build /rails/public
+COPY --from=client --chown=rails:rails /rails/my-app/build /rails/public
 
 # Deployment options
 ENV RAILS_LOG_TO_STDOUT="1" \

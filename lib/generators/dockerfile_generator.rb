@@ -255,7 +255,7 @@ private
   end
 
   def run_as_root?
-    true # options.root? || options.nginx?
+    options.root? || options.nginx? # needed to access /dev/stdout
   end
 
   def using_node?
@@ -487,8 +487,11 @@ private
     end
 
     if using_puppeteer?
-      env['GROVER_NO_SANDBOX'] = "true" if @gemfile.include? 'grover'
-      env['PUPPETEER_RUBY_NO_SANDBOX'] = "1"  if @gemfile.include? 'puppeteer-ruby'
+      if options.root?
+        env['GROVER_NO_SANDBOX'] = "true" if @gemfile.include? 'grover'
+        env['PUPPETEER_RUBY_NO_SANDBOX'] = "1"  if @gemfile.include? 'puppeteer-ruby'
+      end
+
       env['PUPPETEER_EXECUTABLE_PATH'] = "/usr/bin/google-chrome"
     end
 

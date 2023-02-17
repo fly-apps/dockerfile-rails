@@ -6,18 +6,18 @@ Let's start with the target audience of Ruby on Rails, which we can infer from t
 
 It is fair to conclude from this that a typical Ruby on Rails developer meets some or all of the following characteristics:
 
- * small team
+ * member of a small team
  * business subject matter experts
  * knowledgeable of, or recently introduced to, the Ruby programming language
 
 # Docker developer profile
 
-To illustrate the target audience of Rails Dockerfiles, I'm going to succintly state some rather basic background information that is necessary to confidently make changes to Dockerfiles:
+To illustrate the target audience of Rails Dockerfiles, I'm going to succintly state some rather basic background information that is necessary to confidently make changes to the Rails 7.1 generated Dockerfiles:
 
-> Most [official Ruby docker images](https://hub.docker.com/_/ruby)
+> Most [official Ruby dockerhub images](https://hub.docker.com/_/ruby)
 > are based on Debian [bullseye](https://www.debian.org/releases/bullseye/),
-> and there are a [large number of packages](https://packages.debian.org/stable/)
-> available to be installed.
+> which provides a [large number of packages](https://packages.debian.org/stable/)
+> that you can install.
 > Simply find the packages that you need and add them to the `apt-get install` line
 > in the relevant [build stage](https://docs.docker.com/build/building/multi-stage/).
 

@@ -441,6 +441,10 @@ private
       'BUNDLE_WITHOUT' => options.ci? ? 'development' : 'development:test'
     }
 
+    if @@args['base']
+      env.merge! @@args['base'].map {|key, value| [key, "$#{key}"]}.to_h
+    end
+
     env.merge! @@vars['base'] if @@vars['base']
 
     env.map {|key, value| "#{key}=#{value.inspect}"}
@@ -449,42 +453,52 @@ private
   def build_env
     env = {}
 
+    if @@args['build']
+      env.merge! @@args['build'].map {|key, value| [key, "$#{key}"]}.to_h
+    end
+
     env.merge! @@vars['base'] if @@vars['base']
 
     env.map {|key, value| "#{key}=#{value.inspect}"}
   end
 
   def deploy_env
-    env = (@@vars['deploy'] || {}).map {|key, value| "#{key}=#{value.inspect}"}
+    env = {}
 
-    env << 'PORT="3001"' if options.nginx?
+    env['PORT'] = "3001" if options.nginx?
 
     if Rails::VERSION::MAJOR<7 || Rails::VERSION::STRING.start_with?('7.0')
-      env << 'RAILS_LOG_TO_STDOUT="1"'
-      env << 'RAILS_SERVE_STATIC_FILES="true"' unless options.nginx?
+      env['RAILS_LOG_TO_STDOUT'] = "1"
+      env['RAILS_SERVE_STATIC_FILES'] = "true" unless options.nginx?
     end
 
     if options.yjit?
-      env << 'RUBY_YJIT_ENABLE="1"'
+      env['RUBY_YJIT_ENABLE'] = "1"
     end
 
     if options.jemalloc? and not options.fullstaq?
       if (options.platform || Gem::Platform::local.cpu).include? 'arm'
-        env << 'LD_PRELOAD="/usr/lib/aarch64-linux-gnu/libjemalloc.so.2"'
+        env['LD_PRELOAD'] = "/usr/lib/aarch64-linux-gnu/libjemalloc.so.2"
       else
-        env << 'LD_PRELOAD="/usr/lib/x86_64-linux-gnu/libjemalloc.so.2"'
+        env['LD_PRELOAD'] = "/usr/lib/x86_64-linux-gnu/libjemalloc.so.2"
       end
 
-      env << 'MALLOC_CONF="dirty_decay_ms:1000,narenas:2,background_thread:true"'
+      env['MALLOC_CONF'] = "dirty_decay_ms:1000,narenas:2,background_thread:true"
     end
 
     if using_puppeteer?
-      env << 'GROVER_NO_SANDBOX="true"' if @gemfile.include? 'grover'
-      env << 'PUPPETEER_RUBY_NO_SANDBOX="1"' if @gemfile.include? 'puppeteer-ruby'
-      env << 'PUPPETEER_EXECUTABLE_PATH="/usr/bin/google-chrome"'
+      env['GROVER_NO_SANDBOX'] = "true" if @gemfile.include? 'grover'
+      env['PUPPETEER_RUBY_NO_SANDBOX'] = "1"  if @gemfile.include? 'puppeteer-ruby'
+      env['PUPPETEER_EXECUTABLE_PATH'] = "/usr/bin/google-chrome"
     end
 
-    env
+    if @@args['deploy']
+      env.merge! @@args['deploy'].map {|key, value| [key, "$#{key}"]}.to_h
+    end
+
+    env.merge! @@vars['base'] if @@vars['base']
+
+    env.map {|key, value| "#{key}=#{value.inspect}"}
   end
 
   def base_args

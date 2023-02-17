@@ -22,14 +22,14 @@ LABEL <%= key =~ /^\w[.\w]*$/ ? key : key.inspect %>=<%= value.inspect %>
 # Rails app lives here
 WORKDIR /rails
 
-# Set production environment
-ENV <%= base_env.join(" \\\n    ") %>
-
 <% unless base_args.empty? -%>
 # Base build arguments
 ARG <%= base_args.join(" \\\n    ") %>
 
 <% end -%>
+# Set production environment
+ENV <%= base_env.join(" \\\n    ") %>
+
 # Update gems and preinstall the desired version of bundler
 ARG BUNDLER_VERSION=<%= Bundler::VERSION %>
 RUN gem update --system --no-document && \
@@ -72,14 +72,14 @@ FROM prebuild as node
 FROM prebuild as build
 
 <% end -%>
-<% unless build_env.empty? -%>
-# Deployment options
-ENV <%= build_env.join(" \\\n    ") %>
-
-<% end -%>
 <% unless build_args.empty? -%>
 # Build arguments
 ARG <%= build_args.join(" \\\n    ") %>
+
+<% end -%>
+<% unless build_env.empty? -%>
+# Deployment options
+ENV <%= build_env.join(" \\\n    ") %>
 
 <% end -%>
 # Install application gems

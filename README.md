@@ -7,6 +7,12 @@ Provides a Rails generator to produce Dockerfiles and related files.  This is be
   * Will set `.node_version`, `packageManager` and install gems if needed to deploy your application.
   * Can produce a `docker-compose.yml` file for locally testing your configuration before deploying.
 
+For more background:
+
+* [Motivation](./MOTIVATION.md) - why this generator was created and what problems it is meant to solve
+* [Demos](./DEMO.md) - scripts to copy and paste into an empty directory to launch demo apps
+* [Test Results](./test/results) - expected outputs for each test
+
 ## Usage
 
 ```
@@ -51,10 +57,10 @@ additional support may be needed:
 
 Not all of your needs can be determined by scanning your application.  For example, I like to add [vim](https://www.vim.org/) and [procps](https://packages.debian.org/bullseye/procps).
 
- `--add package...` - add one or more debian packages
- `--arg=name:value` - add a [build argument](https://docs.docker.com/engine/reference/builder/#arg)
- `--env=name:value` - add an environment variable
- `--remove package...` - remove package from "to be added" list
+ * `--add package...` - add one or more debian packages
+ * `--arg=name:value` - add a [build argument](https://docs.docker.com/engine/reference/builder/#arg)
+ * `--env=name:value` - add an environment variable
+ * `--remove package...` - remove package from "to be added" list
 
  Each of these can be tailored to a specific build phase by adding `-base`, `-build`, or `-deploy` after the flag name (e.g `--env-build:`).  If no such suffix is found, the default for arg is `-base`, and the default for the rest is `-deploy`.  Removal of an arg or environment variable is done by leaving the value blank.
 
@@ -94,12 +100,11 @@ If you are running a single test, the following environment variables settings m
 
 ## Links
 
-Many of the following links relate to the current development status with respect to Rails 7.1 and will be removed once that is resolved.
+The following links relate to the current development status with respect to Rails 7.1 and will be removed once that is resolved.
 
-* [Demos](./DEMO.md) - scripts to copy and paste into an empty directory to launch demo apps
-* [Test Results](./test/results) - expected outputs for each test
 * [Preparations for Rails 7.1](https://community.fly.io/t/preparations-for-rails-7-1/9512) - [Fly.io](https://fly.io/)'s plans and initial discussions with DHH
 * [Rails Dockerfile futures](https://discuss.rubyonrails.org/t/rails-dockerfile-futures/82091/1) - rationale for a generator
 * [Fly Cookbooks](https://fly.io/docs/rails/cookbooks/) - deeper dive into Dockerfile design choices
 * [app/templates/Dockerfile.tt](https://github.com/rails/rails/blob/main/railties/lib/rails/generators/rails/app/templates/Dockerfile.tt) - current Rails 7.1 template
 * Fly.io [Cut over to Rails Dockerfile Generator on Sunday 29 Jan 2023](https://community.fly.io/t/cut-over-to-rails-dockerfile-generator-on-sunday-29-jan-2023/10350)
+* Fly.io [FAQ](https://fly.io/docs/rails/getting-started/dockerfiles/)

@@ -14,29 +14,29 @@ bundle add dockerfile-rails --optimistic --group development
 bin/rails generate dockerfile
 ```
 
-General option:
+### General option:
 
 * `--force` - overwrite existing files
 
-Runtime Optimizations:
+### Runtime Optimizations:
 
 * `--fullstaq` - use [fullstaq](https://fullstaqruby.org/) [images](https://github.com/evilmartians/fullstaq-ruby-docker) on [quay.io](https://quay.io/repository/evl.ms/fullstaq-ruby?tab=tags&tag=latest)
 * `--jemalloc` - use [jemalloc](https://jemalloc.net/) memory allocator
 * `--swap=n` - allocate swap space.  See [falloc options](https://man7.org/linux/man-pages/man1/fallocate.1.html#OPTIONS) for suffixes
 * `--yjit` - enable [YJIT](https://github.com/ruby/ruby/blob/master/doc/yjit/yjit.md) optimizing compiler
 
-Build optimizations:
+### Build optimizations:
 
 * `--cache` - use build caching to speed up builds
 * `--parallel` - use multi-stage builds to install gems and node modules in parallel
 
-Features:
+### Add a Feature:
 
 * `--ci` - include test gems in deployed image
 * `--compose` - generate a `docker-compose.yml` file
 * `--nginx` - serve static files via [nginx](https://www.nginx.com/)
 
-Dependencies:
+### Add a Database:
 
 Generally the dockerfile generator will be able to determine what dependencies you
 are actually using.  But should you be using DATABASE_URL, for example, at runtime
@@ -47,7 +47,18 @@ additional support may be needed:
 * `--redis` - add redis libraries
 * `--sqlite3` - add sqlite3 libraries
 
-Configuration:
+### Add a package/environment variable/build argument:
+
+Not all of your needs can be determined by scanning your application.  For example, I like to add [vim](https://www.vim.org/) and [procps](https://packages.debian.org/bullseye/procps).
+
+ `--add package...` - add one or more debian packages
+ `--arg=name:value` - add a [build argument](https://docs.docker.com/engine/reference/builder/#arg)
+ `--env=name:value` - add an environment variable
+ `--remove package...` - remove package from "to be added" list
+
+ Each of these can be tailored to a specific build phase by adding `-base`, `-build`, or `-deploy` after the flag name (e.g `--env-build:`).  If no such suffix is found, the default for arg is `-base`, and the default for the rest is `-deploy`.  Removal of an arg or environment variable is done by leaving the value blank.
+
+### Configuration:
 
 * `--bin-cd` - adjust binstubs to set current working directory
 * `--label=name:value` - specify docker label.  Can be used multiple times.  See [LABEL](https://docs.docker.com/engine/reference/builder/#label) for detail

@@ -32,7 +32,7 @@ class NeofetchController < ApplicationController
       # adjust to a two column layout
       html = out.read
         .sub(/body \{/, "\\0display: grid; justify-items: center; " +
-          "grid-template-columns: auto auto; ")
+          "font-size: 2vw; grid-template-columns: auto auto; ")
         .sub(/<\/b>\n\s*/, "</b></pre>\n<pre>")
         .gsub(/^\s+(<|---)/, '\1')
 

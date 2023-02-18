@@ -5,24 +5,58 @@ If you have Rails and Docker installed on your machine, running each of these de
 Rails provides a _smoke test_ for new applications that makes sure that you have your software configured correctly enough to serve a page.  The following deploys that smoke test in production.  Once done take a look at the `Dockerfile` file produced.
 
 ```bash
-rails new welcome --minimal
-cd welcome
+rails new demo --minimal
+cd demo
 echo 'Rails.application.routes.draw { root "rails/welcome#index" }' > config/routes.rb
-bundle add dockerfile-rails --group development
+bundle add dockerfile-rails --optimistic --group development
 bin/rails generate dockerfile
-docker buildx build . -t rails-welcome
-docker run -p 3000:3000 -e RAILS_MASTER_KEY=$(cat config/master.key) rails-welcome
+docker buildx build . -t rails-demo
+docker run -p 3000:3000 -e RAILS_MASTER_KEY=$(cat config/master.key) rails-demo
+```
+
+# Demo 2 - Neofetch
+
+Similar in spirit to the previous demo, but installs and runs Linux commands to show container status.
+
+```bash
+rails new demo --minimal
+cd demo
+echo 'Rails.application.routes.draw { root "neofetch#get" }' > config/routes.rb
+
+cat << 'EOF' > app/controllers/neofetch_controller.rb
+require 'open3'
+
+class NeofetchController < ApplicationController
+  def get
+    Open3.pipeline_r('neofetch', 'ansi2html') do |out, threads|
+      # adjust to a two column layout
+      html = out.read
+        .sub(/body \{/, "\\0display: grid; justify-items: center; " +
+          "grid-template-columns: auto auto; ")
+        .sub(/<\/b>\n\s*/, "</b></pre>\n<pre>")
+        .gsub(/^\s+(<|---)/, '\1')
+
+      render html: html.html_safe
+    end
+  end
+end
+EOF
+
+bundle add dockerfile-rails --optimistic --group development
+bin/rails generate dockerfile --add neofetch colorized-logs
+docker buildx build . -t rails-demo
+docker run -p 3000:3000 -e RAILS_MASTER_KEY=$(cat config/master.key) rails-demo
 ```
 
 Add `--load` to the `buildx` command if you want to save the image to local Docker.
 
-# Demo 2 - Action Cable and Active Record
+# Demo 3 - Action Cable and Active Record
 
 Real applications involve a network of services.  The following demo makes use of PostgreSQL and Redis to display a welcome screen with a live, updating, visitors counter. Once done, take a look at the `docker-compose.yml` file produced.
 
 ```bash
-rails new welcome --database postgresql
-cd welcome
+rails new demo --database postgresql
+cd demo
 
 bin/rails generate model Visitor counter:integer
 bin/rails generate controller Visitors counter
@@ -87,7 +121,7 @@ cat << 'EOF' > config/routes.rb
 Rails.application.routes.draw { root "visitors#counter" }
 EOF
 
-bundle add dockerfile-rails --group development
+bundle add dockerfile-rails --optimistic --group development
 bin/rails generate dockerfile --compose
 
 export RAILS_MASTER_KEY=$(cat config/master.key)
@@ -95,14 +129,14 @@ docker compose build
 docker compose up
 ```
 
-# Demo 3 - API only
+# Demo 4 - API only
 
 This demo deploys a [Create React App](https://create-react-app.dev/) client and a Rails API-only server.  Ruby and Rails version information is retrieved from the server and displayed below a spinning React logo.  Note that the build process installs the
 node moddules and ruby gems in parallel.
 
 ```bash
-rails new welcome --api
-cd welcome
+rails new demo --api
+cd demo
 npx -y create-react-app client
 
 bin/rails generate controller Api versions
@@ -149,22 +183,22 @@ function App() {
 export default App;
 EOF
 
-bundle add dockerfile-rails --group development
+bundle add dockerfile-rails --optimistic --group development
 bin/rails generate dockerfile
 
-docker buildx build . -t rails-welcome
-docker run -p 3000:3000 -e RAILS_MASTER_KEY=$(cat config/master.key) rails-welcome
+docker buildx build . -t rails-demo
+docker run -p 3000:3000 -e RAILS_MASTER_KEY=$(cat config/master.key) rails-demo
 ```
 
-# Demo 4 - Bunding Javascript (esbuild)
+# Demo 5 - Bunding Javascript (esbuild)
 
 While optional, bundling Javascript is a popular choice, and starting with
 Rails 7 there are three options: esbuild, rollup, and webpack.  The
 the following demonstrates Rails 7 with esbuild:
 
 ```bash
-rails new welcome --javascript esbuild
-cd welcome
+rails new demo --javascript esbuild
+cd demo
 
 yarn add react react-dom
 bin/rails generate controller Time index
@@ -269,21 +303,21 @@ cat <<-"EOF" > config/routes.rb
 Rails.application.routes.draw { root "time#index" }
 EOF
 
-bundle add dockerfile-rails --group development
+bundle add dockerfile-rails --optimistic --group development
 bin/rails generate dockerfile
 
-docker buildx build . -t rails-welcome
-docker run -p 3000:3000 -e RAILS_MASTER_KEY=$(cat config/master.key) rails-welcome
+docker buildx build . -t rails-demo
+docker run -p 3000:3000 -e RAILS_MASTER_KEY=$(cat config/master.key) rails-demo
 ```
 
-# Demo 5 - Grover / puppeteer / Chrome
+# Demo 6 - Grover / puppeteer / Chrome
 
 This demo runs only on Intel hardware as Google doesn't supply Chrome
 binaries for Linux on ARM.
 
 ```bash
-rails new welcome --minimal
-cd welcome
+rails new demo --minimal
+cd demo
 bundle add grover
 npm install puppeteer
 
@@ -298,8 +332,8 @@ class GroverController < ApplicationController
 end
 EOF
 
-bundle add dockerfile-rails --group development
+bundle add dockerfile-rails --optimistic --group development
 bin/rails generate dockerfile
-docker buildx build . -t rails-welcome
-docker run -p 3000:3000 -e RAILS_MASTER_KEY=$(cat config/master.key) rails-welcome
+docker buildx build . -t rails-demo
+docker run -p 3000:3000 -e RAILS_MASTER_KEY=$(cat config/master.key) rails-demo
 ```

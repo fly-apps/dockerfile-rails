@@ -55,17 +55,17 @@ RUN SECRET_KEY_BASE=DUMMY ./bin/rails assets:precompile
 # Final stage for app image
 FROM base
 
+# Install packages needed for deployment
+RUN apt-get update -qq && \
+    apt-get install --no-install-recommends -y libsqlite3-0 && \
+    rm -rf /var/lib/apt/lists /var/cache/apt/archives
+
 # add a non-root user
 ARG UID=xxx
     GID=1000
 RUN groupadd -f -g $GID rails && \
     useradd -u $UID -g $GID rails
 USER rails
-
-# Install packages needed for deployment
-RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y libsqlite3-0 && \
-    rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 # Copy built application from previous stage
 COPY --from=build --chown=rails:rails /rails /rails

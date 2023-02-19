@@ -143,6 +143,18 @@ FROM base
 ARG <%= deploy_args.map {|key, value| "#{key}=#{value.inspect}"}.join(" \\\n    ") %>
 
 <% end -%>
+<% unless deploy_packages.empty? -%>
+# Install packages needed for deployment
+<%= render partial: 'apt_install', locals: {packages: deploy_packages, clean: true, repos: deploy_repos} %>
+<% end -%>
+
+<% if options.nginx? -%>
+<%= render partial: 'nginx' %>
+
+<% elsif procfile.size > 1 -%>
+RUN gem install foreman
+
+<% end -%>
 <% unless run_as_root? -%>
 # add a non-root user
 <% if options.compose? -%>
@@ -154,18 +166,6 @@ RUN groupadd -f -g $GID rails && \
 RUN useradd rails
 <% end -%>
 USER rails
-
-<% end -%>
-<% unless deploy_packages.empty? -%>
-# Install packages needed for deployment
-<%= render partial: 'apt_install', locals: {packages: deploy_packages, clean: true, repos: deploy_repos} %>
-<% end -%>
-
-<% if options.nginx? -%>
-<%= render partial: 'nginx' %>
-
-<% elsif procfile.size > 1 -%>
-RUN gem install foreman
 
 <% end -%>
 <% unless options.precompile == "defer" -%>

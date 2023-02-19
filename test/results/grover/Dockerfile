@@ -55,10 +55,6 @@ RUN SECRET_KEY_BASE=DUMMY ./bin/rails assets:precompile
 # Final stage for app image
 FROM base
 
-# add a non-root user
-RUN useradd rails
-USER rails
-
 # Install packages needed for deployment
 RUN curl https://dl-ssl.google.com/linux/linux_signing_key.pub | \
     gpg --dearmor > /etc/apt/trusted.gpg.d/google-archive.gpg && \
@@ -66,6 +62,10 @@ RUN curl https://dl-ssl.google.com/linux/linux_signing_key.pub | \
     apt-get update -qq && \
     apt-get install --no-install-recommends -y google-chrome-stable libsqlite3-0 && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
+
+# add a non-root user
+RUN useradd rails
+USER rails
 
 # Copy built application from previous stage
 COPY --from=build --chown=rails:rails /rails /rails

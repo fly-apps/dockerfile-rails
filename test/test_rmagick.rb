@@ -1,11 +1,13 @@
-require_relative 'base'
+# frozen_string_literal: true
+
+require_relative "base"
 
 class TestRmagick < TestBase
-  @rails_options = '--minimal'
+  @rails_options = "--minimal"
 
-  def app_setup 
-    system 'bundle add rmagick'
-  end 
+  def app_setup
+    system "bundle add rmagick"
+  end
 
   def test_rmagick
     check_dockerfile

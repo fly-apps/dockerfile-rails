@@ -1,8 +1,10 @@
-require_relative 'base'
+# frozen_string_literal: true
+
+require_relative "base"
 
 class TestSwap < TestBase
-  @rails_options = '--minimal'
-  @generate_options = '--swap=512M'
+  @rails_options = "--minimal"
+  @generate_options = "--swap=512M"
 
   def test_swap
     check_entrypoint

@@ -1,8 +1,10 @@
-require_relative 'base'
+# frozen_string_literal: true
+
+require_relative "base"
 
 class TestMinimal < TestBase
-  @rails_options = '--minimal'
-  @generate_options = ''
+  @rails_options = "--minimal"
+  @generate_options = ""
 
   def test_minimal
     check_dockerfile

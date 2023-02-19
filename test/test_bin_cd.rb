@@ -1,8 +1,10 @@
-require_relative 'base'
+# frozen_string_literal: true
+
+require_relative "base"
 
 class TestBinCd < TestBase
-  @rails_options = '--minimal'
-  @generate_options = '--bin-cd'
+  @rails_options = "--minimal"
+  @generate_options = "--bin-cd"
 
   def test_bin_cd
     check_dockerfile

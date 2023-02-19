@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 Gem::Specification.new do |spec|
   spec.name        = "dockerfile-rails"
-  spec.version     = '1.0.18'
-  spec.authors     = [ 
+  spec.version     = "1.0.18"
+  spec.authors     = [
     "Sam Ruby",
   ]
   spec.email       = "rubys@intertwingly.net"

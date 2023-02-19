@@ -1,11 +1,13 @@
-require_relative 'base'
+# frozen_string_literal: true
+
+require_relative "base"
 
 class TestExecjsImportmap < TestBase
-  @rails_options = ''
+  @rails_options = ""
 
-  def app_setup 
-    system 'bundle add execjs'
-  end 
+  def app_setup
+    system "bundle add execjs"
+  end
 
   def test_execjs
     check_dockerfile

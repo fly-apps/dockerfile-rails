@@ -25,6 +25,10 @@ FROM base as build
 RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y build-essential pkg-config
 
+# Deployment options
+ENV AWS_ACCESS_KEY_ID="1" \
+    AWS_SECRET_ACCESS_KEY="1"
+
 # Install application gems
 COPY Gemfile Gemfile.lock ./
 RUN bundle _${BUNDLER_VERSION}_ install

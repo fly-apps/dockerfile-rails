@@ -65,7 +65,7 @@ ARG UID=xxx
     GID=1000
 RUN groupadd -f -g $GID rails && \
     useradd -u $UID -g $GID rails
-USER rails
+USER rails:rails
 
 # Copy built application from previous stage
 COPY --from=build --chown=rails:rails /rails /rails

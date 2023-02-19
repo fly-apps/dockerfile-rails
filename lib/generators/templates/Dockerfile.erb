@@ -165,7 +165,7 @@ RUN groupadd -f -g $GID rails && \
 <% else -%>
 RUN useradd rails
 <% end -%>
-USER rails
+USER rails:rails
 
 <% end -%>
 <% unless options.precompile == "defer" -%>

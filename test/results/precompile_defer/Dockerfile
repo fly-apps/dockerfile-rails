@@ -39,7 +39,7 @@ RUN apt-get update -qq && \
 
 # # Run and own the application files as a non-root user for security
 RUN useradd rails
-USER rails
+USER rails:rails
 
 # Deployment options
 ENV RAILS_LOG_TO_STDOUT="1" \

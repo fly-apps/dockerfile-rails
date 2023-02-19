@@ -73,7 +73,7 @@ RUN --mount=type=cache,id=dev-apt-cache,sharing=locked,target=/var/cache/apt \
 
 # # Run and own the application files as a non-root user for security
 RUN useradd rails
-USER rails
+USER rails:rails
 
 # Copy built application from previous stage
 COPY --from=build --chown=rails:rails /rails /rails

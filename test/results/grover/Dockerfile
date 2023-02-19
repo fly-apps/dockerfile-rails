@@ -65,7 +65,7 @@ RUN curl https://dl-ssl.google.com/linux/linux_signing_key.pub | \
 
 # # Run and own the application files as a non-root user for security
 RUN useradd rails
-USER rails
+USER rails:rails
 
 # Copy built application from previous stage
 COPY --from=build --chown=rails:rails /rails /rails

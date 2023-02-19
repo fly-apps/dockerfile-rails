@@ -71,7 +71,7 @@ RUN apt-get update -qq && \
 
 # # Run and own the application files as a non-root user for security
 RUN useradd rails
-USER rails
+USER rails:rails
 
 # Copy built application from previous stage
 COPY --from=build --chown=rails:rails /rails /rails

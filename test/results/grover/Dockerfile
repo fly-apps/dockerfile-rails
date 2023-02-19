@@ -63,7 +63,7 @@ RUN curl https://dl-ssl.google.com/linux/linux_signing_key.pub | \
     apt-get install --no-install-recommends -y google-chrome-stable libsqlite3-0 && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
-# add a non-root user
+# # Run and own the application files as a non-root user for security
 RUN useradd rails
 USER rails
 

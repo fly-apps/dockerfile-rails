@@ -48,7 +48,7 @@ RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y postgresql-client && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
-# add a non-root user
+# # Run and own the application files as a non-root user for security
 ARG UID=xxx
     GID=1000
 RUN groupadd -f -g $GID rails && \

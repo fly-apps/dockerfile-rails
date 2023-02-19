@@ -44,7 +44,7 @@ RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y imagemagick libsqlite3-0 && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
-# add a non-root user
+# # Run and own the application files as a non-root user for security
 RUN useradd rails
 USER rails
 

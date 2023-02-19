@@ -44,7 +44,11 @@ RUN SECRET_KEY_BASE=DUMMY ./bin/rails assets:precompile
 FROM base
 
 # add a non-root user
-RUN useradd rails
+ARG UID=xxx
+    GID=1000
+RUN groupadd -f -g $GID rails && \
+    useradd -u $UID -g $GID rails
+USER rails
 
 # Install packages needed for deployment
 RUN apt-get update -qq && \

@@ -67,6 +67,7 @@ FROM base
 
 # add a non-root user
 RUN useradd rails
+USER rails
 
 # Install packages needed for deployment
 RUN --mount=type=cache,id=dev-apt-cache,sharing=locked,target=/var/cache/apt \

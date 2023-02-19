@@ -57,6 +57,7 @@ FROM base
 
 # add a non-root user
 RUN useradd rails
+USER rails
 
 # Install packages needed for deployment
 RUN curl https://dl-ssl.google.com/linux/linux_signing_key.pub | \

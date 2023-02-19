@@ -34,6 +34,7 @@ RUN bundle exec bootsnap precompile app/ lib/
 
 # add a non-root user
 RUN useradd rails
+USER rails
 
 # Install packages needed for deployment
 RUN apt-get update -qq && \

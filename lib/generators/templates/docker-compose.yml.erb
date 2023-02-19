@@ -1,7 +1,16 @@
 version: "3.8"
 services:
   web:
+<% if all_args.empty? -%>
     build: .
+<% else -%>
+    build:
+      context: .
+      args:
+<% all_args.each do |name, value| -%>
+        <%= name %>: <%= value.html_safe? ? value : "\"#{Shellwords.escape(value)}\"" %>
+<% end -%>
+<% end -%>
     ports:
       - "3000:3000"
     environment:

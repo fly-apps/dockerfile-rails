@@ -509,7 +509,7 @@ private
 
     args.merge! @@args['base'] if @@args['base']
 
-    args.map {|key, value| "#{key}=#{value.inspect}"}
+    args
   end
 
   def build_args
@@ -517,7 +517,7 @@ private
 
     args.merge! @@args['build'] if @@args['build']
 
-    args.map {|key, value| "#{key}=#{value.inspect}"}
+    args
   end
 
   def deploy_args
@@ -525,7 +525,24 @@ private
 
     args.merge! @@args['deploy'] if @@args['deploy']
 
-    args.map {|key, value| "#{key}=#{value.inspect}"}
+    args
+  end
+
+  def all_args
+    args = {}
+
+    unless options.root?
+      args.merge!({
+        UID: "${UID:-1000}".html_safe,
+        GID: "${GID:-${UID:-1000}}".html_safe
+      })
+    end
+
+    args.merge! base_args
+    args.merge! build_args
+    args.merge! deploy_args
+
+    args
   end
 
   def binfile_fixups

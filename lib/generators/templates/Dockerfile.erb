@@ -24,7 +24,7 @@ WORKDIR /rails
 
 <% unless base_args.empty? -%>
 # Base build arguments
-ARG <%= base_args.join(" \\\n    ") %>
+ARG <%= base_args.map {|key, value| "#{key}=#{value.inspect}"}.join(" \\\n    ") %>
 
 <% end -%>
 # Set production environment
@@ -74,7 +74,7 @@ FROM prebuild as build
 <% end -%>
 <% unless build_args.empty? -%>
 # Build arguments
-ARG <%= build_args.join(" \\\n    ") %>
+ARG <%= build_args.map {|key, value| "#{key}=#{value.inspect}"}.join(" \\\n    ") %>
 
 <% end -%>
 <% unless build_env.empty? -%>
@@ -140,12 +140,20 @@ FROM base
 <% end -%>
 <% unless deploy_args.empty? -%>
 # Deployment build arguments
-ARG <%= deploy_args.join(" \\\n    ") %>
+ARG <%= deploy_args.map {|key, value| "#{key}=#{value.inspect}"}.join(" \\\n    ") %>
 
 <% end -%>
 <% unless run_as_root? -%>
 # add a non-root user
+<% if options.compose? -%>
+ARG UID=1000 \
+    GID=1000
+RUN groupadd -f -g $GID rails && \
+    useradd -u $UID -g $GID rails
+<% else -%>
 RUN useradd rails
+<% end -%>
+USER rails
 
 <% end -%>
 <% unless deploy_packages.empty? -%>

@@ -48,9 +48,9 @@ class DockerfileGenerator < Rails::Generators::Base
         end
       end
 
-      if options[:env]
-        options[:env].each do |stage, vars|
-          @@envs[stage.to_s] = vars.stringify_keys
+      if options[:envs]
+        options[:envs].each do |stage, vars|
+          @@vars[stage.to_s] = vars.stringify_keys
         end
       end
 
@@ -173,7 +173,6 @@ class DockerfileGenerator < Rails::Generators::Base
       @dockerfile_config[option] = value if @dockerfile_config.include? option
     end
 
-    # apply requested package changes
     %w(base build deploy).each do |phase|
       @@packages[phase] += options["add-#{phase}"]
       @@packages[phase] -= options["remove-#{phase}"]
@@ -462,7 +461,7 @@ private
       env.merge! @@args["build"].to_h { |key, value| [key, "$#{key}"] }
     end
 
-    env.merge! @@vars["base"] if @@vars["base"]
+    env.merge! @@vars["build"] if @@vars["build"]
 
     env.map { |key, value| "#{key}=#{value.inspect}" }
   end

@@ -4,7 +4,7 @@ require_relative '../dockerfile-rails/scanner.rb'
 class DockerfileGenerator < Rails::Generators::Base
   include DockerfileRails::Scanner
 
-  OPTION_DEFAULTS = OpenStruct.new(
+  OPTION_DEFAULTS = {
     'bin-cd' => false,
     'cache' => false,
     'ci' => false,
@@ -21,9 +21,10 @@ class DockerfileGenerator < Rails::Generators::Base
     'prepare' => true,
     'redis' => false,
     'root' => false,
+    'sqlite3' => false,
     'swap' => nil,
     'yjit' => false,
-  )
+  }.then {|hash| Struct.new(*hash.keys.map(&:to_sym)).new(*hash.values)}
 
   @@labels = {}
   @@packages = {"base" => [], "build" => [], "deploy" => []}
@@ -226,11 +227,14 @@ private
     scope = (Class.new do
       def initialize(obj, locals)
         @_obj = obj
-        @_locals = OpenStruct.new(locals)
+        @_locals = locals.then do |hash| 
+          return nil if hash.empty?
+          Struct.new(*hash.keys.map(&:to_sym)).new(*hash.values)
+        end
       end
 
       def method_missing(method, *args, &block)
-        if @_locals.respond_to? method
+        if @_locals&.respond_to? method
           @_locals.send method, *args, &block
         else
           @_obj.send method, *args, &block

@@ -259,7 +259,7 @@ private
   end
 
   def run_as_root?
-    options.root? || options.nginx? # needed to access /dev/stdout
+    options.root?
   end
 
   def using_node?
@@ -691,7 +691,7 @@ private
   def procfile
     if options.nginx?
       {
-        nginx: 'nginx -g "daemon off;"',
+        nginx: '/usr/sbin/nginx -g "daemon off;"',
         rails: "./bin/rails server -p 3001"
       }
     else

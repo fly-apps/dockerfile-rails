@@ -1,5 +1,8 @@
 # configure nginx
 RUN gem install foreman && \
+<% unless run_as_root? -%>
+    sed -i 's|pid /run|pid /rails/tmp/pids|' /etc/nginx/nginx.conf && \
+<% end -%>
     sed -i 's/access_log\s.*;/access_log \/dev\/stdout;/' /etc/nginx/nginx.conf && \
     sed -i 's/error_log\s.*;/error_log \/dev\/stderr info;/' /etc/nginx/nginx.conf
 

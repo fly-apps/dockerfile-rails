@@ -46,6 +46,7 @@ RUN apt-get update -qq && \
 
 # configure nginx
 RUN gem install foreman && \
+    sed -i 's|pid /run|pid /rails/tmp/pids|' /etc/nginx/nginx.conf && \
     sed -i 's/access_log\s.*;/access_log \/dev\/stdout;/' /etc/nginx/nginx.conf && \
     sed -i 's/error_log\s.*;/error_log \/dev\/stderr info;/' /etc/nginx/nginx.conf
 
@@ -76,8 +77,13 @@ server {
 }
 EOF
 
+# Run and own the application files as a non-root user for security
+RUN useradd rails && \
+    chown rails:rails /var/lib/nginx /var/log/nginx/*
+USER rails:rails
+
 # Copy built application from previous stage
-COPY --from=build /rails /rails
+COPY --from=build --chown=rails:rails /rails /rails
 
 # Deployment options
 ENV PORT="3001" \
@@ -88,7 +94,7 @@ ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 
 # Build a Procfile for production use
 COPY <<-"EOF" /rails/Procfile.prod
-nginx: nginx -g "daemon off;"
+nginx: /usr/sbin/nginx -g "daemon off;"
 rails: ./bin/rails server -p 3001
 EOF
 

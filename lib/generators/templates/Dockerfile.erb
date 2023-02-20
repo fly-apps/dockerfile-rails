@@ -161,10 +161,9 @@ RUN gem install foreman
 ARG UID=1000 \
     GID=1000
 RUN groupadd -f -g $GID rails && \
-    useradd -u $UID -g $GID rails
-<% else -%>
-RUN useradd rails
-<% end -%>
+    useradd -u $UID -g $GID rails<% else -%>
+RUN useradd rails<% end -%><% if options.nginx? %> && \
+    chown rails:rails /var/lib/nginx /var/log/nginx/*<% end %>
 USER rails:rails
 
 <% end -%>

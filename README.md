@@ -40,7 +40,7 @@ bin/rails generate dockerfile
 
 * `--ci` - include test gems in deployed image
 * `--compose` - generate a `docker-compose.yml` file
-* `--nginx` - serve static files via [nginx](https://www.nginx.com/)
+* `--nginx` - serve static files via [nginx](https://www.nginx.com/).  May require `--root` on some targets to access `/dev/stdout`
 
 ### Add a Database:
 

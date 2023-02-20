@@ -310,10 +310,12 @@ docker buildx build . -t rails-demo
 docker run -p 3000:3000 -e RAILS_MASTER_KEY=$(cat config/master.key) rails-demo
 ```
 
-# Demo 6 - Grover / puppeteer / Chrome
+# Demo 6 - Grover / puppeteer / Chromium
 
-This demo runs only on Intel hardware as Google doesn't supply Chrome
-binaries for Linux on ARM.
+Uses Grover to produce a PDF of a web page.  If you specify a `--platform` that
+contains `amd64`, chrome will be substituted for Chromium.  `--platform` is
+required to access Chrome as Google doesn't supply Chrome binaries for Linux on
+ARM.
 
 ```bash
 rails new demo --minimal

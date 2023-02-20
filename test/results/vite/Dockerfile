@@ -28,7 +28,8 @@ RUN apt-get update -qq && \
 # Install Node.js
 ARG NODE_VERSION=xxx
 RUN curl -fsSL https://fnm.vercel.app/install | bash && \
-    /root/.local/share/fnm/fnm install $NODE_VERSION
+    /root/.local/share/fnm/fnm install $NODE_VERSION && \
+    mv /root/.local/share/fnm/aliases/default/bin/node /usr/local/bin
 ENV PATH=/root/.local/share/fnm/aliases/default/bin/:$PATH
 
 # Install application gems

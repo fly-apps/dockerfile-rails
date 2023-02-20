@@ -25,7 +25,8 @@ RUN apt-get update -qq && \
 # Install Node.js
 ARG NODE_VERSION=xxx
 RUN curl -fsSL https://fnm.vercel.app/install | bash && \
-    /root/.local/share/fnm/fnm install $NODE_VERSION
+    /root/.local/share/fnm/fnm install $NODE_VERSION && \
+    mv /root/.local/share/fnm/aliases/default/bin/node /usr/local/bin
 ENV PATH=/root/.local/share/fnm/aliases/default/bin/:$PATH
 
 
@@ -56,11 +57,8 @@ RUN SECRET_KEY_BASE=DUMMY ./bin/rails assets:precompile
 FROM base
 
 # Install packages needed for deployment
-RUN curl https://dl-ssl.google.com/linux/linux_signing_key.pub | \
-    gpg --dearmor > /etc/apt/trusted.gpg.d/google-archive.gpg && \
-    echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list && \
-    apt-get update -qq && \
-    apt-get install --no-install-recommends -y google-chrome-stable libsqlite3-0 && \
+RUN apt-get update -qq && \
+    apt-get install --no-install-recommends -y chromium chromium-sandbox libsqlite3-0 && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 # Run and own the application files as a non-root user for security
@@ -73,7 +71,8 @@ COPY --from=build --chown=rails:rails /rails /rails
 # Deployment options
 ENV RAILS_LOG_TO_STDOUT="1" \
     RAILS_SERVE_STATIC_FILES="true" \
-    PUPPETEER_EXECUTABLE_PATH="/usr/bin/google-chrome"
+    GROVER_NO_SANDBOX="true" \
+    PUPPETEER_EXECUTABLE_PATH="/usr/bin/chromium"
 
 # Entrypoint prepares the database.
 ENTRYPOINT ["/rails/bin/docker-entrypoint"]

@@ -13,7 +13,8 @@ ARG YARN_VERSION=<%= yarn_version %>
 <% end -%>
 <% if node_version -%>
 RUN curl -fsSL https://fnm.vercel.app/install | bash && \
-    /root/.local/share/fnm/fnm install $NODE_VERSION
+    /root/.local/share/fnm/fnm install $NODE_VERSION<% unless run_as_root? %> && \
+    mv /root/.local/share/fnm/aliases/default/bin/node /usr/local/bin<% end %>
 ENV PATH=/root/.local/share/fnm/aliases/default/bin/:$PATH
 <% end -%>
 <% if yarn_version -%>

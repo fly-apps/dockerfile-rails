@@ -412,7 +412,13 @@ private
     end
 
     # Puppeteer
-    packages << "google-chrome-stable" if using_puppeteer?
+    if using_puppeteer?
+      if options.platform&.include? "amd"
+        packages << "google-chrome-stable"
+      else
+        packages += %w(chromium chromium-sandbox)
+      end
+    end
 
     # nginx
     packages << "nginx" if options.nginx?
@@ -423,7 +429,7 @@ private
   def deploy_repos
     repos = []
 
-    if using_puppeteer?
+    if using_puppeteer? && deploy_packages.include?("google-chrome-stable")
       repos += [
        "curl https://dl-ssl.google.com/linux/linux_signing_key.pub |",
        "gpg --dearmor > /etc/apt/trusted.gpg.d/google-archive.gpg &&",
@@ -491,12 +497,14 @@ private
     end
 
     if using_puppeteer?
-      if options.root?
-        env["GROVER_NO_SANDBOX"] = "true" if @gemfile.include? "grover"
-        env["PUPPETEER_RUBY_NO_SANDBOX"] = "1"  if @gemfile.include? "puppeteer-ruby"
-      end
+      env["GROVER_NO_SANDBOX"] = "true" if @gemfile.include? "grover"
+      env["PUPPETEER_RUBY_NO_SANDBOX"] = "1"  if @gemfile.include? "puppeteer-ruby"
 
-      env["PUPPETEER_EXECUTABLE_PATH"] = "/usr/bin/google-chrome"
+      if options.platform&.include? "amd"
+        env["PUPPETEER_EXECUTABLE_PATH"] = "/usr/bin/google-chrome"
+      else
+        env["PUPPETEER_EXECUTABLE_PATH"] = "/usr/bin/chromium"
+      end
     end
 
     if @@args["deploy"]

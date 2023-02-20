@@ -463,6 +463,14 @@ private
   def build_env
     env = {}
 
+    if using_execjs?
+      env["PATH"] = "/root/.local/share/fnm/aliases/default/bin/:$PATH"
+    end
+
+    if using_puppeteer?
+      env["PUPPETEER_SKIP_CHROMIUM_DOWNLOAD"] = "true"
+    end
+
     if @@args["build"]
       env.merge! @@args["build"].to_h { |key, value| [key, "$#{key}"] }
     end

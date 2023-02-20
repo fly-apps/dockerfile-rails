@@ -1,7 +1,4 @@
 # Install node modules
-<% if using_puppeteer? -%>
-ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD="true"
-<% end -%>
 COPY <%=sources.join(' ') %> .
 <% if sources.join.include? 'yarn' -%>
 <% if options.cache? -%>

@@ -78,7 +78,7 @@ ARG <%= build_args.map {|key, value| "#{key}=#{value.inspect}"}.join(" \\\n    "
 
 <% end -%>
 <% unless build_env.empty? -%>
-# Deployment options
+# Build options
 ENV <%= build_env.join(" \\\n    ") %>
 
 <% end -%>

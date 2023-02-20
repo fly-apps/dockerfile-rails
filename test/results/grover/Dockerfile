@@ -27,7 +27,6 @@ ARG NODE_VERSION=xxx
 RUN curl -fsSL https://fnm.vercel.app/install | bash && \
     /root/.local/share/fnm/fnm install $NODE_VERSION && \
     mv /root/.local/share/fnm/aliases/default/bin/node /usr/local/bin
-ENV PATH=/root/.local/share/fnm/aliases/default/bin/:$PATH
 
 
 # Throw-away build stage to reduce size of final image
@@ -37,12 +36,15 @@ FROM base as build
 RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y build-essential node-gyp pkg-config python-is-python3
 
+# Build options
+ENV PATH="/root/.local/share/fnm/aliases/default/bin/:$PATH" \
+    PUPPETEER_SKIP_CHROMIUM_DOWNLOAD="true"
+
 # Install application gems
 COPY Gemfile Gemfile.lock ./
 RUN bundle _${BUNDLER_VERSION}_ install
 
 # Install node modules
-ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD="true"
 COPY package.json package-lock.json .
 RUN npm install
 

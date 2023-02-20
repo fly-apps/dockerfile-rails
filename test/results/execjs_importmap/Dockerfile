@@ -27,7 +27,6 @@ ARG NODE_VERSION=xxx
 RUN curl -fsSL https://fnm.vercel.app/install | bash && \
     /root/.local/share/fnm/fnm install $NODE_VERSION && \
     mv /root/.local/share/fnm/aliases/default/bin/node /usr/local/bin
-ENV PATH=/root/.local/share/fnm/aliases/default/bin/:$PATH
 
 
 # Throw-away build stage to reduce size of final image
@@ -36,6 +35,9 @@ FROM base as build
 # Install packages needed to build gems
 RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y build-essential pkg-config
+
+# Build options
+ENV PATH="/root/.local/share/fnm/aliases/default/bin/:$PATH"
 
 # Install application gems
 COPY Gemfile Gemfile.lock ./

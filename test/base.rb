@@ -41,12 +41,12 @@ class TestBase < Minitest::Test
 
   def check_dockerfile
     results = IO.read("Dockerfile")
-      .gsub(/(^ARG\s+\w+\s*=).*/, '\1xxx')
+      .gsub(/(^ARG\s+\w+\s*=).*?(\s*\\?$)/, '\1xxx\2')
 
     IO.write("#{@results}/Dockerfile", results) if @capture
 
     expected = IO.read("#{@results}/Dockerfile")
-      .gsub(/(^ARG\s+\w+\s*=).*/, '\1xxx')
+      .gsub(/(^ARG\s+\w+\s*=).*?(\s*\\?$)/, '\1xxx\2')
 
     assert_equal expected, results
   end

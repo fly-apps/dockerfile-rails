@@ -49,7 +49,7 @@ RUN apt-get update -qq && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 # Run and own the application files as a non-root user for security
-ARG UID=xxx
+ARG UID=xxx \
     GID=1000
 RUN groupadd -f -g $GID rails && \
     useradd -u $UID -g $GID rails

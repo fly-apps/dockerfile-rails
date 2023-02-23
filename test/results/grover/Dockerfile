@@ -19,14 +19,16 @@ RUN gem update --system --no-document && \
 
 # Install packages needed to install nodejs and chrome
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y curl gnupg unzip && \
+    apt-get install --no-install-recommends -y curl gnupg && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 # Install Node.js
 ARG NODE_VERSION=xxx
-RUN curl -fsSL https://fnm.vercel.app/install | bash && \
-    /root/.local/share/fnm/fnm install $NODE_VERSION && \
-    mv /root/.local/share/fnm/aliases/default/bin/node /usr/local/bin
+ENV PATH=/usr/local/node/bin:$PATH
+RUN curl -sL https://github.com/nodenv/node-build/archive/master.tar.gz | tar xz -C /tmp/ && \
+    /tmp/node-build-master/bin/node-build "${NODE_VERSION}" /usr/local/node && \
+    npm install -g yarn@$YARN_VERSION && \
+    rm -rf /tmp/node-build-master
 
 
 # Throw-away build stage to reduce size of final image
@@ -37,7 +39,7 @@ RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y build-essential node-gyp pkg-config python-is-python3
 
 # Build options
-ENV PATH="/root/.local/share/fnm/aliases/default/bin/:$PATH" \
+ENV PATH="/usr/local/node/bin:$PATH" \
     PUPPETEER_SKIP_CHROMIUM_DOWNLOAD="true"
 
 # Install application gems

@@ -23,14 +23,16 @@ FROM base as build
 
 # Install packages needed to build gems and node modules
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y build-essential curl node-gyp pkg-config python-is-python3 unzip
+    apt-get install --no-install-recommends -y build-essential curl node-gyp pkg-config python-is-python3
 
 # Install JavaScript dependencies
 ARG NODE_VERSION=xxx
 ARG YARN_VERSION=xxx
-RUN curl -fsSL https://fnm.vercel.app/install | bash && \
-    /root/.local/share/fnm/fnm install $NODE_VERSION
-ENV PATH=/root/.local/share/fnm/aliases/default/bin/:$PATH
+ENV PATH=/usr/local/node/bin:$PATH
+RUN curl -sL https://github.com/nodenv/node-build/archive/master.tar.gz | tar xz -C /tmp/ && \
+    /tmp/node-build-master/bin/node-build "${NODE_VERSION}" /usr/local/node && \
+    npm install -g yarn@$YARN_VERSION && \
+    rm -rf /tmp/node-build-master
 RUN npm install -g yarn@$YARN_VERSION
 
 # Install application gems

@@ -311,7 +311,7 @@ private
     packages += @@packages["base"] if @@packages["base"]
 
     if using_execjs?
-      packages += %w(curl unzip)
+      packages += %w(curl)
     end
 
     if using_puppeteer?
@@ -364,7 +364,7 @@ private
     # node support, including support for building native modules
     if using_node?
       packages += %w(node-gyp pkg-config)
-      packages += %w(curl unzip) unless using_execjs? || using_puppeteer?
+      packages += %w(curl) unless using_execjs? || using_puppeteer?
 
       # module build process depends on Python, and debian changed
       # how python is installed with the bullseye release.  Below
@@ -464,7 +464,7 @@ private
     env = {}
 
     if using_execjs?
-      env["PATH"] = "/root/.local/share/fnm/aliases/default/bin/:$PATH"
+      env["PATH"] = "/usr/local/node/bin:$PATH"
     end
 
     if using_puppeteer?

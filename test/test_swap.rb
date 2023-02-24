@@ -7,6 +7,7 @@ class TestSwap < TestBase
   @generate_options = "--swap=512M"
 
   def test_swap
+    check_dockerfile
     check_entrypoint
   end
 end

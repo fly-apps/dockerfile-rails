@@ -1,13 +1,23 @@
 #!/bin/bash -e
 
 <% if options.swap -%>
-# allocate swap space
-fallocate -l <%= options.swap %> /swapfile
-chmod 0600 /swapfile
-mkswap /swapfile
-echo 10 > /proc/sys/vm/swappiness
-swapon /swapfile
-echo 1 > /proc/sys/vm/overcommit_memory
+<% if run_as_root? -%>
+<% @space = "" -%>
+<% else -%>
+<% @space = "  " -%>
+if [ $UID -eq 0 ]; then
+<% end -%>
+<%= @space %># allocate swap space
+<%= @space %>fallocate -l <%= options.swap %> /swapfile
+<%= @space %>chmod 0600 /swapfile
+<%= @space %>mkswap /swapfile
+<%= @space %>echo 10 > /proc/sys/vm/swappiness
+<%= @space %>swapon /swapfile
+<%= @space %>echo 1 > /proc/sys/vm/overcommit_memory
+<% unless run_as_root? -%>
+  exec su rails $0 $@
+fi
+<% end -%>
 
 <% end -%>
 <% if options.prepare -%>

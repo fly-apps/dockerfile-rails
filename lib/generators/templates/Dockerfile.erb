@@ -155,7 +155,7 @@ ARG <%= deploy_args.map {|key, value| "#{key}=#{value.inspect}"}.join(" \\\n    
 RUN gem install foreman
 
 <% end -%>
-<% unless run_as_root? -%>
+<% if !run_as_root? && !options.swap -%>
 # Run and own the application files as a non-root user for security
 <% if options.compose? -%>
 ARG UID=1000 \

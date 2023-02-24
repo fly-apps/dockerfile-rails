@@ -155,7 +155,7 @@ ARG <%= deploy_args.map {|key, value| "#{key}=#{value.inspect}"}.join(" \\\n    
 RUN gem install foreman
 
 <% end -%>
-<% if !run_as_root? && !options.swap -%>
+<% unless run_as_root? -%>
 # Run and own the application files as a non-root user for security
 <% if options.compose? -%>
 ARG UID=1000 \
@@ -164,7 +164,9 @@ RUN groupadd -f -g $GID rails && \
     useradd -u $UID -g $GID rails<% else -%>
 RUN useradd rails<% end -%><% if options.nginx? %> && \
     chown rails:rails /var/lib/nginx /var/log/nginx/*<% end %>
+<% unless options.swap -%>
 USER rails:rails
+<% end -%>
 
 <% end -%>
 <% unless options.precompile == "defer" -%>

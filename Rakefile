@@ -30,7 +30,7 @@ namespace :test do
       cp "#{__dir__}/test/docker-entrypoint", "bin"
       IO.write "config/routes.rb",
         'Rails.application.routes.draw {get "/up", to: proc {[200, {}, ["ok"]]}}'
-      sh "docker buildx build . -t system:test"
+      sh "docker buildx build . --load -t system:test"
       key = IO.read("config/master.key")
       sh "docker images"
       sh "docker run -p 3000:3000 -e RAILS_MASTER_KEY=#{key} system:test"

@@ -77,9 +77,15 @@ Options are saved between runs into `config/dockerfile.yml`.  To invert a boolea
 
 ## Testing
 
-The current testing strategy is to run `rails new` and `generate dockerfile` with various configurations and compare the generated artifacts with expected results.  `ARG` values in `Dockerfiles` are masked before comparison.
+A single invocation of `rake test:all` will run all of the tests defined.  dockerfile-rails has are three types of tests:
 
-Running all tests, or even a single individual test can be done as follows:
+  * `rake test:rubocop` runs [rubocop](https://github.com/rubocop/rubocop) using the same options as the Rails codebase.
+  * `rake test:system` creates a new esbuild application, generates a dockerfile, builds and runs it.  As this is time consuming, only one application is tested this way at this time, and a `--javascript` example was selected as it exercises a large portion of the features.
+  * `rake test` runs integration tests, as described below
+
+The current integration testing strategy is to run `rails new` and `generate dockerfile` with various configurations and compare the generated artifacts with expected results.  `ARG` values in `Dockerfiles` are masked before comparison.
+
+Running all integration tests, or even a single individual test can be done as follows:
 
 ```
 rake test

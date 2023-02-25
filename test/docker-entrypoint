@@ -3,7 +3,7 @@
 
 require "net/http"
 
-LOCALHOST = "host.docker.internal"
+LOCALHOST = `uname -n`.chomp
 PORT = 3000
 
 pid = Process.spawn("./bin/rails", "server")

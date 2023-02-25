@@ -12,10 +12,9 @@ ENV RAILS_ENV="production" \
     BUNDLE_DEPLOYMENT="1" \
     BUNDLE_WITHOUT="development:test"
 
-# Update gems and preinstall the desired version of bundler
-ARG BUNDLER_VERSION=xxx
+# Update gems and bundler
 RUN gem update --system --no-document && \
-    gem install -N bundler -v ${BUNDLER_VERSION}
+    gem install -N bundler
 
 
 # Throw-away build stage to reduce size of final image
@@ -27,7 +26,7 @@ RUN apt-get update -qq && \
 
 # Install application gems
 COPY Gemfile Gemfile.lock ./
-RUN bundle _${BUNDLER_VERSION}_ install
+RUN bundle install
 
 # Copy application code
 COPY . .

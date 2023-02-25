@@ -12,10 +12,9 @@ ENV RAILS_ENV="production" \
     BUNDLE_DEPLOYMENT="1" \
     BUNDLE_WITHOUT="development:test"
 
-# Update gems and preinstall the desired version of bundler
-ARG BUNDLER_VERSION=xxx
+# Update gems and bundler
 RUN gem update --system --no-document && \
-    gem install -N bundler -v ${BUNDLER_VERSION}
+    gem install -N bundler
 
 # Install packages needed to install nodejs
 RUN apt-get update -qq && \
@@ -47,7 +46,7 @@ ENV PATH="/usr/local/node/bin:$PATH"
 
 # Install application gems
 COPY Gemfile Gemfile.lock ./
-RUN bundle _${BUNDLER_VERSION}_ install && \
+RUN bundle install && \
     bundle exec bootsnap precompile --gemfile
 
 # Install node modules

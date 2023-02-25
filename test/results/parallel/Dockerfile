@@ -40,7 +40,7 @@ RUN npm install -g yarn@$YARN_VERSION
 
 # Install node modules
 COPY package.json yarn.lock .
-RUN yarn install
+RUN yarn install --frozen-lockfile
 
 
 FROM prebuild as build

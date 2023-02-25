@@ -1,12 +1,8 @@
 # Install node modules
 COPY <%=sources.join(' ') %> .
 <% if sources.join.include? 'yarn' -%>
-<% if options.cache? -%>
-RUN --mount=type=cache,id=bld-yarn-cache,target=/root/.yarn \
-    YARN_CACHE_FOLDER=/root/.yarn yarn install
-<% else -%>
-RUN yarn install
-<% end -%>
+RUN <% if options.cache? -%>--mount=type=cache,id=bld-yarn-cache,target=/root/.yarn \
+    YARN_CACHE_FOLDER=/root/.yarn <% end -%>yarn install --frozen-lockfile
 <% else -%>
 <% if options.cache? -%>
 RUN --mount=type=cache,id=bld-npm-cache,target=/root/.npm \

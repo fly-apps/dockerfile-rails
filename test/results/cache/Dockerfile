@@ -52,7 +52,7 @@ RUN --mount=type=cache,id=bld-gem-cache,sharing=locked,target=/srv/vendor \
 # Install node modules
 COPY package.json yarn.lock .
 RUN --mount=type=cache,id=bld-yarn-cache,target=/root/.yarn \
-    YARN_CACHE_FOLDER=/root/.yarn yarn install
+    YARN_CACHE_FOLDER=/root/.yarn yarn install --frozen-lockfile
 
 # Copy application code
 COPY . .

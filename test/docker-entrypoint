@@ -6,7 +6,7 @@ require "net/http"
 LOCALHOST = `uname -n`.chomp
 PORT = 3000
 
-pid = Process.spawn("./bin/rails", "server")
+pid = Process.spawn("./bin/rails", "server", "-p", PORT.to_s)
 
 begin
   60.times do |i|

@@ -17,6 +17,10 @@ namespace :test do
     Rake::Task[:test].invoke
   end
 
+  task :rubocop do
+    sh "rubocop"
+  end
+
   task :system do
     rm_rf "test/tmp/system_test"
     Dir.chdir "test/tmp" do
@@ -37,4 +41,6 @@ namespace :test do
   ensure
     rm_rf "test/tmp/system_test"
   end
+
+  task all: %w(test:rubocop test test:system)
 end

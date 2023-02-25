@@ -12,6 +12,7 @@ WORKDIR /rails
 # Set production environment
 ENV RAILS_ENV="production" \
     BUNDLE_PATH="vendor/bundle" \
+    BUNDLE_DEPLOYMENT="1" \
     BUNDLE_WITHOUT="development:test"
 
 # Update gems and preinstall the desired version of bundler

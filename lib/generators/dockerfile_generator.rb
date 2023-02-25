@@ -466,6 +466,7 @@ private
     env = {
       "RAILS_ENV" => "production",
       "BUNDLE_PATH" => "vendor/bundle",
+      "BUNDLE_DEPLOYMENT" => "1",
       "BUNDLE_WITHOUT" => options.ci? ? "development" : "development:test"
     }
 

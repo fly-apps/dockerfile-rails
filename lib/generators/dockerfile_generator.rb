@@ -214,7 +214,7 @@ class DockerfileGenerator < Rails::Generators::Base
       package = JSON.load_file("package.json")
       unless package.dig("scripts", "build")
         package["scripts"] ||= {}
-        package["scripts"]["build"] = "vite build --outDir public"
+        package["scripts"]["build"] ||= "vite build --outDir public"
 
         say_status :update, "package.json"
         IO.write("package.json", JSON.pretty_generate(package))
@@ -293,6 +293,8 @@ private
   end
 
   def install_gems
+    ENV["BUNDLE_IGNORE_MESSAGES"] = "1"
+
     if options.postgresql? || @postgresql
       system "bundle add pg" unless @gemfile.include? "pg"
     end
@@ -303,6 +305,22 @@ private
 
     if options.redis? || using_redis?
       system "bundle add redis" unless @gemfile.include? "redis"
+    end
+
+    # ensure linux platform is in the bundle lock
+    current_platforms = `bundle platform`
+    add_platforms = []
+
+    if !current_platforms.include?("x86_64-linux")
+      add_platforms += ["--add-platform=x86_64-linux"]
+    end
+
+    if !current_platforms.include?("aarch64-linux") && RUBY_PLATFORM.start_with?("arm64")
+      add_platforms += ["--add-platform=aarch64-linux"]
+    end
+
+    unless add_platforms.empty?
+      system "bundle lock #{add_platforms.join(" ")}"
     end
   end
 

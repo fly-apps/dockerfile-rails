@@ -1,8 +1,9 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
-require 'net/http'
+require "net/http"
 
-LOCALHOST = 'host.docker.internal'
+LOCALHOST = "host.docker.internal"
 PORT = 3000
 
 pid = Process.spawn("./bin/rails", "server")
@@ -11,9 +12,9 @@ begin
   60.times do |i|
     sleep 0.5
     begin
-      status = Net::HTTP.get_response(LOCALHOST,'/up', PORT).code
-      exit 0 if status == '200'
-      exit status.to_i if %w(404 500).include? status 
+      status = Net::HTTP.get_response(LOCALHOST, "/up", PORT).code
+      exit 0 if status == "200"
+      exit status.to_i if %w(404 500).include? status
     rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT, EOFError
     end
   end

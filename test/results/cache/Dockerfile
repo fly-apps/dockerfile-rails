@@ -9,7 +9,6 @@ WORKDIR /rails
 
 # Set production environment
 ENV RAILS_ENV="production" \
-    BUNDLE_PATH="vendor/bundle" \
     BUNDLE_DEPLOYMENT="1" \
     BUNDLE_WITHOUT="development:test"
 
@@ -78,7 +77,8 @@ RUN --mount=type=cache,id=dev-apt-cache,sharing=locked,target=/var/cache/apt \
 RUN useradd rails
 USER rails:rails
 
-# Copy built application from previous stage
+# Copy built artifacts: gems, application
+COPY --from=build /usr/local/bundle /usr/local/bundle
 COPY --from=build --chown=rails:rails /rails /rails
 
 # Deployment options

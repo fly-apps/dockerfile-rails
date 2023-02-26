@@ -44,7 +44,7 @@ RUN yarn install --frozen-lockfile
 FROM prebuild as build
 
 # Install application gems
-COPY Gemfile Gemfile.lock ./
+COPY Gemfile Gemfile.lock .
 RUN bundle install && \
     bundle exec bootsnap precompile --gemfile
 

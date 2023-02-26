@@ -41,7 +41,7 @@ ENV PATH="/usr/local/node/bin:$PATH" \
     PUPPETEER_SKIP_CHROMIUM_DOWNLOAD="true"
 
 # Install application gems
-COPY Gemfile Gemfile.lock ./
+COPY Gemfile Gemfile.lock .
 RUN bundle install
 
 # Install node modules

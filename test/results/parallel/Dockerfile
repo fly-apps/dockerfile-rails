@@ -35,7 +35,6 @@ RUN curl -sL https://github.com/nodenv/node-build/archive/master.tar.gz | tar xz
     /tmp/node-build-master/bin/node-build "${NODE_VERSION}" /usr/local/node && \
     npm install -g yarn@$YARN_VERSION && \
     rm -rf /tmp/node-build-master
-RUN npm install -g yarn@$YARN_VERSION
 
 # Install node modules
 COPY package.json yarn.lock .

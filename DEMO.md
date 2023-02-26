@@ -11,7 +11,7 @@ echo 'Rails.application.routes.draw { root "rails/welcome#index" }' > config/rou
 bundle add dockerfile-rails --optimistic --group development
 bin/rails generate dockerfile
 docker buildx build . -t rails-demo
-docker run -p 3000:3000 -e RAILS_MASTER_KEY=$(cat config/master.key) rails-demo
+docker run -p 3000:3000 -e RAILS_MASTER_KEY=$(cat config/master.key) --rm rails-demo
 ```
 
 # Demo 2 - Neofetch
@@ -45,7 +45,7 @@ EOF
 bundle add dockerfile-rails --optimistic --group development
 bin/rails generate dockerfile --add neofetch colorized-logs
 docker buildx build . -t rails-demo
-docker run -p 3000:3000 -e RAILS_MASTER_KEY=$(cat config/master.key) rails-demo
+docker run -p 3000:3000 -e RAILS_MASTER_KEY=$(cat config/master.key) --rm rails-demo
 ```
 
 Add `--load` to the `buildx` command if you want to save the image to local Docker.
@@ -187,7 +187,7 @@ bundle add dockerfile-rails --optimistic --group development
 bin/rails generate dockerfile
 
 docker buildx build . -t rails-demo
-docker run -p 3000:3000 -e RAILS_MASTER_KEY=$(cat config/master.key) rails-demo
+docker run -p 3000:3000 -e RAILS_MASTER_KEY=$(cat config/master.key) --rm rails-demo
 ```
 
 # Demo 5 - Bunding Javascript (esbuild)
@@ -307,7 +307,7 @@ bundle add dockerfile-rails --optimistic --group development
 bin/rails generate dockerfile
 
 docker buildx build . -t rails-demo
-docker run -p 3000:3000 -e RAILS_MASTER_KEY=$(cat config/master.key) rails-demo
+docker run -p 3000:3000 -e RAILS_MASTER_KEY=$(cat config/master.key) --rm rails-demo
 ```
 
 # Demo 6 - Grover / puppeteer / Chromium
@@ -337,5 +337,5 @@ EOF
 bundle add dockerfile-rails --optimistic --group development
 bin/rails generate dockerfile
 docker buildx build . -t rails-demo
-docker run -p 3000:3000 -e RAILS_MASTER_KEY=$(cat config/master.key) rails-demo
+docker run -p 3000:3000 -e RAILS_MASTER_KEY=$(cat config/master.key) --rm rails-demo
 ```

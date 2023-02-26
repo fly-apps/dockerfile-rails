@@ -20,10 +20,12 @@
 <% if keeps? -%>
 !/log/.keep
 !/tmp/.keep
+<% end -%>
 
 # Ignore pidfiles, but keep the directory.
 /tmp/pids/*
 !/tmp/pids/
+<% if keeps? -%>
 !/tmp/pids/.keep
 <% end -%>
 

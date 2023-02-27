@@ -313,6 +313,13 @@ private
       system "bundle add redis --skip-install" unless @gemfile.include? "redis"
     end
 
+    # https://stackoverflow.com/questions/70500220/rails-7-ruby-3-1-loaderror-cannot-load-such-file-net-smtp/70500221#70500221
+    if @gemfile.include? 'mail'
+      %w(net-smtp net-imap net-pop).each do |gem|
+        system "bundle add #{gem} --skip-install --require false" unless @gemfile.include? gem
+      end
+    end
+
     unless gemfile == IO.read("Gemfile")
       system "bundle install --quiet"
     end

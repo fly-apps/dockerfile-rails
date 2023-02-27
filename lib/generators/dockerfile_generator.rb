@@ -256,7 +256,7 @@ private
 
   def platform
     if options.platform
-      "--platform #{options.platform} "
+      "--platform=#{options.platform} "
     else
       ""
     end

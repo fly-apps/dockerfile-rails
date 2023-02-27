@@ -370,9 +370,6 @@ private
     # add git if needed to install gems
     packages << "git" if @git
 
-    # add redis if Action Cable, caching, or sidekiq are used
-    packages << "redis" if options.redis? || using_redis?
-
     # ActiveStorage preview support
     packages << "libvips" if @gemfile.include? "ruby-vips"
 
@@ -417,9 +414,6 @@ private
     packages << "libsqlite3-0" if options.sqlite3? || @sqlite3
     packages << "postgresql-client" if options.postgresql? || @postgresql
     packages << "default-mysql-client" if options.mysql || @mysql
-
-    # add redis in case Action Cable, caching, or sidekiq are added later
-    packages << "redis" if using_redis?
 
     # ActiveStorage preview support
     packages << "libvips" if @gemfile.include? "ruby-vips"

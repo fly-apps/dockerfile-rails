@@ -299,16 +299,22 @@ private
   def install_gems
     ENV["BUNDLE_IGNORE_MESSAGES"] = "1"
 
+    gemfile = IO.read('Gemfile')
+
     if options.postgresql? || @postgresql
-      system "bundle add pg" unless @gemfile.include? "pg"
+      system "bundle add pg --skip-install" unless @gemfile.include? "pg"
     end
 
     if options.mysql? || @mysql
-      system "bundle add mysql2" unless @gemfile.include? "mysql2"
+      system "bundle add mysql2 --skip-install" unless @gemfile.include? "mysql2"
     end
 
     if options.redis? || using_redis?
-      system "bundle add redis" unless @gemfile.include? "redis"
+      system "bundle add redis --skip-install" unless @gemfile.include? "redis"
+    end
+
+    unless gemfile == IO.read('Gemfile')
+      system "bundle install --quiet"
     end
 
     if options.lock?

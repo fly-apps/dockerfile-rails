@@ -299,7 +299,7 @@ private
   def install_gems
     ENV["BUNDLE_IGNORE_MESSAGES"] = "1"
 
-    gemfile = IO.read('Gemfile')
+    gemfile = IO.read("Gemfile")
 
     if options.postgresql? || @postgresql
       system "bundle add pg --skip-install" unless @gemfile.include? "pg"
@@ -313,7 +313,7 @@ private
       system "bundle add redis --skip-install" unless @gemfile.include? "redis"
     end
 
-    unless gemfile == IO.read('Gemfile')
+    unless gemfile == IO.read("Gemfile")
       system "bundle install --quiet"
     end
 

@@ -14,6 +14,7 @@ class DockerfileGenerator < Rails::Generators::Base
     "fullstaq" => false,
     "jemalloc" => false,
     "label" => {},
+    "lock" => true,
     "mysql" => false,
     "nginx" => false,
     "parallel" => false,
@@ -66,6 +67,9 @@ class DockerfileGenerator < Rails::Generators::Base
 
   class_option :ci, type: :boolean, default: OPTION_DEFAULTS.ci,
     desc: "include test gems in bundle"
+
+  class_option :lock, type: :boolean, default: OPTION_DEFAULTS.lock,
+    desc: "lock Gemfile/package.json"
 
   class_option :precompile, type: :string, default: OPTION_DEFAULTS.precompile,
     desc: 'if set to "defer", assets:precompile will be done at deploy time'
@@ -307,20 +311,22 @@ private
       system "bundle add redis" unless @gemfile.include? "redis"
     end
 
-    # ensure linux platform is in the bundle lock
-    current_platforms = `bundle platform`
-    add_platforms = []
+    if options.lock?
+      # ensure linux platform is in the bundle lock
+      current_platforms = `bundle platform`
+      add_platforms = []
 
-    if !current_platforms.include?("x86_64-linux")
-      add_platforms += ["--add-platform=x86_64-linux"]
-    end
+      if !current_platforms.include?("x86_64-linux")
+	add_platforms += ["--add-platform=x86_64-linux"]
+      end
 
-    if !current_platforms.include?("aarch64-linux") && RUBY_PLATFORM.start_with?("arm64")
-      add_platforms += ["--add-platform=aarch64-linux"]
-    end
+      if !current_platforms.include?("aarch64-linux") && RUBY_PLATFORM.start_with?("arm64")
+	add_platforms += ["--add-platform=aarch64-linux"]
+      end
 
-    unless add_platforms.empty?
-      system "bundle lock #{add_platforms.join(" ")}"
+      unless add_platforms.empty?
+	system "bundle lock #{add_platforms.join(" ")}"
+      end
     end
   end
 
@@ -459,9 +465,12 @@ private
   def base_env
     env = {
       "RAILS_ENV" => "production",
-      "BUNDLE_DEPLOYMENT" => "1",
       "BUNDLE_WITHOUT" => options.ci? ? "development" : "development:test"
     }
+
+    if options.lock?
+      env["BUNDLE_DEPLOYMENT"] = "1"
+    end
 
     if @@args["base"]
       env.merge! @@args["base"].to_h { |key, value| [key, "$#{key}"] }

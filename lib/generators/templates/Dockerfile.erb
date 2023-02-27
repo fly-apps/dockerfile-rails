@@ -8,7 +8,7 @@ ARG RUBY_VERSION=<%= RUBY_VERSION %>
 
 <% end -%>
 <% if options.fullstaq -%>
-FROM <%= platform %>quay.io/evl.ms/fullstaq-ruby:${RUBY_VERSION}-<%= @options.jemalloc ? 'jemalloc-' : '' %>slim<% unless options.precompile == "defer" %> as base<% end %>
+FROM <%= platform %>quay.io/evl.ms/fullstaq-ruby:${RUBY_VERSION}-<%= options.jemalloc ? 'jemalloc-' : '' %>slim<% unless options.precompile == "defer" %> as base<% end %>
 <% else -%>
 FROM <%= platform %>ruby:$RUBY_VERSION-slim<% unless options.precompile == "defer" %> as base<% end %>
 <% end -%>
@@ -32,7 +32,7 @@ ENV <%= base_env.join(" \\\n    ") %>
 
 # Update gems and bundler
 RUN gem update --system --no-document && \
-<% if options.ci? -%>
+<% if options.ci? and options.lock? -%>
     gem install -N irb reline && \
 <% end -%>
     gem install -N bundler

@@ -36,11 +36,12 @@ bin/rails generate dockerfile
 * `--cache` - use build caching to speed up builds
 * `--parallel` - use multi-stage builds to install gems and node modules in parallel
 
-### Add a Feature:
+### Add/remove a Feature:
 
 * `--ci` - include test gems in deployed image
 * `--compose` - generate a `docker-compose.yml` file
 * `--nginx` - serve static files via [nginx](https://www.nginx.com/).  May require `--root` on some targets to access `/dev/stdout`
+* `--no-lock` - don't add linux platforms, set `BUNDLE_DEPLOY`, or `--frozen-lockfile`.  May be needed at times to work around a [rubygems bug](https://github.com/rubygems/rubygems/issues/6082#issuecomment-1329756343).
 
 ### Add a Database:
 

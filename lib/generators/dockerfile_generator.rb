@@ -317,15 +317,15 @@ private
       add_platforms = []
 
       if !current_platforms.include?("x86_64-linux")
-	add_platforms += ["--add-platform=x86_64-linux"]
+        add_platforms += ["--add-platform=x86_64-linux"]
       end
 
       if !current_platforms.include?("aarch64-linux") && RUBY_PLATFORM.start_with?("arm64")
-	add_platforms += ["--add-platform=aarch64-linux"]
+        add_platforms += ["--add-platform=aarch64-linux"]
       end
 
       unless add_platforms.empty?
-	system "bundle lock #{add_platforms.join(" ")}"
+        system "bundle lock #{add_platforms.join(" ")}"
       end
     end
   end

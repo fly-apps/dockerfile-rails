@@ -343,6 +343,16 @@ private
     end
   end
 
+  def base_gems
+    gems = ["bundler"]
+
+    if options.ci? && options.lock? && @gemfile.include?("debug")
+      gems += %w(irb reline) - @gemfile
+    end
+
+    gems.sort
+  end
+
   def base_packages
     packages = []
     packages += @@packages["base"] if @@packages["base"]

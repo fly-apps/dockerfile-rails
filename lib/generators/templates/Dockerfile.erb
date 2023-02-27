@@ -32,10 +32,7 @@ ENV <%= base_env.join(" \\\n    ") %>
 
 # Update gems and bundler
 RUN gem update --system --no-document && \
-<% if options.ci? and options.lock? -%>
-    gem install -N irb reline && \
-<% end -%>
-    gem install -N bundler
+    gem install -N <%= base_gems.join(" ") %>
 
 <% unless base_requirements.empty? -%>
 # Install packages needed to install <%= base_requirements %>

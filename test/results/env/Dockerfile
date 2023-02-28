@@ -29,7 +29,7 @@ ENV AWS_ACCESS_KEY_ID="1" \
     AWS_SECRET_ACCESS_KEY="1"
 
 # Install application gems
-COPY Gemfile Gemfile.lock .
+COPY Gemfile Gemfile.lock ./
 RUN bundle install
 
 # Copy application code

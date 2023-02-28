@@ -40,7 +40,7 @@ RUN apt-get update -qq && \
 ENV PATH="/usr/local/node/bin:$PATH"
 
 # Install application gems
-COPY Gemfile Gemfile.lock .
+COPY Gemfile Gemfile.lock ./
 RUN bundle install && \
     bundle exec bootsnap precompile --gemfile
 

@@ -32,11 +32,11 @@ RUN curl -sL https://github.com/nodenv/node-build/archive/master.tar.gz | tar xz
     rm -rf /tmp/node-build-master
 
 # Install application gems
-COPY Gemfile Gemfile.lock .
+COPY Gemfile Gemfile.lock ./
 RUN bundle install
 
 # Install node modules
-COPY package.json package-lock.json .
+COPY package.json package-lock.json ./
 RUN npm install
 
 # Copy application code

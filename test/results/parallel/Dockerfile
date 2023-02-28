@@ -37,14 +37,14 @@ RUN curl -sL https://github.com/nodenv/node-build/archive/master.tar.gz | tar xz
     rm -rf /tmp/node-build-master
 
 # Install node modules
-COPY package.json yarn.lock .
+COPY package.json yarn.lock ./
 RUN yarn install --frozen-lockfile
 
 
 FROM prebuild as build
 
 # Install application gems
-COPY Gemfile Gemfile.lock .
+COPY Gemfile Gemfile.lock ./
 RUN bundle install && \
     bundle exec bootsnap precompile --gemfile
 

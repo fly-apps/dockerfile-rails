@@ -29,11 +29,11 @@ ENV AWS_ACCESS_KEY_ID="1" \
     AWS_SECRET_ACCESS_KEY="1"
 
 # Install application gems
-COPY Gemfile Gemfile.lock ./
+COPY --link Gemfile Gemfile.lock ./
 RUN bundle install
 
 # Copy application code
-COPY . .
+COPY --link . .
 
 # Precompiling assets for production without requiring secret RAILS_MASTER_KEY
 RUN SECRET_KEY_BASE=DUMMY ./bin/rails assets:precompile

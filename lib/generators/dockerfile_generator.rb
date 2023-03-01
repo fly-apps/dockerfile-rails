@@ -14,6 +14,7 @@ class DockerfileGenerator < Rails::Generators::Base
     "fullstaq" => false,
     "jemalloc" => false,
     "label" => {},
+    "link" => true,
     "lock" => true,
     "mysql" => false,
     "nginx" => false,
@@ -67,6 +68,9 @@ class DockerfileGenerator < Rails::Generators::Base
 
   class_option :ci, type: :boolean, default: OPTION_DEFAULTS.ci,
     desc: "include test gems in bundle"
+
+  class_option :link, type: :boolean, default: OPTION_DEFAULTS.lock,
+    desc: "use COPY --link whenever possible"
 
   class_option :lock, type: :boolean, default: OPTION_DEFAULTS.lock,
     desc: "lock Gemfile/package.json"

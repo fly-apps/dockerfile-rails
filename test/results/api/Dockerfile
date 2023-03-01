@@ -11,11 +11,11 @@ WORKDIR /rails/my-app
 ENV NODE_ENV=production
 
 # Install node modules
-COPY my-app/package.json ./
+COPY --link my-app/package.json ./
 RUN npm install
 
 # build client application
-COPY my-app .
+COPY --link my-app .
 RUN npm run build
 
 
@@ -42,12 +42,12 @@ RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y build-essential pkg-config
 
 # Install application gems
-COPY Gemfile Gemfile.lock ./
+COPY --link Gemfile Gemfile.lock ./
 RUN bundle install && \
     bundle exec bootsnap precompile --gemfile
 
 # Copy application code
-COPY . .
+COPY --link . .
 
 # Precompile bootsnap code for faster boot times
 RUN bundle exec bootsnap precompile app/ lib/

@@ -79,7 +79,7 @@ ENV <%= build_env.join(" \\\n    ") %>
 
 <% end -%>
 # Install application gems
-COPY Gemfile Gemfile.lock ./
+COPY<% if options.link? %> --link<% end %> Gemfile Gemfile.lock ./
 <% if options.cache? -%>
 RUN --mount=type=cache,id=bld-gem-cache,sharing=locked,target=/srv/vendor \
     bundle config set app_config .bundle && \
@@ -107,7 +107,7 @@ COPY --from=node /rails/node_modules /rails/node_modules
 
 <% end -%>
 # Copy application code
-COPY . .
+COPY<% if options.link? %> --link<% end %> . .
 
 <% if depend_on_bootsnap? -%>
 # Precompile bootsnap code for faster boot times

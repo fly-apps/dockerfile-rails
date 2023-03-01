@@ -41,15 +41,15 @@ ENV PATH="/usr/local/node/bin:$PATH" \
     PUPPETEER_SKIP_CHROMIUM_DOWNLOAD="true"
 
 # Install application gems
-COPY Gemfile Gemfile.lock ./
+COPY --link Gemfile Gemfile.lock ./
 RUN bundle install
 
 # Install node modules
-COPY package.json package-lock.json ./
+COPY --link package.json package-lock.json ./
 RUN npm install
 
 # Copy application code
-COPY . .
+COPY --link . .
 
 # Precompiling assets for production without requiring secret RAILS_MASTER_KEY
 RUN SECRET_KEY_BASE=DUMMY ./bin/rails assets:precompile

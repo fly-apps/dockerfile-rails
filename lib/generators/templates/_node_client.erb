@@ -9,5 +9,5 @@ ENV NODE_ENV=production
 <%= render partial: 'npm_install', locals: {sources: api_client_files} %>
 
 # build client application
-COPY <%= api_client_dir %> .
+COPY<% if options.link? %> --link<% end %> <%= api_client_dir %> .
 RUN npm run build

@@ -65,7 +65,7 @@ RUN apt-get update -qq && \
 ARG UID=xxx \
     GID=1000
 RUN groupadd -f -g $GID rails && \
-    useradd -u $UID -g $GID rails
+    useradd -u $UID -g $GID rails --home /rails --shell /bin/bash
 USER rails:rails
 
 # Copy built artifacts: gems, application

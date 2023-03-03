@@ -72,7 +72,7 @@ RUN --mount=type=cache,id=dev-apt-cache,sharing=locked,target=/var/cache/apt \
     apt-get install --no-install-recommends -y libsqlite3-0
 
 # Run and own the application files as a non-root user for security
-RUN useradd rails
+RUN useradd rails --home /rails --shell /bin/bash
 USER rails:rails
 
 # Copy built artifacts: gems, application

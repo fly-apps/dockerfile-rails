@@ -16,7 +16,7 @@ begin
       response = Net::HTTP.get_response(LOCALHOST, "/up", PORT)
 
       if %w(404 500).include? response.code
-	status = response.code.to_i
+        status = response.code.to_i
       end
 
       puts response.body

@@ -158,7 +158,7 @@ ARG UID=1000 \
     GID=1000
 RUN groupadd -f -g $GID rails && \
     useradd -u $UID -g $GID rails<% else -%>
-RUN useradd rails<% end -%><% if options.nginx? %> && \
+RUN useradd rails<% end -%> --home /rails --shell /bin/bash<% if options.nginx? %> && \
     chown rails:rails /var/lib/nginx /var/log/nginx/*<% end %>
 <% unless options.swap -%>
 USER rails:rails

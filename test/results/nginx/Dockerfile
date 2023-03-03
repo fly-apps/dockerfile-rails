@@ -77,7 +77,7 @@ server {
 EOF
 
 # Run and own the application files as a non-root user for security
-RUN useradd rails && \
+RUN useradd rails --home /rails --shell /bin/bash && \
     chown rails:rails /var/lib/nginx /var/log/nginx/*
 USER rails:rails
 

@@ -26,6 +26,7 @@ class DockerfileGenerator < Rails::Generators::Base
     "redis" => false,
     "root" => false,
     "sqlite3" => false,
+    "sudo" => false,
     "swap" => nil,
     "yjit" => false,
   }.then { |hash| Struct.new(*hash.keys.map(&:to_sym)).new(*hash.values) }
@@ -129,6 +130,8 @@ class DockerfileGenerator < Rails::Generators::Base
   class_option :root, type: :boolean, default: OPTION_DEFAULTS.root,
     desc: "Run application as root user"
 
+  class_option :sudo, type: :boolean, default: OPTION_DEFAULTS.sudo,
+    desc: "Install and configure sudo to enable running as rails with full environment"
 
   class_option "add-base", type: :array, default: [],
     desc: "additional packages to install for both build and deploy"
@@ -467,6 +470,9 @@ private
 
     # nginx
     packages << "nginx" if options.nginx?
+
+    # sudo
+    packages << "sudo" if options.sudo?
 
     packages.sort
   end

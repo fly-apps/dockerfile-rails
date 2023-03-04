@@ -36,7 +36,7 @@ namespace :test do
         'Rails.application.routes.draw {get "/up", to: proc {[200, {}, ["ok"]]}}'
       sh "docker buildx build . --load -t system:test"
       key = IO.read("config/master.key")
-      sh "docker run -p 3000:3000 -e RAILS_MASTER_KEY=#{key} system:test"
+      sh "docker run -p 3000:3000 -e RAILS_MASTER_KEY=#{key} --rm system:test"
     end
   ensure
     rm_rf "test/tmp/system_test"

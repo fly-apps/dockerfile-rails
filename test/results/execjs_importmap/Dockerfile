@@ -42,7 +42,8 @@ ENV PATH="/usr/local/node/bin:$PATH"
 # Install application gems
 COPY --link Gemfile Gemfile.lock ./
 RUN bundle install && \
-    bundle exec bootsnap precompile --gemfile
+    bundle exec bootsnap precompile --gemfile && \
+    rm -rf ~/.bundle/ $BUNDLE_PATH/ruby/*/cache $BUNDLE_PATH/ruby/*/bundler/gems/*/.git
 
 # Copy application code
 COPY --link . .

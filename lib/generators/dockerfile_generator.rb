@@ -308,7 +308,7 @@ private
 
     gemfile = IO.read("Gemfile")
 
-    unless gemfile =~ /^\s*source\s/
+    unless /^\s*source\s/.match?(gemfile)
       gemfile = %{source "https://rubygems.org"\n} + gemfile
     end
 

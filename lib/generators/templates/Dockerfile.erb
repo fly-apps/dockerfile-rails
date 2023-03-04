@@ -95,7 +95,8 @@ RUN --mount=type=cache,id=bld-gem-cache,sharing=locked,target=/srv/vendor \
 
 <% else -%>
 RUN bundle install<% if depend_on_bootsnap? -%> && \
-    bundle exec bootsnap precompile --gemfile<% end %>
+    bundle exec bootsnap precompile --gemfile<% end %> && \
+    rm -rf ~/.bundle/ $BUNDLE_PATH/ruby/*/cache $BUNDLE_PATH/ruby/*/bundler/gems/*/.git
 
 <% end -%>
 <% if parallel? -%>
@@ -167,7 +168,7 @@ USER rails:rails
 <% end -%>
 <% unless options.precompile == "defer" -%>
 # Copy built artifacts: gems, application
-COPY --from=build /usr/local/bundle /usr/local/bundle
+COPY --from=build $BUNDLE_PATH $BUNDLE_PATH
 COPY --from=build <% unless run_as_root? %>--chown=rails:rails <% end %>/rails /rails
 <% if api_client_dir -%>
 

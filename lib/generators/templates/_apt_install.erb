@@ -6,9 +6,6 @@ RUN --mount=type=cache,id=dev-apt-cache,sharing=locked,target=/var/cache/apt \
 <% else -%>
 RUN <%= repos %>apt-get update -qq && \
     apt-get install --no-install-recommends -y <%= packages.join(" ") %><% if clean %> && \
-<% if packages.include?("sudo") && options.sudo? -%>
-    sed -i 's/env_reset/env_keep="*"/' /etc/sudoers && \
-<% end -%>
     rm -rf /var/lib/apt/lists /var/cache/apt/archives<% end %>
 <% end -%>
 <% if @sqlserver -%>

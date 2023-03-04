@@ -6,7 +6,7 @@ require_relative "../dockerfile-rails/scanner.rb"
 class DockerfileGenerator < Rails::Generators::Base
   include DockerfileRails::Scanner
 
-  OPTION_DEFAULTS = {
+  BASE_DEFAULTS = {
     "bin-cd" => false,
     "cache" => false,
     "ci" => false,
@@ -30,6 +30,8 @@ class DockerfileGenerator < Rails::Generators::Base
     "swap" => nil,
     "yjit" => false,
   }.then { |hash| Struct.new(*hash.keys.map(&:to_sym)).new(*hash.values) }
+
+  OPTION_DEFAULTS = BASE_DEFAULTS.dup
 
   @@labels = {}
   @@packages = { "base" => [], "build" => [], "deploy" => [] }
@@ -219,17 +221,26 @@ class DockerfileGenerator < Rails::Generators::Base
 
     template "docker-compose.yml.erb", "docker-compose.yml" if options.compose
 
-    template "dockerfile.yml.erb", "config/dockerfile.yml", force: true
-
     if @gemfile.include?("vite_ruby")
       package = JSON.load_file("package.json")
       unless package.dig("scripts", "build")
         package["scripts"] ||= {}
-        package["scripts"]["build"] ||= "vite build --outDir public"
+        package["scripts"]["build"] = "vite build --outDir public"
 
         say_status :update, "package.json"
         IO.write("package.json", JSON.pretty_generate(package))
       end
+    end
+
+    @dockerfile_config = (@dockerfile_config.to_a - BASE_DEFAULTS.to_h.stringify_keys.to_a).to_h
+    %w(packages envs args).each do |key|
+      @dockerfile_config.delete key if @dockerfile_config[key].empty?
+    end
+
+    if !@dockerfile_config.empty?
+      template "dockerfile.yml.erb", "config/dockerfile.yml", force: true
+    elsif File.exist? "config/dockerfile.yml"
+      remove_file "config/dockerfile.yml"
     end
   end
 

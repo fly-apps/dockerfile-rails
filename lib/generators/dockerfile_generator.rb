@@ -308,6 +308,10 @@ private
 
     gemfile = IO.read("Gemfile")
 
+    unless gemfile =~ /^\s*source\s/
+      gemfile = %{source "https://rubygems.org"\n} + gemfile
+    end
+
     if options.postgresql? || @postgresql
       system "bundle add pg --skip-install" unless @gemfile.include? "pg"
     end

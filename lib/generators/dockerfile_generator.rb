@@ -369,7 +369,9 @@ private
     gems = ["bundler"]
 
     if options.ci? && options.lock? && @gemfile.include?("debug")
-      gems += %w(irb reline) - @gemfile
+      # https://github.com/rails/rails/pull/47515
+      # https://github.com/rubygems/rubygems/issues/6082#issuecomment-1329756343
+      gems += %w(irb reline) - @gemfile unless Gem.ruby_version >= '3.2.2'
     end
 
     gems.sort

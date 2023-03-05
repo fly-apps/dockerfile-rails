@@ -19,6 +19,7 @@ class DockerfileGenerator < Rails::Generators::Base
     "mysql" => false,
     "nginx" => false,
     "parallel" => false,
+    "passenger" => false,
     "platform" => nil,
     "postgresql" => false,
     "precompile" => nil,
@@ -128,6 +129,9 @@ class DockerfileGenerator < Rails::Generators::Base
 
   class_option :nginx, type: :boolean, default: OPTION_DEFAULTS.nginx,
     desc: "Serve static files with nginx"
+
+  class_option :passenger, type: :boolean, default: OPTION_DEFAULTS.passenger,
+    desc: "Serve Rails application with Phusion Passsenger"
 
   class_option :root, type: :boolean, default: OPTION_DEFAULTS.root,
     desc: "Run application as root user"
@@ -485,8 +489,11 @@ private
       end
     end
 
+    # Passenger
+    packages += %w(passenger libnginx-mod-http-passenger) if options.passenger?
+
     # nginx
-    packages << "nginx" if options.nginx?
+    packages << "nginx" if options.nginx? || options.passenger?
 
     # sudo
     packages << "sudo" if options.sudo?
@@ -496,18 +503,35 @@ private
 
   def deploy_repos
     repos = []
+    packages = []
 
     if using_puppeteer? && deploy_packages.include?("google-chrome-stable")
+      packages += %w(gnupg curl)
       repos += [
-       "curl https://dl-ssl.google.com/linux/linux_signing_key.pub |",
-       "gpg --dearmor > /etc/apt/trusted.gpg.d/google-archive.gpg &&",
+       "curl https://oss-binaries.phusionpassenger.com/auto-software-signing-gpg-key.txt |",
+       "  gpg --dearmor > /etc/apt/trusted.gpg.d/google-archive.gpg &&",
        'echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
+      ]
+    end
+
+    if options.passenger?
+      packages += %w(gnupg curl)
+      repos += [
+       "curl https://oss-binaries.phusionpassenger.com/auto-software-signing-gpg-key.txt |",
+       "  gpg --dearmor > /etc/apt/trusted.gpg.d/phusion.gpg &&",
+       "bash -c 'echo deb https://oss-binaries.phusionpassenger.com/apt/passenger $(source /etc/os-release; echo $VERSION_CODENAME) main > /etc/apt/sources.list.d/passenger.list'"
       ]
     end
 
     if repos.empty?
       ""
     else
+      packages.sort!.uniq!
+      unless packages.empty?
+        repos.unshift "apt-get update -qq &&",
+          "apt-get install --no-install-recommends -y #{packages.join(" ")} &&"
+      end
+
       repos.join(" \\\n    ") + " && \\\n    "
     end
   end
@@ -554,7 +578,7 @@ private
   def deploy_env
     env = {}
 
-    env["PORT"] = "3001" if options.nginx?
+    env["PORT"] = "3001" if options.nginx? && !options.passenger?
 
     if Rails::VERSION::MAJOR < 7 || Rails::VERSION::STRING.start_with?("7.0")
       env["RAILS_LOG_TO_STDOUT"] = "1"
@@ -565,7 +589,7 @@ private
       env["RUBY_YJIT_ENABLE"] = "1"
     end
 
-    if options.jemalloc? && (not options.fullstaq?)
+    if options.jemalloc? && !options.fullstaq?
       if (options.platform || Gem::Platform.local.cpu).include? "arm"
         env["LD_PRELOAD"] = "/usr/lib/aarch64-linux-gnu/libjemalloc.so.2"
       else

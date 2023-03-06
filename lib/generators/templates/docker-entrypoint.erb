@@ -26,7 +26,7 @@ fi
 if [ "${*}" == "foreman start --procfile=Procfile.prod" ]; then
 <% else -%>
 # If running the rails server then create or migrate existing database
-if [ "${*}" == "./bin/rails server" ]; then
+if [ "${*}" == <%= procfile.values.first.inspect %> ]; then
 <% end -%>
 <% if options.precompile == "defer" -%>
   ./bin/rails assets:precompile

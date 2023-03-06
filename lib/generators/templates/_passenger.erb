@@ -1,0 +1,10 @@
+# configure nginx and passenger
+COPY <<-'EOF' /etc/nginx/sites-enabled/default
+server {
+    listen 3000;
+    root /rails/public;
+    passenger_enabled on;
+}
+EOF
+RUN echo "daemon off;" >> /etc/nginx/nginx.conf && \
+    mkdir /var/run/passenger-instreg

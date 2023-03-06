@@ -397,7 +397,6 @@ private
     # libicu63 in buster, libicu67 in bullseye, libiclu72 in bookworm...
     packages << "libicu-dev" if @gemfile.include? "charlock_holmes"
 
-
     if @gemfile.include? "webp-ffi"
       # https://github.com/le0pard/webp-ffi#requirements
       packages += %w(libjpeg-dev libpng-dev libtiff-dev libwebp-dev)
@@ -784,7 +783,11 @@ private
   end
 
   def procfile
-    if options.nginx?
+    if options.passenger?
+      {
+        nginx: "nginx"
+      }
+    elsif options.nginx?
       {
         nginx: '/usr/sbin/nginx -g "daemon off;"',
         rails: "./bin/rails server -p 3001"

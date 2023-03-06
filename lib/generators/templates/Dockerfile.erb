@@ -145,7 +145,7 @@ ARG <%= deploy_args.map {|key, value| "#{key}=#{value.inspect}"}.join(" \\\n    
 <%= render partial: 'apt_install', locals: {packages: deploy_packages, clean: true, repos: deploy_repos} %>
 <% end -%>
 
-<% if options.passenger? -%>
+<% if using_passenger? -%>
 <%= render partial: 'passenger' %>
 
 <% elsif options.nginx? -%>
@@ -166,7 +166,7 @@ RUN useradd rails<% end -%> --home /rails --shell /bin/bash<% if options.nginx? 
     chown rails:rails /var/lib/nginx /var/log/nginx/*<% end %><% if deploy_packages.include?("sudo") && options.sudo? %> && \
     sed -i 's/env_reset/env_keep="*"/' /etc/sudoers && \
     chown rails:rails .<% end %>
-<% unless options.swap? or options.passenger? -%>
+<% unless options.swap? or using_passenger? -%>
 USER rails:rails
 <% end -%>
 

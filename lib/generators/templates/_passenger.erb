@@ -4,7 +4,23 @@ server {
     listen 3000;
     root /rails/public;
     passenger_enabled on;
+<% if options['max-idle'] -%>
+    passenger_ctl hook_detached_process /etc/nginx/hook_detached_process;
+    passenger_min_instances 0;
+    passenger_pool_idle_time <%= max_idle %>;
+<% end -%>
 }
+<% if options['max-idle'] -%>
+COPY <<-'EOF' /etc/nginx/sites-enabled/hook_detached_process
+#!/usr/bin/env ruby
+status = `passenger-status`
+processes = status[/^Processes\s*:\s*(\d*)/, 1].to_i
+system 'nginx -s stop' if processes == 0
+EOF
+<% end -%>
 EOF
 RUN echo "daemon off;" >> /etc/nginx/nginx.conf && \
+<% if options['max-idle'] -%>
+    chmod +sx /etc/nginx/sites-enabled/hook_detached_process && \
+<% end -%>
     mkdir /var/run/passenger-instreg

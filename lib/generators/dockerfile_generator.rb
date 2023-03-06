@@ -16,6 +16,7 @@ class DockerfileGenerator < Rails::Generators::Base
     "label" => {},
     "link" => true,
     "lock" => true,
+    "max-idle" => nil,
     "mysql" => false,
     "nginx" => false,
     "parallel" => false,
@@ -132,6 +133,9 @@ class DockerfileGenerator < Rails::Generators::Base
 
   class_option :passenger, type: :boolean, default: OPTION_DEFAULTS.passenger,
     desc: "Serve Rails application with Phusion Passsenger"
+
+  class_option "max-idle", type: :string, default: OPTION_DEFAULTS["max-idle"],
+    desc: "Exit server after application has been idle for n seconds."
 
   class_option :root, type: :boolean, default: OPTION_DEFAULTS.root,
     desc: "Run application as root user"
@@ -303,6 +307,10 @@ private
 
   def using_puppeteer?
     @gemfile.include?("grover") or @gemfile.include?("puppeteer-ruby")
+  end
+
+  def using_passenger?
+    options.passenger? or options["max-idle"]
   end
 
   def using_sidekiq?
@@ -489,10 +497,10 @@ private
     end
 
     # Passenger
-    packages += %w(passenger libnginx-mod-http-passenger) if options.passenger?
+    packages += %w(passenger libnginx-mod-http-passenger) if using_passenger?
 
     # nginx
-    packages << "nginx" if options.nginx? || options.passenger?
+    packages << "nginx" if options.nginx? || using_passenger?
 
     # sudo
     packages << "sudo" if options.sudo?
@@ -513,7 +521,7 @@ private
       ]
     end
 
-    if options.passenger?
+    if using_passenger?
       packages += %w(gnupg curl)
       repos += [
        "curl https://oss-binaries.phusionpassenger.com/auto-software-signing-gpg-key.txt |",
@@ -577,7 +585,7 @@ private
   def deploy_env
     env = {}
 
-    env["PORT"] = "3001" if options.nginx? && !options.passenger?
+    env["PORT"] = "3001" if options.nginx? && !using_passenger?
 
     if Rails::VERSION::MAJOR < 7 || Rails::VERSION::STRING.start_with?("7.0")
       env["RAILS_LOG_TO_STDOUT"] = "1"
@@ -783,7 +791,7 @@ private
   end
 
   def procfile
-    if options.passenger?
+    if using_passenger?
       {
         nginx: "nginx"
       }
@@ -810,5 +818,23 @@ private
     end
 
     more
+  end
+
+  def max_idle
+    option = options["max-idle"]
+
+    if option == nil || option.strip.downcase == "infinity"
+      nil
+    elsif /^\s*\d+(\.\d+)\s*/.match? option
+      option.to_f
+    elsif /^\s*P/.match? option
+      ActiveSupport::Duration.parse(option.strip).seconds
+    else
+      option.scan(/\d+\w/).map do |t|
+        ActiveSupport::Duration.parse("PT#{t.upcase}") rescue ActiveSupport::Duration.parse("P#{t.upcase}")
+      end.sum.seconds
+    end
+  rescue ArgumentError
+    nil
   end
 end

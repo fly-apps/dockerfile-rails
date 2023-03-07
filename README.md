@@ -40,7 +40,7 @@ bin/rails generate dockerfile
 
 * `--ci` - include test gems in deployed image
 * `--compose` - generate a `docker-compose.yml` file
-* `--max-idle=n` - exit afer *n* seconds of inactivity.  Supports [iso 8601](https://en.wikipedia.org/wiki/ISO_8601#Durations) and (sleep)[https://man7.org/linux/man-pages/man1/sleep.1.html#DESCRIPTION) syntaxes.  Uses passenger for now, awaiting [puma](https://github.com/puma/puma/issues/2580) support.
+* `--max-idle=n` - exit afer *n* seconds of inactivity.  Supports [iso 8601](https://en.wikipedia.org/wiki/ISO_8601#Durations) and [sleep](https://man7.org/linux/man-pages/man1/sleep.1.html#DESCRIPTION) syntaxes.  Uses passenger for now, awaiting [puma](https://github.com/puma/puma/issues/2580) support.
 * `--nginx` - serve static files via [nginx](https://www.nginx.com/).  May require `--root` on some targets to access `/dev/stdout`
 * `--no-link` - don't add [--link](https://docs.docker.com/engine/reference/builder/#copy---link) to COPY statements.  Some tools (like at the moment, [buildah](https://www.redhat.com/en/topics/containers/what-is-buildah)) don't yet support this feature.
 * `--no-lock` - don't add linux platforms, set `BUNDLE_DEPLOY`, or `--frozen-lockfile`.  May be needed at times to work around a [rubygems bug](https://github.com/rubygems/rubygems/issues/6082#issuecomment-1329756343).

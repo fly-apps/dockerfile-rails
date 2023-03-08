@@ -298,6 +298,17 @@ private
   end
 
   def using_redis?
+    # Note: If you have redis installed on your computer, 'rails new` will
+    # automatically add redis to your Gemfile, so having it in your Gemfile is
+    # not a reliable indicator of whether or not your application actually uses
+    # redis.
+
+    # using_redis? is currently used for two things: actually adding the redis
+    # gem if it is going to be needed in production, and adding a redis
+    # container to docker-compose.yml. Neither of these actions should be done
+    # unless there is an indication that redis is actually being used and not
+    # merely included in the Gemfile.
+
     options.redis? or @redis or @gemfile.include?("sidekiq")
   end
 

@@ -72,12 +72,13 @@ RUN echo "daemon off;" >> /etc/nginx/nginx.conf && \
     chmod +sx /etc/nginx/sites-enabled/hook_detached_process && \
     mkdir /var/run/passenger-instreg
 
-# Run and own the application files as a non-root user for security
-RUN useradd rails --home /rails --shell /bin/bash
-
 # Copy built artifacts: gems, application
 COPY --from=build /usr/local/bundle /usr/local/bundle
-COPY --from=build --chown=rails:rails /rails /rails
+COPY --from=build /rails /rails
+
+# Run and own only the runtime files as a non-root user for security
+RUN useradd rails --home /rails --shell /bin/bash && \
+    chown -R rails:rails db log tmp
 
 # Deployment options
 ENV RAILS_LOG_TO_STDOUT="1" \

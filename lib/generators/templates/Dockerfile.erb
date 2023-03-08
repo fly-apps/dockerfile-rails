@@ -155,30 +155,36 @@ ARG <%= deploy_args.map {|key, value| "#{key}=#{value.inspect}"}.join(" \\\n    
 RUN gem install foreman
 
 <% end -%>
+<% unless options.precompile == "defer" -%>
+# Copy built artifacts: gems, application
+COPY --from=build /usr/local/bundle /usr/local/bundle
+COPY --from=build /rails /rails
+<% if api_client_dir -%>
+
+# Copy built client
+COPY --from=client /rails/<%= api_client_dir %>/build /rails/public
+<% end -%>
+
+<% end -%>
 <% unless run_as_root? -%>
-# Run and own the application files as a non-root user for security
+# Run and own only the runtime files as a non-root user for security
 <% if options.compose? -%>
 ARG UID=1000 \
     GID=1000
 RUN groupadd -f -g $GID rails && \
-    useradd -u $UID -g $GID rails<% else -%>
-RUN useradd rails<% end -%> --home /rails --shell /bin/bash<% if options.nginx? %> && \
-    chown rails:rails /var/lib/nginx /var/log/nginx/*<% end %><% if deploy_packages.include?("sudo") && options.sudo? %> && \
+    useradd -u $UID -g $GID rails --home /rails --shell /bin/bash && \
+<% else -%>
+RUN useradd rails --home /rails --shell /bin/bash && \
+<% end -%>
+<% if options.nginx? -%>
+    chown rails:rails /var/lib/nginx /var/log/nginx/* && \
+<% end -%>
+<% if deploy_packages.include?("sudo") && options.sudo? -%>
     sed -i 's/env_reset/env_keep="*"/' /etc/sudoers && \
-    chown rails:rails .<% end %>
+<% end -%>
+    chown -R rails:rails <%= Dir[*%w(db log storage tmp)].join(" ") %>
 <% unless options.swap? or using_passenger? -%>
 USER rails:rails
-<% end -%>
-
-<% end -%>
-<% unless options.precompile == "defer" -%>
-# Copy built artifacts: gems, application
-COPY --from=build /usr/local/bundle /usr/local/bundle
-COPY --from=build <% unless run_as_root? %>--chown=rails:rails <% end %>/rails /rails
-<% if api_client_dir -%>
-
-# Copy built client
-COPY --from=client <% unless run_as_root? %>--chown=rails:rails <% end %>/rails/<%= api_client_dir %>/build /rails/public
 <% end -%>
 
 <% end -%>

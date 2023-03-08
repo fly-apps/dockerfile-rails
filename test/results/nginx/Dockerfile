@@ -77,14 +77,15 @@ server {
 }
 EOF
 
-# Run and own the application files as a non-root user for security
-RUN useradd rails --home /rails --shell /bin/bash && \
-    chown rails:rails /var/lib/nginx /var/log/nginx/*
-USER rails:rails
-
 # Copy built artifacts: gems, application
 COPY --from=build /usr/local/bundle /usr/local/bundle
-COPY --from=build --chown=rails:rails /rails /rails
+COPY --from=build /rails /rails
+
+# Run and own only the runtime files as a non-root user for security
+RUN useradd rails --home /rails --shell /bin/bash && \
+    chown rails:rails /var/lib/nginx /var/log/nginx/* && \
+    chown -R rails:rails db log tmp
+USER rails:rails
 
 # Deployment options
 ENV PORT="3001" \

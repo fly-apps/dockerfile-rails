@@ -39,7 +39,7 @@ namespace :test do
       sh "docker run -p 3000:3000 -e RAILS_MASTER_KEY=#{key} --rm system:test"
     end
   ensure
-    rm_rf "test/tmp/system_test"
+    rm_rf "test/tmp/system_test" unless ENV["TEST_KEEP"]
   end
 
   task all: %w(test:rubocop test test:system)

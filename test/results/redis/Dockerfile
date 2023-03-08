@@ -48,16 +48,17 @@ RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y libsqlite3-0 && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
-# Run and own the application files as a non-root user for security
+# Copy built artifacts: gems, application
+COPY --from=build /usr/local/bundle /usr/local/bundle
+COPY --from=build /rails /rails
+
+# Run and own only the runtime files as a non-root user for security
 ARG UID=xxx \
     GID=1000
 RUN groupadd -f -g $GID rails && \
-    useradd -u $UID -g $GID rails --home /rails --shell /bin/bash
+    useradd -u $UID -g $GID rails --home /rails --shell /bin/bash && \
+    chown -R rails:rails db log storage tmp
 USER rails:rails
-
-# Copy built artifacts: gems, application
-COPY --from=build /usr/local/bundle /usr/local/bundle
-COPY --from=build --chown=rails:rails /rails /rails
 
 # Deployment options
 ENV RAILS_LOG_TO_STDOUT="1" \

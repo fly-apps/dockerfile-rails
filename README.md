@@ -66,7 +66,7 @@ Not all of your needs can be determined by scanning your application.  For examp
  * `--env=name:value` - add an environment variable
  * `--remove package...` - remove package from "to be added" list
 
- Each of these can be tailored to a specific build phase by adding `-base`, `-build`, or `-deploy` after the flag name (e.g `--env-build:`).  If no such suffix is found, the default for arg is `-base`, and the default for the rest is `-deploy`.  Removal of an arg or environment variable is done by leaving the value blank.
+ Each of these can be tailored to a specific build phase by adding `-base`, `-build`, or `-deploy` after the flag name (e.g `--add-build freetds-dev --add-deploy freetds-bin`).  If no such suffix is found, the default for arg is `-base`, and the default for the rest is `-deploy`.  Removal of an arg or environment variable is done by leaving the value blank (e.g `--env-build=PORT:`).
 
 ### Configuration:
 

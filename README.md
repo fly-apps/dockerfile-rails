@@ -119,3 +119,7 @@ The following links relate to the current development status with respect to Rai
 * Fly.io [Cut over to Rails Dockerfile Generator on Sunday 29 Jan 2023](https://community.fly.io/t/cut-over-to-rails-dockerfile-generator-on-sunday-29-jan-2023/10350)
 * Fly.io [FAQ](https://fly.io/docs/rails/getting-started/dockerfiles/)
 * DDH's [target](https://github.com/rails/rails/pull/47372#issuecomment-1438971730)
+
+Parallel efforts for Hanami:
+
+* [Proposal](https://discourse.hanamirb.org/t/dockerfile-hanami/816)

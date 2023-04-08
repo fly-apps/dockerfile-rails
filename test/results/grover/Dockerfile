@@ -32,9 +32,9 @@ RUN curl -sL https://github.com/nodenv/node-build/archive/master.tar.gz | tar xz
 # Throw-away build stage to reduce size of final image
 FROM base as build
 
-# Install packages needed to build gems and node modules
+# Install packages needed to build gems
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y build-essential node-gyp pkg-config python-is-python3
+    apt-get install --no-install-recommends -y build-essential pkg-config
 
 # Build options
 ENV PATH="/usr/local/node/bin:$PATH" \
@@ -44,10 +44,6 @@ ENV PATH="/usr/local/node/bin:$PATH" \
 COPY --link Gemfile Gemfile.lock ./
 RUN bundle install && \
     rm -rf ~/.bundle/ $BUNDLE_PATH/ruby/*/cache $BUNDLE_PATH/ruby/*/bundler/gems/*/.git
-
-# Install node modules
-COPY --link package.json package-lock.json ./
-RUN npm install
 
 # Copy application code
 COPY --link . .

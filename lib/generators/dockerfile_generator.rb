@@ -30,6 +30,7 @@ class DockerfileGenerator < Rails::Generators::Base
     "sqlite3" => false,
     "sudo" => false,
     "swap" => nil,
+    "windows" => false,
     "yjit" => false,
   }.then { |hash| Struct.new(*hash.keys.map(&:to_sym)).new(*hash.values) }
 
@@ -85,6 +86,9 @@ class DockerfileGenerator < Rails::Generators::Base
 
   class_option "bin-cd", type: :boolean, default: OPTION_DEFAULTS["bin-cd"],
     desc: "modify binstubs to set working directory"
+
+  class_option "windows", type: :boolean, default: OPTION_DEFAULTS["windows"],
+    desc: "fixup CRLF in binstubs and make each executable"
 
   class_option :cache, type: :boolean, default: OPTION_DEFAULTS.cache,
     desc: "use build cache to speed up installs"
@@ -692,13 +696,13 @@ private
     # none are required, but prepares for the need to do the
     # fix line endings if other fixups are required.
     has_cr = Dir["bin/*"].any? { |file| IO.read(file).include? "\r" }
-    if has_cr || (Gem.win_platform? && !binfixups.empty?)
+    if has_cr || (Gem.win_platform? && !binfixups.empty?) || options.windows?
       binfixups.unshift 'sed -i "s/\r$//g" bin/*'
     end
 
     # Windows file systems may not have the concept of executable.
     # In such cases, fix up during the build.
-    unless Dir["bin/*"].all? { |file| File.executable? file }
+    if Dir["bin/*"].any? { |file| !File.executable?(file) } || options.windows?
       binfixups.unshift "chmod +x bin/*"
     end
 
@@ -713,7 +717,7 @@ private
   def deploy_database
     if options.postgresql? || @postgresql
       "postgresql"
-    elsif options.mysql || @mysql
+    elsif options.mysql? || @mysql
       "mysql"
     else
       "sqlite3"

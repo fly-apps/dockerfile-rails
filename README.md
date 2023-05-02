@@ -77,7 +77,7 @@ Not all of your needs can be determined by scanning your application.  For examp
 * `--platform=s` - specify target platform.  See [FROM](https://docs.docker.com/engine/reference/builder/#from) for details
 * `--precompile=defer` - may be needed when your configuration requires access to secrets that are not available at build time.  Results in larger images and slower deployments.
 * `--root` - run application as root
-* `--windows` - make Dockerfile work for Windows users that may have
+* `--windows` - make Dockerfile work for Windows users that may have set `git config --global core.autocrlf true`
 
 Options are saved between runs into `config/dockerfile.yml`.  To invert a boolean options, add or remove a `no-` prefix from the option name.
 

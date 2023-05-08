@@ -73,7 +73,7 @@ COPY --from=client /rails/my-app/build /rails/public
 ARG UID=xxx \
     GID=1000
 RUN groupadd -f -g $GID rails && \
-    useradd -u $UID -g $GID rails --home /rails --shell /bin/bash && \
+    useradd -u $UID -g $GID rails --create-home --shell /bin/bash && \
     chown -R rails:rails db log storage tmp
 USER rails:rails
 

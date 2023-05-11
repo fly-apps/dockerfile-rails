@@ -132,7 +132,7 @@ docker compose up
 # Demo 4 - API only
 
 This demo deploys a [Create React App](https://create-react-app.dev/) client and a Rails API-only server.  Ruby and Rails version information is retrieved from the server and displayed below a spinning React logo.  Note that the build process installs the
-node moddules and ruby gems in parallel.
+node modules and ruby gems in parallel.
 
 ```bash
 rails new demo --api

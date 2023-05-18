@@ -492,7 +492,8 @@ private
     # start with databases: sqlite3, postgres, mysql
     packages << "libsqlite3-0" if options.sqlite3? || @sqlite3
     packages << "postgresql-client" if options.postgresql? || @postgresql
-    packages << "default-mysql-client" if options.mysql || @mysql
+    packages << "default-mysql-client" if options.mysql? || @mysql
+    packages << "libjemalloc2" if options.jemalloc? && !options.fullstaq?
 
     # ActiveStorage preview support
     packages << "libvips" if @gemfile.include? "ruby-vips"

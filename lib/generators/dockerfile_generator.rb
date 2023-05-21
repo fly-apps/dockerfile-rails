@@ -608,8 +608,8 @@ private
       env["RAILS_SERVE_STATIC_FILES"] = "true" unless options.nginx?
     end
 
-    if deploy_database == 'sqlite3'
-      env['DATABASE_URL'] = 'sqlite3:///data/production.sqlite'
+    if deploy_database == "sqlite3"
+      env["DATABASE_URL"] = "sqlite3:///data/production.sqlite"
     end
 
     if options.yjit?
@@ -720,9 +720,11 @@ private
   end
 
   def deploy_database
-    if options.postgresql? || @postgresql
+    # note: as database can be overridden at runtime via DATABASE_URL,
+    # use presence of "pg" or "mysql2" in the bundle as evidence of intent.
+    if options.postgresql? || @postgresql || @gemfile.include?("pg")
       "postgresql"
-    elsif options.mysql? || @mysql
+    elsif options.mysql? || @mysql || @gemfile.include?("mysql2")
       "mysql"
     else
       "sqlite3"

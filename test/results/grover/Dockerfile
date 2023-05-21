@@ -70,18 +70,21 @@ COPY --from=build /rails /rails
 
 # Run and own only the runtime files as a non-root user for security
 RUN useradd rails --create-home --shell /bin/bash && \
-    chown -R rails:rails db log tmp
+    mkdir /data && \
+    chown -R rails:rails db log tmp /data
 USER rails:rails
 
 # Deployment options
-ENV RAILS_LOG_TO_STDOUT="1" \
-    RAILS_SERVE_STATIC_FILES="true" \
+ENV DATABASE_URL="sqlite3:///data/production.sqlite" \
     GROVER_NO_SANDBOX="true" \
-    PUPPETEER_EXECUTABLE_PATH="/usr/bin/chromium"
+    PUPPETEER_EXECUTABLE_PATH="/usr/bin/chromium" \
+    RAILS_LOG_TO_STDOUT="1" \
+    RAILS_SERVE_STATIC_FILES="true"
 
 # Entrypoint prepares the database.
 ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 
 # Start the server by default, this can be overwritten at runtime
 EXPOSE 3000
+VOLUME /data
 CMD ["./bin/rails", "server"]

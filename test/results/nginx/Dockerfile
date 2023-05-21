@@ -84,11 +84,13 @@ COPY --from=build /rails /rails
 # Run and own only the runtime files as a non-root user for security
 RUN useradd rails --create-home --shell /bin/bash && \
     chown rails:rails /var/lib/nginx /var/log/nginx/* && \
-    chown -R rails:rails db log tmp
+    mkdir /data && \
+    chown -R rails:rails db log tmp /data
 USER rails:rails
 
 # Deployment options
-ENV PORT="3001" \
+ENV DATABASE_URL="sqlite3:///data/production.sqlite" \
+    PORT="3001" \
     RAILS_LOG_TO_STDOUT="1"
 
 # Entrypoint prepares the database.
@@ -102,4 +104,5 @@ EOF
 
 # Start the server by default, this can be overwritten at runtime
 EXPOSE 3000
+VOLUME /data
 CMD ["foreman", "start", "--procfile=Procfile.prod"]

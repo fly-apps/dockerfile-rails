@@ -166,7 +166,11 @@ COPY --from=client /rails/<%= api_client_dir %>/build /rails/public
 <% end -%>
 
 <% end -%>
-<% unless run_as_root? -%>
+<% if run_as_root? -%>
+<% if deploy_database == 'sqlite3' -%>
+RUN mkdir /data
+<% end -%>
+<% else -%>
 # Run and own only the runtime files as a non-root user for security
 <% if options.compose? -%>
 ARG UID=1000 \
@@ -182,7 +186,12 @@ RUN useradd rails --create-home --shell /bin/bash && \
 <% if deploy_packages.include?("sudo") && options.sudo? -%>
     sed -i 's/env_reset/env_keep="*"/' /etc/sudoers && \
 <% end -%>
+<% if deploy_database == 'sqlite3' -%>
+    mkdir /data && \
+    chown -R rails:rails <%= Dir[*%w(db log storage tmp)].join(" ") %> /data
+<% else -%>
     chown -R rails:rails <%= Dir[*%w(db log storage tmp)].join(" ") %>
+<% end -%>
 <% unless options.swap? or using_passenger? -%>
 USER rails:rails
 <% end -%>
@@ -210,9 +219,15 @@ EOF
 
 # Start the server by default, this can be overwritten at runtime
 EXPOSE 3000
+<% if deploy_database == 'sqlite3' -%>
+VOLUME /data
+<% end -%>
 CMD ["foreman", "start", "--procfile=Procfile.prod"]
 <% else -%>
 # Start the server by default, this can be overwritten at runtime
 EXPOSE 3000
+<% if deploy_database == 'sqlite3' -%>
+VOLUME /data
+<% end -%>
 CMD <%= procfile.values.first.split(" ").inspect %>
 <% end -%>

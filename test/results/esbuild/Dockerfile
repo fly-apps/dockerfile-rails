@@ -70,11 +70,13 @@ ARG UID=xxx \
     GID=1000
 RUN groupadd -f -g $GID rails && \
     useradd -u $UID -g $GID rails --create-home --shell /bin/bash && \
-    chown -R rails:rails db log storage tmp
+    mkdir /data && \
+    chown -R rails:rails db log storage tmp /data
 USER rails:rails
 
 # Deployment options
-ENV RAILS_LOG_TO_STDOUT="1" \
+ENV DATABASE_URL="sqlite3:///data/production.sqlite" \
+    RAILS_LOG_TO_STDOUT="1" \
     RAILS_SERVE_STATIC_FILES="true"
 
 # Entrypoint prepares the database.
@@ -82,4 +84,5 @@ ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 
 # Start the server by default, this can be overwritten at runtime
 EXPOSE 3000
+VOLUME /data
 CMD ["./bin/rails", "server"]

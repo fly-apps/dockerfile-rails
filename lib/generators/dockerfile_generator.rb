@@ -608,6 +608,10 @@ private
       env["RAILS_SERVE_STATIC_FILES"] = "true" unless options.nginx?
     end
 
+    if deploy_database == 'sqlite3'
+      env['DATABASE_URL'] = 'sqlite3:///data/production.sqlite'
+    end
+
     if options.yjit?
       env["RUBY_YJIT_ENABLE"] = "1"
     end
@@ -639,7 +643,7 @@ private
 
     env.merge! @@vars["base"] if @@vars["base"]
 
-    env.map { |key, value| "#{key}=#{value.inspect}" }
+    env.map { |key, value| "#{key}=#{value.inspect}" }.sort
   end
 
   def base_args

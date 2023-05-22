@@ -82,11 +82,7 @@ lease:
 
   # Required. The URL for this node's LiteFS API.
   # Should match HTTP port.
-  advertise-url: "http://myhost:20202"
-
-  # Sets the hostname that other nodes will use to reference this
-  # node. Automatically assigned based on hostname(1) if not set.
-  hostname: "myhost"
+  advertise-url: "http://${HOSTNAME}.vm.${FLY_APP_NAME}.internal:20202"
 
   # Specifies whether the node can become the primary. If using
   # "static" leasing, this should be set to true on the primary
@@ -98,11 +94,11 @@ lease:
   # of a deployment or a failure.
   consul:
     # Required. The base URL of the Consul server.
-    url: "http://myhost:8500"
+    url: "${FLY_CONSUL_URL}"
 
     # Required. The key used for obtaining a lease by the primary.
     # This must be unique for each cluster of LiteFS servers
-    key: ${FLY_APP_NAME}
+    key: "litefs/${FLY_APP_NAME}"
 
     # Length of time before a lease expires. The primary will
     # automatically renew the lease while it is alive, however,

@@ -1,0 +1,120 @@
+# based on: https://github.com/superfly/litefs/blob/main/cmd/litefs/etc/litefs.yml
+
+# The FUSE section handles settings on the FUSE file system. FUSE
+# provides a layer for intercepting SQLite transactions on the
+# primary node so they can be shipped to replica nodes transparently.
+fuse:
+  # Required. This is the mount directory that applications will
+  # use to access their SQLite databases.
+  dir: "/data"
+
+  # Set this flag to true to allow non-root users to access mount.
+  # You must set the "user_allow_other" option in /etc/fuse.conf first.
+  allow-other: false
+
+  # The debug flag enables debug logging of all FUSE API calls.
+  # This will produce a lot of logging. Not for general use.
+  debug: false
+
+# The data section specifies where internal LiteFS data is stored
+# and how long to retain the transaction files.
+# 
+# Transaction files are used to ship changes to replica nodes so
+# they should persist long enough for replicas to retrieve them,
+# even in the face of a short network interruption or a redeploy.
+# Under high load, these files can grow large so it's not advised
+# to extend retention too long.
+data:
+  # Path to internal data storage.
+  dir: "/var/lib/litefs"
+
+  # Duration to keep LTX files. Latest LTX file is always kept.
+  retention: "10m"
+
+  # Frequency with which to check for LTX files to delete.
+  retention-monitor-interval: "1m"
+
+# If true, then LiteFS will not wait until the node becomes the
+# primary or connects to the primary before starting the subprocess.
+skip-sync: false
+
+# If true, then LiteFS will not exit if there is a validation
+# issue on startup. This can be useful for debugging issues as
+# it avoids constantly restarting the node on ephemeral hosting.
+exit-on-error: false
+
+# This section defines settings for the LiteFS HTTP API server.
+# This API server is how nodes communicate with each other.
+http:
+  # Specifies the bind address of the HTTP API server.
+  addr: ":20202"
+
+# This section defines settings for the option HTTP proxy.
+# This proxy can handle primary forwarding & replica consistency
+# for applications that use a single SQLite database.
+proxy:
+  # Specifies the bind address of the proxy server.
+  addr: ":8080"
+
+  # The hostport of the target application.
+  target: "localhost:8081"
+
+  # The name of the database used for TXID tracking.
+  db: "production.sqlite3"
+
+  # If true, enables verbose logging of requests by the proxy.
+  debug: false
+
+  # List of paths that are ignored by the proxy. The asterisk is
+  # the only available wildcard. These requests are passed
+  # through to the target as-is.
+  passthrough: ["/debug/*", "*.png"]
+
+# The lease section defines how LiteFS creates a cluster and
+# implements leader election. For dynamic clusters, use the
+# "consul". This allows the primary to change automatically when
+# the current primary goes down. For a simpler setup, use
+# "static" which assigns a single node to be the primary and does
+# not failover.
+lease:
+  # Required. Must be either "consul" or "static".
+  type: "consul"
+
+  # Required. The URL for this node's LiteFS API.
+  # Should match HTTP port.
+  advertise-url: "http://myhost:20202"
+
+  # Sets the hostname that other nodes will use to reference this
+  # node. Automatically assigned based on hostname(1) if not set.
+  hostname: "myhost"
+
+  # Specifies whether the node can become the primary. If using
+  # "static" leasing, this should be set to true on the primary
+  # and false on the replicas.
+  candidate: ${FLY_REGION == PRIMARY_REGION}
+
+  # A Consul server provides leader election and ensures that the
+  # responsibility of the primary node can be moved in the event
+  # of a deployment or a failure.
+  consul:
+    # Required. The base URL of the Consul server.
+    url: "http://myhost:8500"
+
+    # Required. The key used for obtaining a lease by the primary.
+    # This must be unique for each cluster of LiteFS servers
+    key: ${FLY_APP_NAME}
+
+    # Length of time before a lease expires. The primary will
+    # automatically renew the lease while it is alive, however,
+    # if it fails to renew in time then a new primary may be
+    # elected after the TTL. This only occurs for unexpected loss
+    # of the leader as normal operation will allow the leader to
+    # handoff the lease to another replica without downtime.
+    #
+    # Consul does not allow a TTL of less than 10 seconds.
+    ttl: "10s"
+
+    # Length of time after the lease expires before a candidate
+    # can become leader. This buffer is intended to prevent
+    # overlap in leadership due to clock skew or in-flight calls.
+    lock-delay: "1s"

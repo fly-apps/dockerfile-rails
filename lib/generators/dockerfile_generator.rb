@@ -15,6 +15,7 @@ class DockerfileGenerator < Rails::Generators::Base
     "jemalloc" => false,
     "label" => {},
     "link" => true,
+    "litefs" => false,
     "lock" => true,
     "max-idle" => nil,
     "mysql" => false,
@@ -110,6 +111,9 @@ class DockerfileGenerator < Rails::Generators::Base
 
   class_option :sqlite3, aliases: "--sqlite", type: :boolean, default: OPTION_DEFAULTS.sqlite3,
     desc: "include sqlite3 libraries"
+
+  class_option :litefs, type: :boolean, default: OPTION_DEFAULTS.litefs,
+    desc: "replicate sqlite3 databases using litefs"
 
   class_option :postgresql, aliases: "--postgres", type: :boolean, default: OPTION_DEFAULTS.postgresql,
     desc: "include postgresql libraries"
@@ -233,6 +237,8 @@ class DockerfileGenerator < Rails::Generators::Base
 
     template "docker-compose.yml.erb", "docker-compose.yml" if options.compose
 
+    template "litefs.yml.erb", "config/litefs.yml" if using_litefs?
+
     if @gemfile.include?("vite_ruby")
       package = JSON.load_file("package.json")
       unless package.dig("scripts", "build")
@@ -294,6 +300,10 @@ private
 
   def run_as_root?
     options.root?
+  end
+
+  def using_litefs?
+    options.litefs?
   end
 
   def using_node?
@@ -495,6 +505,9 @@ private
     packages << "default-mysql-client" if options.mysql? || @mysql
     packages << "libjemalloc2" if options.jemalloc? && !options.fullstaq?
 
+    # litefs
+    packages += ["ca-certificates", "fuse3"] if options.litefs?
+
     # ActiveStorage preview support
     packages << "libvips" if @gemfile.include? "ruby-vips"
 
@@ -601,7 +614,7 @@ private
   def deploy_env
     env = {}
 
-    env["PORT"] = "3001" if options.nginx? && !using_passenger?
+    env["PORT"] = "3001" if (options.nginx? && !using_passenger?) || using_litefs?
 
     if Rails::VERSION::MAJOR < 7 || Rails::VERSION::STRING.start_with?("7.0")
       env["RAILS_LOG_TO_STDOUT"] = "1"

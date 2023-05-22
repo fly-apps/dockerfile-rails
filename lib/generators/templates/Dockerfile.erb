@@ -135,6 +135,12 @@ RUN SECRET_KEY_BASE<%= Rails::VERSION::MAJOR<7 || Rails::VERSION::STRING.start_w
 FROM base
 
 <% end -%>
+<% if using_litefs? -%>
+# Install, configure litefs
+COPY --from=flyio/litefs:0.4.0 /usr/local/bin/litefs /usr/local/bin/litefs
+COPY<% if options.link? %> --link<% end %> config/litefs.yml /etc/litefs.yml
+
+<% end -%>
 <% unless deploy_args.empty? -%>
 # Deployment build arguments
 ARG <%= deploy_args.map {|key, value| "#{key}=#{value.inspect}"}.join(" \\\n    ") %>
@@ -192,7 +198,7 @@ RUN useradd rails --create-home --shell /bin/bash && \
 <% else -%>
     chown -R rails:rails <%= Dir[*%w(db log storage tmp)].join(" ") %>
 <% end -%>
-<% unless options.swap? or using_passenger? -%>
+<% unless options.swap? or using_passenger? or using_litefs? -%>
 USER rails:rails
 <% end -%>
 
@@ -207,7 +213,7 @@ ENV <%= deploy_env.join(" \\\n    ") %>
 <% else -%>
 # Entrypoint sets up the container.
 <% end -%>
-ENTRYPOINT ["/rails/bin/docker-entrypoint"]
+ENTRYPOINT [<% if using_litefs? %>"litefs", "mount", "--", <% unless run_as_root? or using_passenger? -%>"su", "rails", <% end %><% end %>"/rails/bin/docker-entrypoint"]
 
 <% if procfile.size > 1 -%>
 # Build a Procfile for production use

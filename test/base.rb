@@ -71,6 +71,19 @@ class TestBase < Minitest::Test
     assert_equal expected, results
   end
 
+  def check_litefs
+    results = IO.read("config/litefs.yml")
+
+    if @capture
+      FileUtils.mkdir_p "#{@results}/config"
+      IO.write("#{@results}/config/litefs.yml", results)
+    end
+
+    expected = IO.read("#{@results}/config/litefs.yml")
+
+    assert_equal expected, results
+  end
+
   def check_entrypoint
     results = IO.read("bin/docker-entrypoint")
 

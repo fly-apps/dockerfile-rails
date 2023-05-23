@@ -6,7 +6,7 @@
 fuse:
   # Required. This is the mount directory that applications will
   # use to access their SQLite databases.
-  dir: "/data"
+  dir: "/litefs"
 
   # Set this flag to true to allow non-root users to access mount.
   # You must set the "user_allow_other" option in /etc/fuse.conf first.
@@ -26,7 +26,7 @@ fuse:
 # to extend retention too long.
 data:
   # Path to internal data storage.
-  dir: "/var/lib/litefs"
+  dir: "/data"
 
   # Duration to keep LTX files. Latest LTX file is always kept.
   retention: "10m"
@@ -54,10 +54,10 @@ http:
 # for applications that use a single SQLite database.
 proxy:
   # Specifies the bind address of the proxy server.
-  addr: ":8080"
+  addr: ":3000"
 
   # The hostport of the target application.
-  target: "localhost:8081"
+  target: "localhost:3001"
 
   # The name of the database used for TXID tracking.
   db: "production.sqlite3"
@@ -68,7 +68,7 @@ proxy:
   # List of paths that are ignored by the proxy. The asterisk is
   # the only available wildcard. These requests are passed
   # through to the target as-is.
-  passthrough: ["/debug/*", "*.png"]
+  passthrough: []
 
 # The lease section defines how LiteFS creates a cluster and
 # implements leader election. For dynamic clusters, use the

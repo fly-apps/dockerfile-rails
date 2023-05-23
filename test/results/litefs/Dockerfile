@@ -62,7 +62,7 @@ RUN useradd rails --create-home --shell /bin/bash && \
     chown -R rails:rails db log storage tmp /data
 
 # Deployment options
-ENV DATABASE_URL="sqlite3:///data/production.sqlite" \
+ENV DATABASE_URL="sqlite3:///litefs/production.sqlite" \
     PORT="3001" \
     RAILS_LOG_TO_STDOUT="1" \
     RAILS_SERVE_STATIC_FILES="true"

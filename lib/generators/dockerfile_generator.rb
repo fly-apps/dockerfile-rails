@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "erb"
+require "json"
 require_relative "../dockerfile-rails/scanner.rb"
 
 class DockerfileGenerator < Rails::Generators::Base
@@ -237,7 +238,11 @@ class DockerfileGenerator < Rails::Generators::Base
 
     template "docker-compose.yml.erb", "docker-compose.yml" if options.compose
 
-    template "litefs.yml.erb", "config/litefs.yml" if using_litefs?
+    if using_litefs?
+      template "litefs.yml.erb", "config/litefs.yml"
+
+      fly_attach_consul
+    end
 
     if @gemfile.include?("vite_ruby")
       package = JSON.load_file("package.json")
@@ -871,5 +876,32 @@ private
     end
   rescue ArgumentError
     nil
+  end
+
+  # if running on fly v2, make a best effort to attach consul
+  def fly_attach_consul
+    # certainly not fly unless there is a fly.toml
+    return unless File.exist? "fly.toml"
+
+    # Check fly.toml to guess if v1 or v2
+    toml = File.read("fly.toml")
+    return if toml.include?("enable_consul") # v1-ism
+    return unless toml.include?("primary_region") # v2
+
+    # see if flyctl is in the path
+    paths = ENV["PATH"].split(File::PATH_SEPARATOR)
+    cmds = %w(flyctl)
+    exts = ENV["PATHEXT"] ? ENV["PATHEXT"].split(";") : [""]
+    flyctl = Enumerator.product(paths, cmds, exts).
+      map { |path, cmd, ext| File.join(path, "#{cmd}#{ext}") }.
+      find { |path| File.executable? path }
+    return unless flyctl
+
+    # see if secret is already set?
+    secrets = JSON.parse(`#{flyctl} secrets list --json`)
+    return if secrets.any? { |secret| secret["Name"] == "FLY_CONSUL_URL" }
+
+    # attach consul
+    system "#{flyctl} consul attach"
   end
 end

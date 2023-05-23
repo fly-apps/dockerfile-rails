@@ -902,6 +902,7 @@ private
     return if secrets.any? { |secret| secret["Name"] == "FLY_CONSUL_URL" }
 
     # attach consul
+    say_status "execute", "flyctl consul attach", :green
     system "#{flyctl} consul attach"
   end
 end

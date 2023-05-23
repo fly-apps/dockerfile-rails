@@ -8,6 +8,7 @@ class TestLitefs < TestBase
 
   def test_sqlite3
     check_dockerfile
+    check_entrypoint
     check_litefs
   end
 end

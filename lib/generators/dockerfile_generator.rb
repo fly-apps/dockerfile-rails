@@ -628,9 +628,9 @@ private
 
     if deploy_database == "sqlite3"
       if using_litefs?
-        env["DATABASE_URL"] = "sqlite3:///litefs/production.sqlite"
+        env["DATABASE_URL"] = "sqlite3:///litefs/production.sqlite3"
       else
-        env["DATABASE_URL"] = "sqlite3:///data/production.sqlite"
+        env["DATABASE_URL"] = "sqlite3:///data/production.sqlite3"
       end
     end
 

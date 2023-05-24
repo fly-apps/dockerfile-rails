@@ -8,6 +8,7 @@ if [ $UID -eq 0 ]; then
   echo 10 > /proc/sys/vm/swappiness
   swapon /swapfile
   echo 1 > /proc/sys/vm/overcommit_memory
+
   exec su rails $0 $@
 fi
 

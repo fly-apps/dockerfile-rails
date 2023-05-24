@@ -55,7 +55,7 @@ RUN useradd rails --create-home --shell /bin/bash && \
 USER rails:rails
 
 # Deployment options
-ENV DATABASE_URL="sqlite3:///data/production.sqlite" \
+ENV DATABASE_URL="sqlite3:///data/production.sqlite3" \
     LD_PRELOAD="/usr/lib/x86_64-linux-gnu/libjemalloc.so.2" \
     MALLOC_CONF="dirty_decay_ms:1000,narenas:2,background_thread:true" \
     RAILS_LOG_TO_STDOUT="1" \

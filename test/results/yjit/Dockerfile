@@ -55,7 +55,7 @@ RUN useradd rails --create-home --shell /bin/bash && \
 USER rails:rails
 
 # Deployment options
-ENV DATABASE_URL="sqlite3:///data/production.sqlite" \
+ENV DATABASE_URL="sqlite3:///data/production.sqlite3" \
     RAILS_LOG_TO_STDOUT="1" \
     RAILS_SERVE_STATIC_FILES="true" \
     RUBY_YJIT_ENABLE="1"

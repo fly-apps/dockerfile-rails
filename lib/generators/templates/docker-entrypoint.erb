@@ -14,10 +14,20 @@ if [ $UID -eq 0 ]; then
 <%= @space %>echo 10 > /proc/sys/vm/swappiness
 <%= @space %>swapon /swapfile
 <%= @space %>echo 1 > /proc/sys/vm/overcommit_memory
+<% if using_litefs? -%>
+
+<%= @space %># mount litefs
+<%= @space %>litefs mount &
+<% end -%>
 <% unless run_as_root? or using_passenger? -%>
+
   exec su rails $0 $@
 fi
 <% end -%>
+
+<% elsif using_litefs? -%>
+# mount litefs
+<% unless run_as_root? %>sudo -E <% end %>litefs mount &
 
 <% end -%>
 <% if options.prepare -%>

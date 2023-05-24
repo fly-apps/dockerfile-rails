@@ -79,7 +79,7 @@ RUN groupadd -f -g $GID rails && \
 USER rails:rails
 
 # Deployment options
-ENV DATABASE_URL="sqlite3:///data/production.sqlite" \
+ENV DATABASE_URL="sqlite3:///data/production.sqlite3" \
     RAILS_LOG_TO_STDOUT="1" \
     RAILS_SERVE_STATIC_FILES="true"
 

@@ -52,6 +52,7 @@ Generally the dockerfile generator will be able to determine what dependencies y
 are actually using.  But should you be using DATABASE_URL, for example, at runtime
 additional support may be needed:
 
+* `--litefs` - use [LiteFS](https://fly.io/docs/litefs/)
 * `--mysql` - add mysql libraries
 * `--postgresql` - add postgresql libraries
 * `--redis` - add redis libraries

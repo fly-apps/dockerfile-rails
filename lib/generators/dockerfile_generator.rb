@@ -511,7 +511,7 @@ private
     packages << "libjemalloc2" if options.jemalloc? && !options.fullstaq?
 
     # litefs
-    packages += ["ca-certificates", "fuse3"] if options.litefs?
+    packages += ["ca-certificates", "fuse3", "sudo"] if options.litefs?
 
     # ActiveStorage preview support
     packages << "libvips" if @gemfile.include? "ruby-vips"

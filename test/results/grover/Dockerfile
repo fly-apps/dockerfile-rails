@@ -75,7 +75,7 @@ RUN useradd rails --create-home --shell /bin/bash && \
 USER rails:rails
 
 # Deployment options
-ENV DATABASE_URL="sqlite3:///data/production.sqlite" \
+ENV DATABASE_URL="sqlite3:///data/production.sqlite3" \
     GROVER_NO_SANDBOX="true" \
     PUPPETEER_EXECUTABLE_PATH="/usr/bin/chromium" \
     RAILS_LOG_TO_STDOUT="1" \

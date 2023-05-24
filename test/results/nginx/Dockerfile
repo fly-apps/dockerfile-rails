@@ -89,7 +89,7 @@ RUN useradd rails --create-home --shell /bin/bash && \
 USER rails:rails
 
 # Deployment options
-ENV DATABASE_URL="sqlite3:///data/production.sqlite" \
+ENV DATABASE_URL="sqlite3:///data/production.sqlite3" \
     PORT="3001" \
     RAILS_LOG_TO_STDOUT="1"
 

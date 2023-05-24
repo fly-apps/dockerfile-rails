@@ -193,14 +193,21 @@ RUN useradd rails --create-home --shell /bin/bash && \
     sed -i 's/env_reset/env_keep="*"/' /etc/sudoers && \
 <% end -%>
 <% if deploy_database == 'sqlite3' -%>
-    mkdir /data && \
-    chown -R rails:rails <%= Dir[*%w(db log storage tmp)].join(" ") %> /data
+    mkdir /data<% if using_litefs? %> /litefs<% end %> && \
+    chown -R rails:rails <%= Dir[*%w(db log storage tmp)].join(" ") %> /data<% if using_litefs? %> /litefs<% end %>
 <% else -%>
     chown -R rails:rails <%= Dir[*%w(db log storage tmp)].join(" ") %>
 <% end -%>
 <% unless options.swap? or using_passenger? or using_litefs? -%>
 USER rails:rails
 <% end -%>
+
+<% end -%>
+<% if using_litefs? and !run_as_root? -%>
+# Authorize rails user to launch litefs
+COPY <<-"EOF" /etc/sudoers.d/rails
+rails ALL=(root) /usr/local/bin/litefs
+EOF
 
 <% end -%>
 <% unless deploy_env.empty? -%>
@@ -213,7 +220,7 @@ ENV <%= deploy_env.join(" \\\n    ") %>
 <% else -%>
 # Entrypoint sets up the container.
 <% end -%>
-ENTRYPOINT [<% if using_litefs? %>"litefs", "mount", "--", <% unless run_as_root? or using_passenger? -%>"su", "rails", <% end %><% end %>"/rails/bin/docker-entrypoint"]
+ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 
 <% if procfile.size > 1 -%>
 # Build a Procfile for production use

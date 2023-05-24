@@ -110,9 +110,9 @@ If you are running a single test, the following environment variables settings m
  * `TEST_CAPTURE=1` will capture test results.
  * `TEST_KEEP=1` will leave the test app behind for inspection after the test completes.
 
-## Links
+## Historical Links
 
-The following links relate to the current development status with respect to Rails 7.1 and will be removed once that is resolved.
+The following links relate to the coordination between this package and Rails 7.1.
 
 * [Preparations for Rails 7.1](https://community.fly.io/t/preparations-for-rails-7-1/9512) - [Fly.io](https://fly.io/)'s plans and initial discussions with DHH
 * [Rails Dockerfile futures](https://discuss.rubyonrails.org/t/rails-dockerfile-futures/82091/1) - rationale for a generator

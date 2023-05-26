@@ -244,8 +244,15 @@ class DockerfileGenerator < Rails::Generators::Base
       fly_attach_consul
     end
 
-    if fly_processes
-      fly_make_processes(fly_processes)
+    if fly_processes # therefore File.exist?('fly.toml')
+      if File.stat("fly.toml").size > 0
+        template "fly.toml.erb", "fly.toml"
+      else
+        toml = fly_make_processes(fly_processes)
+        if toml != IO.read("fly.toml")
+          File.write "fly.toml", toml
+        end
+      end
     end
 
     if @gemfile.include?("vite_ruby")
@@ -921,8 +928,12 @@ private
     return unless flyctl
 
     # see if secret is already set?
-    secrets = JSON.parse(`#{flyctl} secrets list --json`)
-    return if secrets.any? { |secret| secret["Name"] == "FLY_CONSUL_URL" }
+    begin
+      secrets = JSON.parse(`#{flyctl} secrets list --json`)
+      return if secrets.any? { |secret| secret["Name"] == "FLY_CONSUL_URL" }
+    rescue
+      return # likely got an error like "Could not find App"
+    end
 
     # attach consul
     say_status :execute, "flyctl consul attach", :green
@@ -931,7 +942,6 @@ private
 
   def fly_make_processes(list)
     toml = File.read("fly.toml")
-    before = toml.dup
 
     if toml.include? "[processes]"
       toml.sub!(/\[processes\].*?(\n\n|\n?\z)/m, "[processes]\n" +
@@ -945,11 +955,6 @@ private
       toml.sub! "[http_service]\n", "\\0  processes = [#{app.inspect}]\n"
     end
 
-    if before == toml
-      say_status :identical, "fly.toml", :blue
-    else
-      say_status :update, "fly.toml"
-      File.write "fly.toml", toml
-    end
+    toml
   end
 end

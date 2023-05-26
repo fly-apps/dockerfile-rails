@@ -236,8 +236,10 @@ EXPOSE 3000
 <% if deploy_database == 'sqlite3' -%>
 VOLUME /data
 <% end -%>
+<% unless fly_processes -%>
 <% if procfile.size > 1 -%>
 CMD ["foreman", "start", "--procfile=Procfile.prod"]
 <% else -%>
 CMD <%= procfile.values.first.split(" ").inspect %>
+<% end -%>
 <% end -%>

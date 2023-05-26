@@ -71,6 +71,18 @@ class TestBase < Minitest::Test
     assert_equal expected, results
   end
 
+  def check_toml
+    results = IO.read("fly.toml")
+
+    if @capture
+      IO.write("#{@results}/fly.toml", results)
+    end
+
+    expected = IO.read("#{@results}/fly.toml")
+
+    assert_equal expected, results
+  end
+
   def check_litefs
     results = IO.read("config/litefs.yml")
 

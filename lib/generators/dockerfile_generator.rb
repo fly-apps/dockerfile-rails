@@ -244,6 +244,10 @@ class DockerfileGenerator < Rails::Generators::Base
       fly_attach_consul
     end
 
+    if fly_processes
+      fly_make_processes(fly_processes)
+    end
+
     if @gemfile.include?("vite_ruby")
       package = JSON.load_file("package.json")
       unless package.dig("scripts", "build")
@@ -851,6 +855,21 @@ private
     end
   end
 
+  def fly_processes
+    return unless File.exist? "fly.toml"
+    return unless using_sidekiq?
+
+    if procfile.size > 1
+      list = { "app" => "foreman start --procfile=Procfile.prod" }
+    else
+      list = { "app" => procfile.values.first }
+    end
+
+    list["sidekiq"] = "bundle exec sidekiq"
+
+    list
+  end
+
   def more_docker_ignores
     more = ""
 
@@ -906,7 +925,31 @@ private
     return if secrets.any? { |secret| secret["Name"] == "FLY_CONSUL_URL" }
 
     # attach consul
-    say_status "execute", "flyctl consul attach", :green
+    say_status :execute, "flyctl consul attach", :green
     system "#{flyctl} consul attach"
+  end
+
+  def fly_make_processes(list)
+    toml = File.read("fly.toml")
+    before = toml.dup
+
+    if toml.include? "[processes]"
+      toml.sub!(/\[processes\].*?(\n\n|\n?\z)/m, "[processes]\n" +
+        list.map { |name, cmd| "  #{name} = #{cmd.inspect}" }.join("\n") + '\1')
+    else
+      toml += "\n[processes]\n" +
+        list.map { |name, cmd| "  #{name} = #{cmd.inspect}\n" }.join
+
+      app = list.has_key?("app") ? "app" : list.keys.first
+
+      toml.sub! "[http_service]\n", "\\0  processes = [#{app.inspect}]\n"
+    end
+
+    if before == toml
+      say_status :identical, "fly.toml", :blue
+    else
+      say_status :update, "fly.toml"
+      File.write "fly.toml", toml
+    end
   end
 end

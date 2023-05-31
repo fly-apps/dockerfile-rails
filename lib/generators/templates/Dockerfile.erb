@@ -10,7 +10,7 @@ ARG RUBY_VERSION=<%= RUBY_VERSION %>
 <% if options.fullstaq -%>
 FROM <%= platform %>quay.io/evl.ms/fullstaq-ruby:${RUBY_VERSION}-<%= options.jemalloc ? 'jemalloc-' : '' %>slim<% unless options.precompile == "defer" %> as base<% end %>
 <% else -%>
-FROM <%= platform %>ruby:$RUBY_VERSION-slim<% unless options.precompile == "defer" %> as base<% end %>
+FROM <%= platform %>registry.docker.com/library/ruby:$RUBY_VERSION-slim<% unless options.precompile == "defer" %> as base<% end %>
 <% end -%>
 
 <% unless options.label.empty? -%>

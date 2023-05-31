@@ -46,7 +46,7 @@ RUN apt-get update -qq && \
       gpg --dearmor > /etc/apt/trusted.gpg.d/phusion.gpg && \
     bash -c 'echo deb https://oss-binaries.phusionpassenger.com/apt/passenger $(source /etc/os-release; echo $VERSION_CODENAME) main > /etc/apt/sources.list.d/passenger.list' && \
     apt-get update -qq && \
-    apt-get install --no-install-recommends -y libnginx-mod-http-passenger libsqlite3-0 nginx passenger && \
+    apt-get install --no-install-recommends -y curl libnginx-mod-http-passenger libsqlite3-0 nginx passenger && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 # configure nginx and passenger

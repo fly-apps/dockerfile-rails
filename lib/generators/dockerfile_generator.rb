@@ -512,7 +512,7 @@ private
   end
 
   def deploy_packages
-    packages = []
+    packages = %w(curl) # work with the default healthcheck strategy in MRSK
     packages += @@packages["deploy"] if @@packages["deploy"]
 
     # start with databases: sqlite3, postgres, mysql

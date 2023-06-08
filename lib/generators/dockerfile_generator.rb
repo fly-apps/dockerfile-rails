@@ -516,10 +516,12 @@ private
     packages += @@packages["deploy"] if @@packages["deploy"]
 
     # start with databases: sqlite3, postgres, mysql
-    packages << "libsqlite3-0" if options.sqlite3? || @sqlite3
     packages << "postgresql-client" if options.postgresql? || @postgresql
     packages << "default-mysql-client" if options.mysql? || @mysql
     packages << "libjemalloc2" if options.jemalloc? && !options.fullstaq?
+    if options.sqlite3? || @sqlite3
+      packages << "libsqlite3-0" unless packages.include? 'sqlite3'
+    end
 
     # litefs
     packages += ["ca-certificates", "fuse3", "sudo"] if options.litefs?

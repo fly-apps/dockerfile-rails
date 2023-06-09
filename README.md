@@ -75,6 +75,7 @@ Not all of your needs can be determined by scanning your application.  For examp
 [autocrlf](https://git-scm.com/book/en/v2/Customizing-Git-Git-Configuration#_core_autocrlf) enabled or may not be able to set bin stubs as executable.
 * `--label=name:value` - specify docker label.  Can be used multiple times.  See [LABEL](https://docs.docker.com/engine/reference/builder/#label) for detail
 * `--no-prepare` - omit `db:prepare`.  Useful for cloud platforms with [release](https://devcenter.heroku.com/articles/release-phase) phases
+* `--passenger` - use [Phusion Passenger](https://www.phusionpassenger.com/) under [nginx](https://www.nginx.com/)
 * `--platform=s` - specify target platform.  See [FROM](https://docs.docker.com/engine/reference/builder/#from) for details
 * `--precompile=defer` - may be needed when your configuration requires access to secrets that are not available at build time.  Results in larger images and slower deployments.
 * `--root` - run application as root

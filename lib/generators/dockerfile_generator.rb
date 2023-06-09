@@ -520,7 +520,7 @@ private
     packages << "default-mysql-client" if options.mysql? || @mysql
     packages << "libjemalloc2" if options.jemalloc? && !options.fullstaq?
     if options.sqlite3? || @sqlite3
-      packages << "libsqlite3-0" unless packages.include? 'sqlite3'
+      packages << "libsqlite3-0" unless packages.include? "sqlite3"
     end
 
     # litefs

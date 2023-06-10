@@ -42,6 +42,7 @@ class DockerfileGenerator < Rails::Generators::Base
   @@packages = { "base" => [], "build" => [], "deploy" => [] }
   @@vars = { "base" => {}, "build" => {}, "deploy" => {} }
   @@args = { "base" => {}, "build" => {}, "deploy" => {} }
+  @@instructions = { "base" => nil, "build" => nil, "deploy" => nil }
 
   # load defaults from config file
   if File.exist? "config/dockerfile.yml"
@@ -67,6 +68,12 @@ class DockerfileGenerator < Rails::Generators::Base
       if options[:args]
         options[:args].each do |stage, vars|
           @@args[stage.to_s] = vars.stringify_keys
+        end
+      end
+
+      if options[:instructions]
+        options[:instructions].each do |stage, value|
+          @@instructions[stage.to_s] = value
         end
       end
 
@@ -191,6 +198,16 @@ class DockerfileGenerator < Rails::Generators::Base
     desc: "additional build arguments to set for deployment"
 
 
+  class_option "instructions-base", type: :string, default: '',
+    desc: "additional instructions to add to the base stage"
+
+  class_option "instructions-build", type: :string, default: '',
+    desc: "additional instructions to add to the build stage"
+
+  class_option "instructions-deploy", aliases: "--instructions", type: :string, default: '',
+    desc: "additional instructions to add to the final stage"
+
+
   def generate_app
     source_paths.push File.expand_path("./templates", __dir__)
 
@@ -216,11 +233,15 @@ class DockerfileGenerator < Rails::Generators::Base
       @@args[phase].merge! options["arg-#{phase}"]
       @@args[phase].delete_if { |key, value| value.blank? }
       @@args.delete phase if @@args[phase].empty?
+
+      @@instructions[phase] ||= options["instructions-#{phase}"]
+      @@instructions.delete phase if @@instructions[phase].empty?
     end
 
     @dockerfile_config["packages"] = @@packages
     @dockerfile_config["envs"] = @@vars
     @dockerfile_config["args"] = @@args
+    @dockerfile_config["instructions"] = @@instructions
 
     scan_rails_app
 
@@ -267,7 +288,7 @@ class DockerfileGenerator < Rails::Generators::Base
     end
 
     @dockerfile_config = (@dockerfile_config.to_a - BASE_DEFAULTS.to_h.stringify_keys.to_a).to_h
-    %w(packages envs args).each do |key|
+    %w(packages envs args instructions).each do |key|
       @dockerfile_config.delete key if @dockerfile_config[key].empty?
     end
 
@@ -718,6 +739,42 @@ private
     args.merge! deploy_args
 
     args
+  end
+
+  def base_instructions
+    return nil unless @@instructions["base"]
+
+    instructions = IO.read @@instructions["base"]
+
+    if instructions.start_with? "#!"
+      instructions = "# custom instructions\nRUN #{@instructions["base"].strip}\n"
+    end
+
+    instructions.html_safe
+  end
+
+  def build_instructions
+    return nil unless @@instructions["build"]
+
+    instructions = IO.read @@instructions["build"]
+
+    if instructions.start_with? "#!"
+      instructions = "# custom build instructions\nRUN #{@instructions["build"].strip}\n"
+    end
+
+    instructions.html_safe
+  end
+
+  def deploy_instructions
+    return nil unless @@instructions["deploy"]
+
+    instructions = IO.read @@instructions["deploy"]
+
+    if instructions.start_with? "#!"
+      instructions = "# custom deploy instructions\nRUN #{@instructions["deploy"].strip}\n"
+    end
+
+    instructions.html_safe
   end
 
   def binfile_fixups

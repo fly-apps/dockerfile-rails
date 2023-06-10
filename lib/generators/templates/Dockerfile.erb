@@ -43,6 +43,10 @@ RUN gem update --system --no-document && \
 <%= render partial: 'install_node', locals: {yarn_version: nil} %>
 
 <% end -%>
+<% if base_instructions -%>
+<%= base_instructions %>
+
+<% end -%>
 <% unless options.precompile == "defer" -%>
 
 # Throw-away build stage<%= parallel? ? 's' : '' %> to reduce size of final image
@@ -110,6 +114,10 @@ COPY --from=node /rails/node_modules /rails/node_modules
 # Copy application code
 COPY<% if options.link? %> --link<% end %> . .
 
+<% if build_instructions -%>
+<%= build_instructions %>
+
+<% end -%>
 <% if depend_on_bootsnap? -%>
 # Precompile bootsnap code for faster boot times
 RUN bundle exec bootsnap precompile app/ lib/
@@ -170,6 +178,10 @@ COPY --from=build /rails /rails
 # Copy built client
 COPY --from=client /rails/<%= api_client_dir %>/build /rails/public
 <% end -%>
+
+<% end -%>
+<% if deploy_instructions -%>
+<%= deploy_instructions %>
 
 <% end -%>
 <% if run_as_root? -%>

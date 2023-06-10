@@ -198,13 +198,13 @@ class DockerfileGenerator < Rails::Generators::Base
     desc: "additional build arguments to set for deployment"
 
 
-  class_option "instructions-base", type: :string, default: '',
+  class_option "instructions-base", type: :string, default: "",
     desc: "additional instructions to add to the base stage"
 
-  class_option "instructions-build", type: :string, default: '',
+  class_option "instructions-build", type: :string, default: "",
     desc: "additional instructions to add to the build stage"
 
-  class_option "instructions-deploy", aliases: "--instructions", type: :string, default: '',
+  class_option "instructions-deploy", aliases: "--instructions", type: :string, default: "",
     desc: "additional instructions to add to the final stage"
 
 
@@ -697,7 +697,7 @@ private
       env.merge! @@args["deploy"].to_h { |key, value| [key, "$#{key}"] }
     end
 
-    env.merge! @@vars["base"] if @@vars["base"]
+    env.merge! @@vars["deploy"] if @@vars["deploy"]
 
     env.map { |key, value| "#{key}=#{value.inspect}" }.sort
   end

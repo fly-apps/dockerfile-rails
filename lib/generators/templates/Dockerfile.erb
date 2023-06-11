@@ -36,7 +36,7 @@ RUN gem update --system --no-document && \
 
 <% unless base_requirements.empty? -%>
 # Install packages needed to install <%= base_requirements %>
-<%= render partial: 'apt_install', locals: {packages: base_packages, clean: true, repos: ''} %>
+<%= render partial: 'apt_install', locals: {packages: base_packages, clean: true, repos: base_repos} %>
 
 <% end -%>
 <% if using_execjs? -%>
@@ -101,6 +101,11 @@ RUN --mount=type=cache,id=bld-gem-cache,sharing=locked,target=/srv/vendor \
 RUN bundle install<% if depend_on_bootsnap? -%> && \
     bundle exec bootsnap precompile --gemfile<% end %> && \
     rm -rf ~/.bundle/ $BUNDLE_PATH/ruby/*/cache $BUNDLE_PATH/ruby/*/bundler/gems/*/.git
+
+<% end -%>
+<% if using_passenger? -%>
+# Compile passenger native support
+RUN passenger-config build-native-support
 
 <% end -%>
 <% if parallel? -%>
@@ -173,6 +178,11 @@ RUN gem install foreman
 # Copy built artifacts: gems, application
 COPY --from=build /usr/local/bundle /usr/local/bundle
 COPY --from=build /rails /rails
+<% if using_passenger? -%>
+
+# Copy passenger native support
+COPY --from=build /root/.passenger/native_support /root/.passenger/native_support
+<% end -%>
 <% if api_client_dir -%>
 
 # Copy built client

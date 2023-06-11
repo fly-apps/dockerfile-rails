@@ -25,4 +25,5 @@ RUN echo "daemon off;" >> /etc/nginx/nginx.conf && \
 <% if options['max-idle'] -%>
     chmod +sx /etc/nginx/sites-enabled/hook_detached_process && \
 <% end -%>
+    sed -i 's/user www-data/user rails/' /etc/nginx/nginx.conf && \
     mkdir /var/run/passenger-instreg

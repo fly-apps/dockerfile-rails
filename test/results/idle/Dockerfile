@@ -29,6 +29,9 @@ COPY --link Gemfile Gemfile.lock ./
 RUN bundle install && \
     rm -rf ~/.bundle/ $BUNDLE_PATH/ruby/*/cache $BUNDLE_PATH/ruby/*/bundler/gems/*/.git
 
+# Compile passenger native support
+RUN passenger-config build-native-support
+
 # Copy application code
 COPY --link . .
 
@@ -41,12 +44,7 @@ FROM base
 
 # Install packages needed for deployment
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y curl gnupg && \
-    curl https://oss-binaries.phusionpassenger.com/auto-software-signing-gpg-key.txt | \
-      gpg --dearmor > /etc/apt/trusted.gpg.d/phusion.gpg && \
-    bash -c 'echo deb https://oss-binaries.phusionpassenger.com/apt/passenger $(source /etc/os-release; echo $VERSION_CODENAME) main > /etc/apt/sources.list.d/passenger.list' && \
-    apt-get update -qq && \
-    apt-get install --no-install-recommends -y curl libnginx-mod-http-passenger libsqlite3-0 nginx passenger && \
+    apt-get install --no-install-recommends -y curl libnginx-mod-http-passenger libsqlite3-0 nginx && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 # configure nginx and passenger
@@ -70,11 +68,15 @@ RUN echo "daemon off;" >> /etc/nginx/nginx.conf && \
     sed -i 's/access_log\s.*;/access_log \/dev\/stdout;/' /etc/nginx/nginx.conf && \
     sed -i 's/error_log\s.*;/error_log \/dev\/stderr info;/' /etc/nginx/nginx.conf && \
     chmod +sx /etc/nginx/sites-enabled/hook_detached_process && \
+    sed -i 's/user www-data/user rails/' /etc/nginx/nginx.conf && \
     mkdir /var/run/passenger-instreg
 
 # Copy built artifacts: gems, application
 COPY --from=build /usr/local/bundle /usr/local/bundle
 COPY --from=build /rails /rails
+
+# Copy passenger native support
+COPY --from=build /root/.passenger/native_support /root/.passenger/native_support
 
 # Run and own only the runtime files as a non-root user for security
 RUN useradd rails --create-home --shell /bin/bash && \

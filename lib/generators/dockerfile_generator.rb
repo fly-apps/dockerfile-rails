@@ -481,6 +481,9 @@ private
       packages += %w(libjpeg-dev libpng-dev libtiff-dev libwebp-dev)
     end
 
+    # Passenger
+    packages << "passenger" if using_passenger?
+
     packages.sort.uniq
   end
 
@@ -574,7 +577,7 @@ private
     end
 
     # Passenger
-    packages += %w(passenger libnginx-mod-http-passenger) if using_passenger?
+    packages << "libnginx-mod-http-passenger" if using_passenger?
 
     # nginx
     packages << "nginx" if options.nginx? || using_passenger?
@@ -589,6 +592,32 @@ private
     packages.sort
   end
 
+  def base_repos
+    repos = []
+    packages = []
+
+    if using_passenger?
+      packages += %w(gnupg curl)
+      repos += [
+       "curl https://oss-binaries.phusionpassenger.com/auto-software-signing-gpg-key.txt |",
+       "  gpg --dearmor > /etc/apt/trusted.gpg.d/phusion.gpg &&",
+       "bash -c 'echo deb https://oss-binaries.phusionpassenger.com/apt/passenger $(source /etc/os-release; echo $VERSION_CODENAME) main > /etc/apt/sources.list.d/passenger.list'"
+      ]
+    end
+
+    if repos.empty?
+      ""
+    else
+      packages.sort!.uniq!
+      unless packages.empty?
+        repos.unshift "apt-get update -qq &&",
+          "apt-get install --no-install-recommends -y #{packages.join(" ")} &&"
+      end
+
+      repos.join(" \\\n    ") + " && \\\n    "
+    end
+  end
+
   def deploy_repos
     repos = []
     packages = []
@@ -599,15 +628,6 @@ private
        "curl https://oss-binaries.phusionpassenger.com/auto-software-signing-gpg-key.txt |",
        "  gpg --dearmor > /etc/apt/trusted.gpg.d/google-archive.gpg &&",
        'echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
-      ]
-    end
-
-    if using_passenger?
-      packages += %w(gnupg curl)
-      repos += [
-       "curl https://oss-binaries.phusionpassenger.com/auto-software-signing-gpg-key.txt |",
-       "  gpg --dearmor > /etc/apt/trusted.gpg.d/phusion.gpg &&",
-       "bash -c 'echo deb https://oss-binaries.phusionpassenger.com/apt/passenger $(source /etc/os-release; echo $VERSION_CODENAME) main > /etc/apt/sources.list.d/passenger.list'"
       ]
     end
 

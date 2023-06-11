@@ -81,6 +81,20 @@ Not all of your needs can be determined by scanning your application.  For examp
 * `--root` - run application as root
 * `--windows` - make Dockerfile work for Windows users that may have set `git config --global core.autocrlf true`
 
+### Advanced Customization:
+
+There may be times where feature detection plus flags just aren't enough.  As an example, you may wish to configure and run multiple processes.  
+
+* `--instructions=path` - a dockerfile fragment to be inserted into the final document. 
+* `--migration=cmd` - a replacement (generally a script) for `db:prepare`/`db:migrate`.
+* `--procfile=path` - a [Procfile](https://github.com/ddollar/foreman#foreman) to use in place of launching Rails directly.
+
+Like with environment variables, packages, and build args, `--instructions` can be tailored to a specific build phase by adding `-base`, `-build`, or `-deploy` after the flag name, with the default being `-deploy`.
+
+Additionaly, if the instructions start with a [shebang](https://en.wikipedia.org/wiki/Shebang_(Unix)) instead the file being treated as a Dockerfile fragment, the file is treated as a script and a `RUN` statement is added to your Dockerfile instead.
+
+---
+
 Options are saved between runs into `config/dockerfile.yml`.  To invert a boolean options, add or remove a `no-` prefix from the option name.
 
 ## Testing

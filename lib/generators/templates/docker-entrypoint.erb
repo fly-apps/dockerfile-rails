@@ -31,7 +31,9 @@ fi
 
 <% end -%>
 <% if options.prepare -%>
-<% if procfile.size > 1 -%>
+<% if !options.procfile.blank? -%>
+if [ "${*}" == "foreman start --procfile=<%= options.procfile %>" ]; then
+<% elsif procfile.size > 1 -%>
 # If running the production procfile then create or migrate existing database
 if [ "${*}" == "foreman start --procfile=Procfile.prod" ]; then
 <% else -%>
@@ -41,7 +43,7 @@ if [ "${*}" == <%= procfile.values.first.inspect %> <% if using_litefs? %>-a "$F
 <% if options.precompile == "defer" -%>
   ./bin/rails assets:precompile
 <% end -%>
-  ./bin/rails <%= dbprep_command %>
+  <%= dbprep_command %>
 fi
 
 <% elsif !options.swap -%>

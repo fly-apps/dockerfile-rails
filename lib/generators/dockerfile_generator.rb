@@ -19,6 +19,7 @@ class DockerfileGenerator < Rails::Generators::Base
     "litefs" => false,
     "lock" => true,
     "max-idle" => nil,
+    "migrate" => "",
     "mysql" => false,
     "nginx" => false,
     "parallel" => false,
@@ -27,6 +28,7 @@ class DockerfileGenerator < Rails::Generators::Base
     "postgresql" => false,
     "precompile" => nil,
     "prepare" => true,
+    "procfile" => "",
     "redis" => false,
     "root" => false,
     "sqlite3" => false,
@@ -158,6 +160,13 @@ class DockerfileGenerator < Rails::Generators::Base
 
   class_option :sudo, type: :boolean, default: OPTION_DEFAULTS.sudo,
     desc: "Install and configure sudo to enable running as rails with full environment"
+
+  class_option "migrate", type: :string, default: OPTION_DEFAULTS.migrate,
+    desc: "custom migration/db:prepare script"
+
+  class_option "procfile", type: :string, default: OPTION_DEFAULTS.procfile,
+    desc: "custom procfile to start services"
+
 
   class_option "add-base", type: :array, default: [],
     desc: "additional packages to install for both build and deploy"
@@ -573,6 +582,10 @@ private
     # sudo
     packages << "sudo" if options.sudo?
 
+    if !options.procfile.blank? || (procfile.size > 1)
+      packages << "ruby-foreman"
+    end
+
     packages.sort
   end
 
@@ -747,7 +760,7 @@ private
     instructions = IO.read @@instructions["base"]
 
     if instructions.start_with? "#!"
-      instructions = "# custom instructions\nRUN #{@instructions["base"].strip}\n"
+      instructions = "# custom instructions\nRUN #{@instructions["base"].strip}"
     end
 
     instructions.html_safe
@@ -759,7 +772,7 @@ private
     instructions = IO.read @@instructions["build"]
 
     if instructions.start_with? "#!"
-      instructions = "# custom build instructions\nRUN #{@instructions["build"].strip}\n"
+      instructions = "# custom build instructions\nRUN #{@instructions["build"].strip}"
     end
 
     instructions.html_safe
@@ -771,7 +784,7 @@ private
     instructions = IO.read @@instructions["deploy"]
 
     if instructions.start_with? "#!"
-      instructions = "# custom deploy instructions\nRUN #{@instructions["deploy"].strip}\n"
+      instructions = "# custom deploy instructions\nRUN #{@instructions["deploy"].strip}"
     end
 
     instructions.html_safe
@@ -897,10 +910,12 @@ private
   end
 
   def dbprep_command
-    if Rails::VERSION::MAJOR >= 6
-      "db:prepare"
+    if !options.migrate.blank?
+      options.migrate
+    elsif Rails::VERSION::MAJOR >= 6
+      "./bin/rails db:prepare"
     else
-      "db:migrate"
+      "./bin/rails db:migrate"
     end
   end
 

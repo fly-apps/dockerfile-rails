@@ -180,10 +180,6 @@ COPY --from=client /rails/<%= api_client_dir %>/build /rails/public
 <% end -%>
 
 <% end -%>
-<% if deploy_instructions -%>
-<%= deploy_instructions %>
-
-<% end -%>
 <% if run_as_root? -%>
 <% if deploy_database == 'sqlite3' -%>
 RUN mkdir /data
@@ -213,6 +209,10 @@ RUN useradd rails --create-home --shell /bin/bash && \
 <% unless options.swap? or using_passenger? or using_litefs? -%>
 USER rails:rails
 <% end -%>
+
+<% end -%>
+<% if deploy_instructions -%>
+<%= deploy_instructions.strip %>
 
 <% end -%>
 <% if using_litefs? and !run_as_root? -%>
@@ -249,7 +249,9 @@ EXPOSE 3000
 VOLUME /data
 <% end -%>
 <% unless fly_processes -%>
-<% if procfile.size > 1 -%>
+<% if !options.procfile.blank? -%>
+CMD ["foreman", "start", "--procfile=<%= options.procfile %>"]
+<% elsif procfile.size > 1 -%>
 CMD ["foreman", "start", "--procfile=Procfile.prod"]
 <% else -%>
 CMD <%= procfile.values.first.split(" ").inspect %>

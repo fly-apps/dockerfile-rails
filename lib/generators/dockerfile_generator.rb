@@ -625,7 +625,7 @@ private
     if using_puppeteer? && deploy_packages.include?("google-chrome-stable")
       packages += %w(gnupg curl)
       repos += [
-       "curl https://oss-binaries.phusionpassenger.com/auto-software-signing-gpg-key.txt |",
+       "curl https://dl-ssl.google.com/linux/linux_signing_key.pub |",
        "  gpg --dearmor > /etc/apt/trusted.gpg.d/google-archive.gpg &&",
        'echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
       ]

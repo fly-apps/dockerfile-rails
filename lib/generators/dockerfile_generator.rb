@@ -34,6 +34,7 @@ class DockerfileGenerator < Rails::Generators::Base
     "sqlite3" => false,
     "sudo" => false,
     "swap" => nil,
+    "variant" => "slim",
     "windows" => false,
     "yjit" => false,
   }.then { |hash| Struct.new(*hash.keys.map(&:to_sym)).new(*hash.values) }
@@ -133,6 +134,9 @@ class DockerfileGenerator < Rails::Generators::Base
 
   class_option :platform, type: :string, default: OPTION_DEFAULTS.platform,
     desc: "image platform (example: linux/arm64)"
+
+  class_option :variant, type: :string, default: OPTION_DEFAULTS.variant,
+    desc: "dockerhub image variant (example: slim-bullseye)"
 
   class_option :jemalloc, type: :boolean, default: OPTION_DEFAULTS.jemalloc,
     desc: "use jemalloc alternative malloc implementation"

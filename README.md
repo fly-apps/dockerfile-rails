@@ -77,6 +77,7 @@ Not all of your needs can be determined by scanning your application.  For examp
 * `--no-prepare` - omit `db:prepare`.  Useful for cloud platforms with [release](https://devcenter.heroku.com/articles/release-phase) phases
 * `--passenger` - use [Phusion Passenger](https://www.phusionpassenger.com/) under [nginx](https://www.nginx.com/)
 * `--platform=s` - specify target platform.  See [FROM](https://docs.docker.com/engine/reference/builder/#from) for details
+* `--variant=s` - dockerhub ruby variant, defaults to `slim`.  See [docker official images](https://hub.docker.com/_/ruby) for list.
 * `--precompile=defer` - may be needed when your configuration requires access to secrets that are not available at build time.  Results in larger images and slower deployments.
 * `--root` - run application as root
 * `--windows` - make Dockerfile work for Windows users that may have set `git config --global core.autocrlf true`

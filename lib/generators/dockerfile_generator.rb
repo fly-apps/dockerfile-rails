@@ -30,6 +30,7 @@ class DockerfileGenerator < Rails::Generators::Base
     "prepare" => true,
     "procfile" => "",
     "redis" => false,
+    "registry" => "",
     "root" => false,
     "sqlite3" => false,
     "sudo" => false,
@@ -134,6 +135,9 @@ class DockerfileGenerator < Rails::Generators::Base
 
   class_option :platform, type: :string, default: OPTION_DEFAULTS.platform,
     desc: "image platform (example: linux/arm64)"
+
+  class_option :registry, type: :string, default: OPTION_DEFAULTS.registry,
+    desc: "docker registry to use (example: registry.docker.com/library/)"
 
   class_option :variant, type: :string, default: OPTION_DEFAULTS.variant,
     desc: "dockerhub image variant (example: slim-bullseye)"

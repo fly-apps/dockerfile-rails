@@ -21,7 +21,11 @@ services:
 <% if deploy_database == 'postgresql' -%>
       - DATABASE_URL=postgres://root:password@postgres-db/
 <% elsif deploy_database == 'mysql' -%>
+<% if using_trilogy? -%>
+      - DATABASE_URL=trilogy://root:password@mysql-db/
+<% else -%>
       - DATABASE_URL=mysql2://root:password@mysql-db/
+<% end -%>
 <% end -%>
 <% if deploy_database == 'sqlite3' -%>
     volumes:
@@ -89,7 +93,11 @@ services:
 <% if deploy_database == 'postgresql' -%>
       - DATABASE_URL=postgres://root:password@postgres-db/
 <% elsif deploy_database == 'mysql' -%>
+<% if using_trilogy? -%>
+      - DATABASE_URL=trilogy://root:password@mysql-db/
+<% else -%>
       - DATABASE_URL=mysql2://root:password@mysql-db/
+<% end -%>
 <% end -%>
     depends_on:
       redis-db:

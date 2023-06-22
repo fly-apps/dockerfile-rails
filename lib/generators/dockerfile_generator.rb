@@ -400,6 +400,14 @@ private
     using_node? && options.parallel
   end
 
+  def has_mysql_gem?
+    @gemfile.include? "mysql2" or using_trilogy?
+  end
+
+  def using_trilogy?
+    @gemfile.include?("trilogy") || @gemfile.include?("activerecord-trilogy-adapter")
+  end
+
   def keeps?
     return @keeps if @keeps != nil
     @keeps = !!Dir["**/.keep"]
@@ -419,7 +427,7 @@ private
     end
 
     if options.mysql? || @mysql
-      system "bundle add mysql2 --skip-install" unless @gemfile.include? "mysql2"
+      system "bundle add mysql2 --skip-install" unless has_mysql_gem?
     end
 
     if options.redis? || using_redis?
@@ -511,7 +519,10 @@ private
     # add databases: sqlite3, postgres, mysql
     packages << "pkg-config" if options.sqlite3? || @sqlite3
     packages << "libpq-dev" if options.postgresql? || @postgresql
-    packages << "default-libmysqlclient-dev" if options.mysql? || @mysql
+
+    if (options.mysql? || @mysql) && !using_trilogy?
+      packages << "default-libmysqlclient-dev"
+    end
 
     # add git if needed to install gems
     packages << "git" if @git
@@ -857,7 +868,7 @@ private
     # use presence of "pg" or "mysql2" in the bundle as evidence of intent.
     if options.postgresql? || @postgresql || @gemfile.include?("pg")
       "postgresql"
-    elsif options.mysql? || @mysql || @gemfile.include?("mysql2")
+    elsif options.mysql? || @mysql || has_mysql_gem?
       "mysql"
     else
       "sqlite3"

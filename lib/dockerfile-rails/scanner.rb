@@ -44,7 +44,7 @@ module DockerfileRails
         @sqlite3 = true
       elsif database == "postgresql"
         @postgresql = true
-      elsif (database == "mysql") || (database == "mysql2")
+      elsif (database == "mysql") || (database == "mysql2") || (database == "trilogy")
         @mysql = true
       elsif database == "sqlserver"
         @sqlserver = true
@@ -52,7 +52,7 @@ module DockerfileRails
 
       @sqlite3 = true if @gemfile.include? "sqlite3"
       @postgresql = true if @gemfile.include? "pg"
-      @mysql = true if @gemfile.include? "mysql2"
+      @mysql = true if @gemfile.include?("mysql2") || using_trilogy?
 
       ### node modules ###
 
@@ -80,6 +80,10 @@ module DockerfileRails
       end
 
       @redis = @redis_cable || @redis_cache
+    end
+
+    def using_trilogy?
+      @gemfile.include?("trilogy") || @gemfile.include?("activerecord-trilogy-adapter")
     end
   end
 end

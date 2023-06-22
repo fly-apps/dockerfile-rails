@@ -51,6 +51,8 @@ RUN bundle install && \
 
 # Copy node modules
 COPY --from=node /rails/node_modules /rails/node_modules
+COPY --from=node /usr/local/node /usr/local/node
+ENV PATH=/usr/local/node/bin:$PATH
 
 # Copy application code
 COPY --link . .

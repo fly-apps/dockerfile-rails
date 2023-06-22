@@ -111,6 +111,8 @@ RUN passenger-config build-native-support
 <% if parallel? -%>
 # Copy node modules
 COPY --from=node /rails/node_modules /rails/node_modules
+COPY --from=node /usr/local/node /usr/local/node
+ENV PATH=/usr/local/node/bin:$PATH
 
 <% elsif using_node? -%>
 <%= render partial: 'npm_install', locals: {sources: Dir[*%w(package.json package-lock.json yarn.lock)]} %>

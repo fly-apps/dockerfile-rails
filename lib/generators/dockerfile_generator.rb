@@ -282,14 +282,12 @@ class DockerfileGenerator < Rails::Generators::Base
       fly_attach_consul
     end
 
-    if fly_processes # therefore File.exist?('fly.toml')
+    if File.exist?('fly.toml') && (fly_processes || !options.prepare)
       if File.stat("fly.toml").size > 0
         template "fly.toml.erb", "fly.toml"
       else
-        toml = fly_make_processes(fly_processes)
-        if toml != IO.read("fly.toml")
-          File.write "fly.toml", toml
-        end
+        toml = fly_make_toml
+        File.write "fly.toml", toml if toml != ""
       end
     end
 
@@ -1042,19 +1040,31 @@ private
     system "#{flyctl} consul attach"
   end
 
-  def fly_make_processes(list)
+  def fly_make_toml
     toml = File.read("fly.toml")
 
-    if toml.include? "[processes]"
-      toml.sub!(/\[processes\].*?(\n\n|\n?\z)/m, "[processes]\n" +
-        list.map { |name, cmd| "  #{name} = #{cmd.inspect}" }.join("\n") + '\1')
-    else
-      toml += "\n[processes]\n" +
-        list.map { |name, cmd| "  #{name} = #{cmd.inspect}\n" }.join
+    list = fly_processes
+    if list
+      if toml.include? "[processes]"
+        toml.sub!(/\[processes\].*?(\n\n|\n?\z)/m, "[processes]\n" +
+          list.map { |name, cmd| "  #{name} = #{cmd.inspect}" }.join("\n") + '\1')
+      else
+        toml += "\n[processes]\n" +
+          list.map { |name, cmd| "  #{name} = #{cmd.inspect}\n" }.join
 
-      app = list.has_key?("app") ? "app" : list.keys.first
+        app = list.has_key?("app") ? "app" : list.keys.first
 
-      toml.sub! "[http_service]\n", "\\0  processes = [#{app.inspect}]\n"
+        toml.sub! "[http_service]\n", "\\0  processes = [#{app.inspect}]\n"
+      end
+    end
+
+    if options.prepare == false
+      deploy = "[deploy]\n  release_command = #{dbprep_command.inspect}\n\n"
+      if toml.include? "[deploy]"
+        toml.sub! /\[deploy\].*?(\n\n|\n?\z)/m, deploy
+      else
+        toml += deploy
+      end
     end
 
     toml

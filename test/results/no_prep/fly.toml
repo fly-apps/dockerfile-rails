@@ -1,0 +1,3 @@
+[deploy]
+  release_command = "./bin/rails db:prepare"
+

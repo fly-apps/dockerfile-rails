@@ -20,7 +20,7 @@ RUN curl -sL https://github.com/nodenv/node-build/archive/master.tar.gz | tar xz
 <% if yarn_version < '2' -%>
 <% if node_version -%>   <% else %>RUN<% end %> npm install -g yarn@$YARN_VERSION<% if node_version -%> && \<% end %>
 <% else -%>
-<% if (node_version.split('.').map(&:to_i) <=> [16,10,0]) < 0 -%>
+<% if node_version && (node_version.split('.').map(&:to_i) <=> [16,10,0]) < 0 -%>
     npm i -g corepack && \
 <% else -%>
     corepack enable && \

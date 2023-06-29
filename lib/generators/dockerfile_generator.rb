@@ -282,7 +282,7 @@ class DockerfileGenerator < Rails::Generators::Base
       fly_attach_consul
     end
 
-    if File.exist?('fly.toml') && (fly_processes || !options.prepare)
+    if File.exist?("fly.toml") && (fly_processes || !options.prepare)
       if File.stat("fly.toml").size > 0
         template "fly.toml.erb", "fly.toml"
       else
@@ -1072,7 +1072,7 @@ private
     if options.prepare == false
       deploy = "[deploy]\n  release_command = #{dbprep_command.inspect}\n\n"
       if toml.include? "[deploy]"
-        toml.sub! /\[deploy\].*?(\n\n|\n?\z)/m, deploy
+        toml.sub!(/\[deploy\].*?(\n\n|\n?\z)/m, deploy)
       else
         toml += deploy
       end

@@ -38,7 +38,7 @@ class DockerfileGenerator < Rails::Generators::Base
     "variant" => "slim",
     "windows" => false,
     "yjit" => false,
-  }.then { |hash| Struct.new(*hash.keys.map(&:to_sym)).new(*hash.values) }
+  }.yield_self { |hash| Struct.new(*hash.keys.map(&:to_sym)).new(*hash.values) }
 
   OPTION_DEFAULTS = BASE_DEFAULTS.dup
 
@@ -319,7 +319,7 @@ private
     scope = (Class.new do
       def initialize(obj, locals)
         @_obj = obj
-        @_locals = locals.then do |hash|
+        @_locals = locals.yield_self do |hash|
           return nil if hash.empty?
           Struct.new(*hash.keys.map(&:to_sym)).new(*hash.values)
         end

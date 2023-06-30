@@ -19,5 +19,5 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency "rails"
 
-  spec.required_ruby_version = '>= 2.6.0'
+  spec.required_ruby_version = ">= 2.6.0"
 end

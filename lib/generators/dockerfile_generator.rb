@@ -723,12 +723,7 @@ private
     end
 
     if options.jemalloc? && !options.fullstaq?
-      if (options.platform || Gem::Platform.local.cpu).include? "arm"
-        env["LD_PRELOAD"] = "/usr/lib/aarch64-linux-gnu/libjemalloc.so.2"
-      else
-        env["LD_PRELOAD"] = "/usr/lib/x86_64-linux-gnu/libjemalloc.so.2"
-      end
-
+      env["LD_PRELOAD"] = "libjemalloc.so.2"
       env["MALLOC_CONF"] = "dirty_decay_ms:1000,narenas:2,background_thread:true"
     end
 

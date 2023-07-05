@@ -20,8 +20,8 @@ EOF
 <% end -%>
 EOF
 RUN echo "daemon off;" >> /etc/nginx/nginx.conf && \
-    sed -i 's/access_log\s.*;/access_log \/dev\/stdout;/' /etc/nginx/nginx.conf && \
-    sed -i 's/error_log\s.*;/error_log \/dev\/stderr info;/' /etc/nginx/nginx.conf && \
+    sed -i 's/access_log\s.*;/access_log stdout;/' /etc/nginx/nginx.conf && \
+    sed -i 's/error_log\s.*;/error_log stderr info;/' /etc/nginx/nginx.conf && \
 <% if options['max-idle'] -%>
     chmod +sx /etc/nginx/sites-enabled/hook_detached_process && \
 <% end -%>

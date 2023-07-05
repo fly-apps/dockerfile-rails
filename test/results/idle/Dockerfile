@@ -65,8 +65,8 @@ system 'nginx -s stop' if processes == 0
 EOF
 EOF
 RUN echo "daemon off;" >> /etc/nginx/nginx.conf && \
-    sed -i 's/access_log\s.*;/access_log \/dev\/stdout;/' /etc/nginx/nginx.conf && \
-    sed -i 's/error_log\s.*;/error_log \/dev\/stderr info;/' /etc/nginx/nginx.conf && \
+    sed -i 's/access_log\s.*;/access_log stdout;/' /etc/nginx/nginx.conf && \
+    sed -i 's/error_log\s.*;/error_log stderr info;/' /etc/nginx/nginx.conf && \
     chmod +sx /etc/nginx/sites-enabled/hook_detached_process && \
     sed -i 's/user www-data/user rails/' /etc/nginx/nginx.conf && \
     mkdir /var/run/passenger-instreg

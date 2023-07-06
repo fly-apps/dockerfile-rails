@@ -644,7 +644,7 @@ private
       repos += [
        "curl https://dl-ssl.google.com/linux/linux_signing_key.pub |",
        "  gpg --dearmor > /etc/apt/trusted.gpg.d/google-archive.gpg &&",
-       'echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
+       'echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list'
       ]
     end
 

@@ -33,6 +33,7 @@ class DockerfileGenerator < Rails::Generators::Base
     "registry" => "",
     "root" => false,
     "sqlite3" => false,
+    "sentry" => false,
     "sudo" => false,
     "swap" => nil,
     "variant" => "slim",
@@ -169,6 +170,9 @@ class DockerfileGenerator < Rails::Generators::Base
   class_option :sudo, type: :boolean, default: OPTION_DEFAULTS.sudo,
     desc: "Install and configure sudo to enable running as rails with full environment"
 
+  class_option :sentry, type: :boolean, default: OPTION_DEFAULTS.sentry,
+    desc: "Install gems and a starter initializer for sentry"
+
   class_option "migrate", type: :string, default: OPTION_DEFAULTS.migrate,
     desc: "custom migration/db:prepare script"
 
@@ -289,6 +293,10 @@ class DockerfileGenerator < Rails::Generators::Base
         toml = fly_make_toml
         File.write "fly.toml", toml if toml != ""
       end
+    end
+
+    if options.sentry? and not File.exist?("config/initializers/sentry.rb")
+      template "sentry.rb.erb", "config/initializers/sentry.rb"
     end
 
     if @gemfile.include?("vite_ruby")
@@ -430,6 +438,11 @@ private
 
     if options.redis? || using_redis?
       system "bundle add redis --skip-install" unless @gemfile.include? "redis"
+    end
+  
+    if options.sentry?
+      system "bundle add sentry-ruby --skip-install" unless @gemfile.include? "sentry-ruby"
+      system "bundle add sentry-rails --skip-install" unless @gemfile.include? "sentry-rails"
     end
 
     # https://stackoverflow.com/questions/70500220/rails-7-ruby-3-1-loaderror-cannot-load-such-file-net-smtp/70500221#70500221

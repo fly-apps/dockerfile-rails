@@ -295,7 +295,7 @@ class DockerfileGenerator < Rails::Generators::Base
       end
     end
 
-    if options.sentry? and not File.exist?("config/initializers/sentry.rb")
+    if options.sentry? && (not File.exist?("config/initializers/sentry.rb"))
       template "sentry.rb.erb", "config/initializers/sentry.rb"
     end
 
@@ -439,7 +439,7 @@ private
     if options.redis? || using_redis?
       system "bundle add redis --skip-install" unless @gemfile.include? "redis"
     end
-  
+
     if options.sentry?
       system "bundle add sentry-ruby --skip-install" unless @gemfile.include? "sentry-ruby"
       system "bundle add sentry-rails --skip-install" unless @gemfile.include? "sentry-rails"

@@ -1101,7 +1101,7 @@ private
 
       pattern = Regexp.new("^(\\d+)(#{suffixes.keys.join('|')})?$", "i")
 
-      match = pattern.match(options.swap)
+      match = pattern.match(options.swap.downcase)
 
       if match
         size = ((match[1].to_i * (suffixes[match[2]] || 1)) / 1048576.0).round

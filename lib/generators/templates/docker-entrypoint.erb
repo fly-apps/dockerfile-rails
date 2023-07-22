@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-<% if options.swap -%>
+<% if options.swap && !File.exist?("fly.toml")-%>
 <% if run_as_root? or using_passenger? -%>
 <% @space = "" -%>
 <% else -%>

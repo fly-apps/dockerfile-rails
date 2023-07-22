@@ -286,7 +286,7 @@ class DockerfileGenerator < Rails::Generators::Base
       fly_attach_consul
     end
 
-    if File.exist?("fly.toml") && (fly_processes || !options.prepare)
+    if File.exist?("fly.toml") && (fly_processes || !options.prepare || options.swap)
       if File.stat("fly.toml").size > 0
         template "fly.toml.erb", "fly.toml"
       else
@@ -1083,6 +1083,29 @@ private
         toml.sub!(/\[deploy\].*?(\n\n|\n?\z)/m, deploy)
       else
         toml += deploy
+      end
+    end
+
+    if options.swap
+      suffixes = {
+        "kib" => 1024,
+        "k"   => 1024,
+        "kb"  => 1000,
+        "mib" => 1048576,
+        "m"   => 1048576,
+        "mb"  => 100000,
+        "gib" => 1073741824,
+        "g"   => 1073741824,
+        "gb"  => 100000000,
+      }
+
+      pattern = Regexp.new("^(\\d+)(#{suffixes.keys.join('|')})?$", "i")
+
+      match = pattern.match(options.swap)
+
+      if match
+        size = ((match[1].to_i * (suffixes[match[2]] || 1)) / 1048576.0).round
+        toml += "swap_size_mb = #{size}"
       end
     end
 

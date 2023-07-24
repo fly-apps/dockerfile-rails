@@ -179,6 +179,9 @@ class DockerfileGenerator < Rails::Generators::Base
   class_option "procfile", type: :string, default: OPTION_DEFAULTS.procfile,
     desc: "custom procfile to start services"
 
+  class_option "private-gemserver-domain", type: :string, default: "",
+    desc: "domain name of a private gemserver used when installing application gems"
+
 
   class_option "add-base", type: :array, default: [],
     desc: "additional packages to install for both build and deploy"
@@ -1025,6 +1028,19 @@ private
     end
   rescue ArgumentError
     nil
+  end
+
+  # Takes the domain of the private gemserver and returns the name of the
+  # environment variable, as expected by bundler.
+  #
+  # For example, if the domain is "gems.example.com", the environment variable
+  # name will be "BUNDLE_GEMS__EXAMPLE__COM".
+  def private_gemserver_env_variable_name
+    option = options["private-gemserver-domain"]
+
+    return nil if option.blank?
+
+    "BUNDLE_#{option.upcase.gsub(".", "__")}"
   end
 
   # if running on fly v2, make a best effort to attach consul

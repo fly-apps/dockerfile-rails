@@ -82,6 +82,7 @@ Not all of your needs can be determined by scanning your application.  For examp
 * `--precompile=defer` - may be needed when your configuration requires access to secrets that are not available at build time.  Results in larger images and slower deployments.
 * `--root` - run application as root
 * `--windows` - make Dockerfile work for Windows users that may have set `git config --global core.autocrlf true`
+* `--private-gemserver-domain=gems.example.com` - set the domain name of your private gemserver.  This is used to tell bundler for what domain to use the credentials of a private gemserver provided via a docker secret
 
 ### Advanced Customization:
 
@@ -116,7 +117,7 @@ rake test
 ruby test/test_minimal.rb
 ```
 
-To assis with this process, outputs of tests can be captured automatically.  This is useful when adding new tests and when making a change that affects many tests.  Be sure to inspect the output (e.g., by using `git diff`) before committing.
+To assist with this process, outputs of tests can be captured automatically.  This is useful when adding new tests and when making a change that affects many tests.  Be sure to inspect the output (e.g., by using `git diff`) before committing.
 
 ```
 rake test:capture

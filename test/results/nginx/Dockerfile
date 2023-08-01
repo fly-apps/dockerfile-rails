@@ -71,8 +71,8 @@ server {
   }
 
   location @backend {
+    include proxy_params;
     proxy_pass http://localhost:3001;
-    proxy_set_header origin 'http://localhost:3000';
   }
 }
 EOF

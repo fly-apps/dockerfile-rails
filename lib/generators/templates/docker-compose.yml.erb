@@ -118,8 +118,8 @@ services:
         condition: service_healthy
 <% end -%>
 <% end -%>
-
 <% if private_gemserver_env_variable_name -%>
+
 secrets:
   gemserver_credentials:
     file: ./GEMSERVER_CREDENTIALS.secret.txt

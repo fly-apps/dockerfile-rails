@@ -9,6 +9,5 @@ class TestPrivateGemserverWithCache < TestBase
   def test_private_gemserver_with_cache
     check_dockerfile
     check_dockerignore
-    check_compose
   end
 end

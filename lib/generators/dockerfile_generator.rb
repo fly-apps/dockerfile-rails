@@ -31,6 +31,7 @@ class DockerfileGenerator < Rails::Generators::Base
     "procfile" => "",
     "redis" => false,
     "registry" => "",
+    "rollbar" => false,
     "root" => false,
     "sqlite3" => false,
     "sentry" => false,
@@ -171,7 +172,10 @@ class DockerfileGenerator < Rails::Generators::Base
     desc: "Install and configure sudo to enable running as rails with full environment"
 
   class_option :sentry, type: :boolean, default: OPTION_DEFAULTS.sentry,
-    desc: "Install gems and a starter initializer for sentry"
+    desc: "Install gems and a default initializer for Sentry"
+
+  class_option :rollbar, type: :boolean, default: OPTION_DEFAULTS.rollbar,
+    desc: "Install gem and a default initializer for Rollbar"
 
   class_option "migrate", type: :string, default: OPTION_DEFAULTS.migrate,
     desc: "custom migration/db:prepare script"
@@ -297,6 +301,10 @@ class DockerfileGenerator < Rails::Generators::Base
 
     if options.sentry? && (not File.exist?("config/initializers/sentry.rb"))
       template "sentry.rb.erb", "config/initializers/sentry.rb"
+    end
+
+    if options.rollbar? && (not File.exist?("config/initializers/rollbar.rb"))
+      template "rollbar.rb.erb", "config/initializers/rollbar.rb"
     end
 
     if @gemfile.include?("vite_ruby")
@@ -443,6 +451,10 @@ private
     if options.sentry?
       system "bundle add sentry-ruby --skip-install" unless @gemfile.include? "sentry-ruby"
       system "bundle add sentry-rails --skip-install" unless @gemfile.include? "sentry-rails"
+    end
+
+    if options.rollbar?
+      system "bundle add rollbar --skip-install" unless @gemfile.include? "rollbar"
     end
 
     # https://stackoverflow.com/questions/70500220/rails-7-ruby-3-1-loaderror-cannot-load-such-file-net-smtp/70500221#70500221

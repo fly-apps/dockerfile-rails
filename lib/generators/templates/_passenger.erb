@@ -10,6 +10,7 @@ server {
     passenger_pool_idle_time <%= max_idle %>;
 <% end -%>
 }
+EOF
 <% if options['max-idle'] -%>
 COPY <<-'EOF' /etc/nginx/sites-enabled/hook_detached_process
 #!/usr/bin/env ruby
@@ -18,7 +19,6 @@ processes = status[/^Processes\s*:\s*(\d*)/, 1].to_i
 system 'nginx -s stop' if processes == 0
 EOF
 <% end -%>
-EOF
 RUN echo "daemon off;" >> /etc/nginx/nginx.conf && \
     sed -i 's/access_log\s.*;/access_log stdout;/' /etc/nginx/nginx.conf && \
     sed -i 's/error_log\s.*;/error_log stderr info;/' /etc/nginx/nginx.conf && \

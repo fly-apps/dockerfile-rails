@@ -9,5 +9,6 @@ class TestPrecompileDefer < TestBase
   def test_precompile_defer
     check_dockerfile
     check_dockerignore
+    check_entrypoint
   end
 end

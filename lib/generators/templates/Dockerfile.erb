@@ -89,7 +89,7 @@ RUN --mount=type=cache,id=bld-gem-cache,sharing=locked,target=/srv/vendor \
     bundle config set app_config .bundle && \
     bundle config set path /srv/vendor && \
     bundle install && \
-<% if depend_on_bootsnap? -%>
+<% if depend_on_bootsnap? && options.precompile != "defer" -%>
     bundle exec bootsnap precompile --gemfile && \
 <% end -%>
     bundle clean && \
@@ -98,7 +98,7 @@ RUN --mount=type=cache,id=bld-gem-cache,sharing=locked,target=/srv/vendor \
     cp -ar /srv/vendor .
 
 <% else -%>
-RUN bundle install<% if depend_on_bootsnap? -%> && \
+RUN bundle install<% if depend_on_bootsnap? && options.precompile != "defer" -%> && \
     bundle exec bootsnap precompile --gemfile<% end %> && \
     rm -rf ~/.bundle/ $BUNDLE_PATH/ruby/*/cache $BUNDLE_PATH/ruby/*/bundler/gems/*/.git
 

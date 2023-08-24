@@ -849,7 +849,9 @@ private
 
   def binfile_fixups
     # binfiles may have OS specific paths to ruby.  Normalize them.
-    shebangs = Dir["bin/*"].map { |file| IO.read(file).lines.first }.join
+    shebangs = Dir["bin/*"].map do |file|
+      IO.read(file).lines.first.encode("UTF-8", "binary", invalid: :replace, undef: :replace, replace: "")
+    end.join
     rubies = shebangs.scan(%r{#!/usr/bin/env (ruby.*)}).flatten.uniq
 
     binfixups = (rubies - %w(ruby)).map do |ruby|

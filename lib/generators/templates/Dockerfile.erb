@@ -115,7 +115,7 @@ COPY --from=node /usr/local/node /usr/local/node
 ENV PATH=/usr/local/node/bin:$PATH
 
 <% elsif using_node? -%>
-<%= render partial: 'npm_install', locals: {sources: Dir[*%w(.npmrc .yarnrc package.json package-lock.json yarn.lock)]} %>
+<%= render partial: 'npm_install', locals: {sources: Dir[*%w(.npmrc package.json package-lock.json yarn.lock)]} %>
 
 <% end -%>
 # Copy application code

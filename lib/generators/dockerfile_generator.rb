@@ -28,6 +28,7 @@ class DockerfileGenerator < Rails::Generators::Base
     "postgresql" => false,
     "precompile" => nil,
     "prepare" => true,
+    "private-gemserver-domain" => nil,
     "procfile" => "",
     "redis" => false,
     "registry" => "",
@@ -183,7 +184,7 @@ class DockerfileGenerator < Rails::Generators::Base
   class_option "procfile", type: :string, default: OPTION_DEFAULTS.procfile,
     desc: "custom procfile to start services"
 
-  class_option "private-gemserver-domain", type: :string, default: "",
+  class_option "private-gemserver-domain", type: :string, default: OPTION_DEFAULTS["private-gemserver-domain"],
     desc: "domain name of a private gemserver used when installing application gems"
 
 

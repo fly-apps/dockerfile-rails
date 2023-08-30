@@ -44,8 +44,11 @@ bin/rails generate dockerfile
 * `--nginx` - serve static files via [nginx](https://www.nginx.com/).  May require `--root` on some targets to access `/dev/stdout`
 * `--no-link` - don't add [--link](https://docs.docker.com/engine/reference/builder/#copy---link) to COPY statements.  Some tools (like at the moment, [buildah](https://www.redhat.com/en/topics/containers/what-is-buildah)) don't yet support this feature.
 * `--no-lock` - don't add linux platforms, set `BUNDLE_DEPLOY`, or `--frozen-lockfile`.  May be needed at times to work around a [rubygems bug](https://github.com/rubygems/rubygems/issues/6082#issuecomment-1329756343).
-* `--sentry` -- install gems and a starter initializer for sentry
 * `--sudo` - install and configure sudo to enable `sudo -iu rails` access to full environment
+
+#### Error Tracking & Alerting:
+* `--rollbar` - install gem and a default initializer for [Rollbar](https://rollbar.com/#)
+* `--sentry` - install gems and a default initializer for [Sentry](https://sentry.io/welcome/)
 
 ### Add a Database:
 

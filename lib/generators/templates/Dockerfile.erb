@@ -94,7 +94,7 @@ RUN --mount=type=cache,id=bld-gem-cache,sharing=locked,target=/srv/vendor \
     bundle config set app_config .bundle && \
     bundle config set path /srv/vendor && \
     bundle install && \
-<% if depend_on_bootsnap? -%>
+<% if depend_on_bootsnap? && options.precompile != "defer" -%>
     bundle exec bootsnap precompile --gemfile && \
 <% end -%>
     bundle clean && \
@@ -107,10 +107,10 @@ RUN --mount=type=cache,id=bld-gem-cache,sharing=locked,target=/srv/vendor \
 RUN --mount=type=secret,id=gemserver_credentials,dst=/kaniko/gemserver_credentials \
     <%= private_gemserver_env_variable_name %>="$(cat /kaniko/gemserver_credentials)" && \
     export <%= private_gemserver_env_variable_name %> && \
-    bundle install<% if depend_on_bootsnap? -%> && \
+    bundle install<% if depend_on_bootsnap? && options.precompile != "defer" -%> && \
     bundle exec bootsnap precompile --gemfile<% end %> && \
 <% else -%>
-RUN bundle install<% if depend_on_bootsnap? -%> && \
+RUN bundle install<% if depend_on_bootsnap? && options.precompile != "defer" -%> && \
     bundle exec bootsnap precompile --gemfile<% end %> && \
 <% end -%>
     rm -rf ~/.bundle/ $BUNDLE_PATH/ruby/*/cache $BUNDLE_PATH/ruby/*/bundler/gems/*/.git
@@ -128,7 +128,7 @@ COPY --from=node /usr/local/node /usr/local/node
 ENV PATH=/usr/local/node/bin:$PATH
 
 <% elsif using_node? -%>
-<%= render partial: 'npm_install', locals: {sources: Dir[*%w(package.json package-lock.json yarn.lock)]} %>
+<%= render partial: 'npm_install', locals: {sources: Dir[*%w(.npmrc .yarnrc package.json package-lock.json yarn.lock)]} %>
 
 <% end -%>
 # Copy application code

@@ -57,12 +57,12 @@ server {
     passenger_min_instances 0;
     passenger_pool_idle_time 300;
 }
+EOF
 COPY <<-'EOF' /etc/nginx/sites-enabled/hook_detached_process
 #!/usr/bin/env ruby
 status = `passenger-status`
 processes = status[/^Processes\s*:\s*(\d*)/, 1].to_i
 system 'nginx -s stop' if processes == 0
-EOF
 EOF
 RUN echo "daemon off;" >> /etc/nginx/nginx.conf && \
     sed -i 's/access_log\s.*;/access_log stdout;/' /etc/nginx/nginx.conf && \

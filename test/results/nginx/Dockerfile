@@ -47,14 +47,14 @@ RUN apt-get update -qq && \
 # configure nginx
 RUN gem install foreman && \
     sed -i 's|pid /run|pid /rails/tmp/pids|' /etc/nginx/nginx.conf && \
-    sed -i 's/access_log\s.*;/access_log stdout;/' /etc/nginx/nginx.conf && \
-    sed -i 's/error_log\s.*;/error_log stderr info;/' /etc/nginx/nginx.conf
+    sed -i 's/access_log\s.*;/access_log \/dev\/stdout;/' /etc/nginx/nginx.conf && \
+    sed -i 's/error_log\s.*;/error_log \/dev\/stderr info;/' /etc/nginx/nginx.conf
 
 COPY <<-"EOF" /etc/nginx/sites-available/default
 server {
   listen 3000 default_server;
   listen [::]:3000 default_server;
-  access_log stdout;
+  access_log /dev/stdout;
 
   root /rails/public;
 
@@ -72,7 +72,7 @@ server {
 
   location @backend {
     proxy_pass http://localhost:3001;
-    proxy_set_header origin 'http://localhost:3000';
+    proxy_set_header Host $http_host;
   }
 }
 EOF

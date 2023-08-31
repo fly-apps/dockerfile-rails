@@ -17,39 +17,26 @@
 # Ignore all logfiles and tempfiles.
 /log/*
 /tmp/*
-<% if keeps? -%>
 !/log/.keep
 !/tmp/.keep
-<% end -%>
 
 # Ignore pidfiles, but keep the directory.
 /tmp/pids/*
 !/tmp/pids/
-<% if keeps? -%>
 !/tmp/pids/.keep
-<% end -%>
 
 # Ignore storage (uploaded files in development and any SQLite databases).
 /storage/*
-<% if keeps? -%>
 !/storage/.keep
 /tmp/storage/*
 !/tmp/storage/
 !/tmp/storage/.keep
-<% end -%>
-<% unless options.api? -%>
 
-<% if private_gemserver_env_variable_name -%>
 # Ignore gemserver credentials.
 GEMSERVER_CREDENTIALS.secret.txt
 
-<% end -%>
 # Ignore assets.
 /node_modules/
 /app/assets/builds/*
-<% if keeps? -%>
 !/app/assets/builds/.keep
-<% end -%>
 /public/assets
-<% end -%>
-<%= more_docker_ignores -%>

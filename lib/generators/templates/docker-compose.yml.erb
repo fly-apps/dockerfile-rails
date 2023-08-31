@@ -3,12 +3,20 @@ services:
   web:
 <% if all_args.empty? -%>
     build: .
+<% if private_gemserver_env_variable_name -%>
+    secrets:
+      - gemserver_credentials
+<% end -%>
 <% else -%>
     build:
       context: .
       args:
 <% all_args.each do |name, value| -%>
         <%= name %>: <%= value.html_safe? ? value : "\"#{Shellwords.escape(value)}\"" %>
+<% end -%>
+<% if private_gemserver_env_variable_name -%>
+    secrets:
+      - gemserver_credentials
 <% end -%>
 <% end -%>
     ports:
@@ -109,4 +117,10 @@ services:
       mysql-db:
         condition: service_healthy
 <% end -%>
+<% end -%>
+<% if private_gemserver_env_variable_name -%>
+
+secrets:
+  gemserver_credentials:
+    file: ./GEMSERVER_CREDENTIALS.secret.txt
 <% end -%>

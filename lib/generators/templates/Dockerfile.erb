@@ -86,6 +86,11 @@ ENV <%= build_env.join(" \\\n    ") %>
 COPY<% if options.link? %> --link<% end %> Gemfile Gemfile.lock ./
 <% if options.cache? -%>
 RUN --mount=type=cache,id=bld-gem-cache,sharing=locked,target=/srv/vendor \
+<% if private_gemserver_env_variable_name -%>
+    --mount=type=secret,id=gemserver_credentials,dst=/kaniko/gemserver_credentials \
+    <%= private_gemserver_env_variable_name %>="$(cat /kaniko/gemserver_credentials)" && \
+    export <%= private_gemserver_env_variable_name %> && \
+<% end -%>
     bundle config set app_config .bundle && \
     bundle config set path /srv/vendor && \
     bundle install && \
@@ -98,8 +103,16 @@ RUN --mount=type=cache,id=bld-gem-cache,sharing=locked,target=/srv/vendor \
     cp -ar /srv/vendor .
 
 <% else -%>
+<% if private_gemserver_env_variable_name -%>
+RUN --mount=type=secret,id=gemserver_credentials,dst=/kaniko/gemserver_credentials \
+    <%= private_gemserver_env_variable_name %>="$(cat /kaniko/gemserver_credentials)" && \
+    export <%= private_gemserver_env_variable_name %> && \
+    bundle install<% if depend_on_bootsnap? && options.precompile != "defer" -%> && \
+    bundle exec bootsnap precompile --gemfile<% end %> && \
+<% else -%>
 RUN bundle install<% if depend_on_bootsnap? && options.precompile != "defer" -%> && \
     bundle exec bootsnap precompile --gemfile<% end %> && \
+<% end -%>
     rm -rf ~/.bundle/ $BUNDLE_PATH/ruby/*/cache $BUNDLE_PATH/ruby/*/bundler/gems/*/.git
 
 <% end -%>

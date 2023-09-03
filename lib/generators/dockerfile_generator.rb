@@ -542,6 +542,7 @@ private
     # start with the essentials
     packages = %w(build-essential)
     packages += @@packages["build"] if @@packages["build"]
+    packages += %w(nodejs npm) if node_version == "lts"
 
     # add databases: sqlite3, postgres, mysql
     packages << "pkg-config" if options.sqlite3? || @sqlite3

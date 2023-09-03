@@ -5,13 +5,13 @@
 <% elsif yarn_version -%>
 # Install yarn
 <% end -%>
-<% if node_version -%>
+<% if node_version && node_version != 'lts' -%>
 ARG NODE_VERSION=<%= node_version %>
 <% end -%>
 <% if yarn_version -%>
 ARG YARN_VERSION=<%= yarn_version %>
 <% end -%>
-<% if node_version -%>
+<% if node_version && node_version != 'lts' -%>
 ENV PATH=/usr/local/node/bin:$PATH
 RUN curl -sL https://github.com/nodenv/node-build/archive/master.tar.gz | tar xz -C /tmp/ && \
     /tmp/node-build-master/bin/node-build "${NODE_VERSION}" /usr/local/node && \

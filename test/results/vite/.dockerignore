@@ -22,14 +22,12 @@
 
 # Ignore pidfiles, but keep the directory.
 /tmp/pids/*
-!/tmp/pids/
 !/tmp/pids/.keep
 
 # Ignore storage (uploaded files in development and any SQLite databases).
 /storage/*
 !/storage/.keep
 /tmp/storage/*
-!/tmp/storage/
 !/tmp/storage/.keep
 
 # Ignore assets.

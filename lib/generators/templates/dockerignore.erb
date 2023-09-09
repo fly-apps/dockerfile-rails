@@ -24,7 +24,6 @@
 
 # Ignore pidfiles, but keep the directory.
 /tmp/pids/*
-!/tmp/pids/
 <% if keeps? -%>
 !/tmp/pids/.keep
 <% end -%>
@@ -34,7 +33,6 @@
 <% if keeps? -%>
 !/storage/.keep
 /tmp/storage/*
-!/tmp/storage/
 !/tmp/storage/.keep
 <% end -%>
 <% unless options.api? -%>

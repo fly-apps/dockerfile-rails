@@ -508,7 +508,11 @@ private
     packages += @@packages["base"] if @@packages["base"]
 
     if using_execjs?
-      packages += %w(curl)
+      if node_version == "lts"
+        packages += %w(nodejs npm)
+      else
+        packages += %w(curl)
+      end
     end
 
     if using_puppeteer?
@@ -542,7 +546,7 @@ private
     # start with the essentials
     packages = %w(build-essential)
     packages += @@packages["build"] if @@packages["build"]
-    packages += %w(nodejs npm) if node_version == "lts"
+    packages += %w(nodejs npm) if (node_version == "lts") && (not using_execjs?)
 
     # add databases: sqlite3, postgres, mysql
     packages << "pkg-config" if options.sqlite3? || @sqlite3
@@ -713,7 +717,7 @@ private
   def build_env
     env = {}
 
-    if using_execjs?
+    if using_execjs? && (node_version != "lts")
       env["PATH"] = "/usr/local/node/bin:$PATH"
     end
 

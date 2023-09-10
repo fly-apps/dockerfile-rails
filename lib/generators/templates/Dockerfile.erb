@@ -39,7 +39,7 @@ RUN gem update --system --no-document && \
 <%= render partial: 'apt_install', locals: {packages: base_packages, clean: true, repos: base_repos} %>
 
 <% end -%>
-<% if using_execjs? -%>
+<% if using_execjs? and node_version != 'lts' -%>
 <%= render partial: 'install_node', locals: {yarn_version: nil} %>
 
 <% end -%>

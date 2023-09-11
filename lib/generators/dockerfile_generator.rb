@@ -378,6 +378,10 @@ private
     options.litefs?
   end
 
+  def using_litestack?
+    @gemfile.include?("litestack")
+  end
+
   def using_node?
     return @using_node if @using_node != nil
     @using_node = File.exist? "package.json"
@@ -703,6 +707,10 @@ private
 
     if options.lock?
       env["BUNDLE_DEPLOYMENT"] = "1"
+    end
+
+    if using_litestack?
+      env["LITESTACK_DATA_PATH"] = "/data"
     end
 
     if @@args["base"]

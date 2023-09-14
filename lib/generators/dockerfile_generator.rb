@@ -963,8 +963,8 @@ private
 
 
   def bun_version
-    version = `bun --version`[/\d+\.\d+\.\d+/]
-    version ||= `npm show bun version`[/\d+\.\d+\.\d+/]
+    version = `bun --version`[/\d+\.\d+\.\d+/] rescue nil
+    version ||= `npm show bun version`[/\d+\.\d+\.\d+/] rescue nil
 
     version
   end

@@ -10,5 +10,4 @@ jobs:
         ruby-version: '3.2'
         bundler-cache: true
     - run: gem install rails
-    - run: npm install -g bun
     - run: rake test

@@ -1,3 +1,10 @@
+<% if using_bun? -%>
+<% if bun_version -%>
+# Install Bun
+ARG BUN_VERSION=<%= bun_version %>
+<% end -%>
+RUN npm install -g bun<% if bun_version %>@$BUN_VERSION<% end %>
+<% else -%>
 <% if node_version and yarn_version -%>
 # Install JavaScript dependencies
 <% elsif node_version -%>
@@ -8,23 +15,14 @@
 <% if node_version && node_version != 'lts' -%>
 ARG NODE_VERSION=<%= node_version %>
 <% end -%>
-<% if using_bun? -%>
-<% if bun_version -%>
-ARG BUN_VERSION=<%= bun_version %>
-<% end -%>
-<% else -%>
 <% if yarn_version -%>
 ARG YARN_VERSION=<%= yarn_version %>
-<% end -%>
 <% end -%>
 <% if node_version && node_version != 'lts' -%>
 ENV PATH=/usr/local/node/bin:$PATH
 RUN curl -sL https://github.com/nodenv/node-build/archive/master.tar.gz | tar xz -C /tmp/ && \
     /tmp/node-build-master/bin/node-build "${NODE_VERSION}" /usr/local/node && \
 <% end -%>
-<% if using_bun? -%>
-    npm install -g bun<% if bun_version %>@$BUN_VERSION<% end %> && \
-<% else -%>
 <% if yarn_version -%>
 <% if yarn_version < '2' -%>
 <% if node_version -%>   <% else %>RUN<% end %> npm install -g yarn@$YARN_VERSION<% if node_version -%> && \<% end %>
@@ -37,7 +35,7 @@ RUN curl -sL https://github.com/nodenv/node-build/archive/master.tar.gz | tar xz
     corepack prepare yarn@$YARN_VERSION --activate<% if node_version -%> && \<% end %>
 <% end -%>
 <% end -%>
-<% end -%>
 <% if node_version -%>
     rm -rf /tmp/node-build-master
+<% end -%>
 <% end -%>

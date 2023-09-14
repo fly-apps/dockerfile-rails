@@ -58,15 +58,18 @@ FROM base as <%= parallel? ? 'pre' : '' %>build
 
 <% if parallel? -%>
 
-FROM prebuild as node
+FROM prebuild as <% if using_bun? %>bun<% else %>node<% end %>
 
 <% end -%>
-<% if using_node? and (!using_execjs? || File.exist?('yarn.lock')) -%>
+<% if using_bun? and (!using_execjs? || File.exist?('bun.lockb')) -%>
+<%= render partial: 'install_node', locals: {bun_version: using_execjs? ? nil : bun_version} %>
+
+<% elsif using_node? and (!using_execjs? || File.exist?('yarn.lock')) -%>
 <%= render partial: 'install_node', locals: {node_version: using_execjs? ? nil : node_version, yarn_version: File.exist?('yarn.lock') ? yarn_version : nil} %>
 
 <% end -%>
 <% if parallel? -%>
-<%= render partial: 'npm_install', locals: {sources: %w(package.json yarn.lock)} %>
+<%= render partial: 'npm_install', locals: {sources: Dir[*%w(package.json yarn.lock bun.lockb)]} %>
 
 
 FROM prebuild as build
@@ -122,9 +125,15 @@ RUN passenger-config build-native-support
 
 <% end -%>
 <% if parallel? -%>
+<% if using_bun? -%>
+# Copy bun modules
+COPY --from=bun /rails/node_modules /rails/node_modules
+COPY --from=bun /usr/local/bun /usr/local/bun
+<% else -%>
 # Copy node modules
 COPY --from=node /rails/node_modules /rails/node_modules
 COPY --from=node /usr/local/node /usr/local/node
+<% end -%>
 ENV PATH=/usr/local/node/bin:$PATH
 
 <% elsif using_node? -%>

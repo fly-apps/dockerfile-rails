@@ -25,7 +25,7 @@ class TestBase < Minitest::Test
     Dir.chdir "test/tmp"
 
     FileUtils.rm_rf @appname
-    system "rails new #{self.class.rails_options} #{@appname}"
+    system "rails new #{@appname} #{self.class.rails_options}"
 
     Dir.chdir @appname
 
@@ -36,7 +36,7 @@ class TestBase < Minitest::Test
     system "bundle add dockerfile-rails --git https://github.com/rubys/dockerfile-rails.git --group development"
 
     ENV["RAILS_ENV"] = "test"
-    system "bin/rails generate dockerfile #{self.class.generate_options}"
+    system "bin/rails generate dockerfile #{self.class.generate_options} --force"
   end
 
   def check_dockerfile

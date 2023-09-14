@@ -387,6 +387,11 @@ private
     @using_node = File.exist? "package.json"
   end
 
+  def using_bun?
+    return @using_bun if @using_bun != nil
+    @using_bun = File.exist?("bun.config.js") || File.exist?("bun.lockb")
+  end
+
   def using_redis?
     # Note: If you have redis installed on your computer, 'rails new` will
     # automatically add redis to your Gemfile, so having it in your Gemfile is
@@ -954,6 +959,14 @@ private
     "latest"
   end
 
+
+  def bun_version
+    version = `bun --version`[/\d+\.\d+\.\d+/]
+    version ||= `npm show bun version`[/\d+\.\d+\.\d+/]
+
+    version
+  end
+
   def depend_on_bootsnap?
     @gemfile.include? "bootsnap"
   end
@@ -982,7 +995,7 @@ private
     client = api_client_dir
     return unless client
 
-    Dir["#{client}/{package.json,package-lock.json,yarn.lock}"]
+    Dir["#{client}/{package.json,package-lock.json,yarn.lock,bun.lockb}"]
   end
 
   def dbprep_command

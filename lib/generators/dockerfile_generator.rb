@@ -577,9 +577,7 @@ private
     # node support, including support for building native modules
     if using_node?
       packages += %w(node-gyp pkg-config)
-      unless using_execjs? || using_puppeteer?
-        packages << (using_bun? ? "npm" : "curl")
-      end
+      packages << "curl" unless using_execjs? || using_puppeteer?
 
       # module build process depends on Python, and debian changed
       # how python is installed with the bullseye release.  Below

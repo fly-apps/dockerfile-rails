@@ -3,14 +3,13 @@ COPY<% if options.link? %> --link<% end %> <%= sources.join(' ') %> ./
 <% if sources.join.include?('.yarnrc') && !Dir['.yarn/releases/*'].empty? -%>
 COPY<% if options.link? %> --link<% end %> .yarn/releases/* .yarn/releases/
 <% end -%>
-<% if sources.join.include? 'yarn' -%>
-RUN <% if options.cache? -%>--mount=type=cache,id=bld-yarn-cache,target=/root/.yarn \
-    YARN_CACHE_FOLDER=/root/.yarn <% end -%><% if using_bun? %>bun<% else %>yarn<% end %> install<% if options.lock? %> --frozen-lockfile<% end %>
+<% if using_bun? -%>
+RUN <% if options.cache? %>--mount=type=cache,id=bld-bun-cache,target=/root/.bun \
+    <% end %>bun install<% if options.lock? %> --frozen-lockfile<% end %>
+<% elsif sources.join.include? 'yarn' -%>
+RUN <% if options.cache? %>--mount=type=cache,id=bld-yarn-cache,target=/root/.yarn \
+    YARN_CACHE_FOLDER=/root/.yarn <% end %>yarn install<% if options.lock? %> --frozen-lockfile<% end %>
 <% else -%>
-<% if options.cache? -%>
-RUN --mount=type=cache,id=bld-npm-cache,target=/root/.npm \
-    npm install
-<% else -%>
-RUN npm install
-<% end -%>
+RUN <% if options.cache? %>--mount=type=cache,id=bld-npm-cache,target=/root/.npm \
+    <% end %>npm install
 <% end -%>

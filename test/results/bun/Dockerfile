@@ -22,13 +22,11 @@ FROM base as build
 
 # Install packages needed to build gems and node modules
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y build-essential curl node-gyp pkg-config python-is-python3
+    apt-get install --no-install-recommends -y build-essential node-gyp npm pkg-config python-is-python3
 
 # Install Bun
 ARG BUN_VERSION=xxx
-ENV BUN_INSTALL=/usr/local/bun
-ENV PATH=/usr/local/node/bin:$PATH
-RUN curl -fsSL https://bun.sh/install | bash -s -- "${BUN_VERSION}"
+RUN npm install -g bun@$BUN_VERSION
 
 # Install application gems
 COPY --link Gemfile Gemfile.lock ./

@@ -577,9 +577,10 @@ private
     # node support, including support for building native modules
     if using_node?
       packages += %w(node-gyp pkg-config)
-      
+
       unless using_execjs? || using_puppeteer?
-        packages << (using_bun? ? "npm" : "curl")
+        packages << "curl"
+        packages << "unzip" if using_bun?
       end
 
       # module build process depends on Python, and debian changed

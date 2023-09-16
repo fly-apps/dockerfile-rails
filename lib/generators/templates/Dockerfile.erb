@@ -129,6 +129,7 @@ RUN passenger-config build-native-support
 # Copy bun modules
 COPY --from=bun /rails/node_modules /rails/node_modules
 COPY --from=bun /usr/local/bun /usr/local/bun
+ENV PATH=/usr/local/bun/bin:$PATH
 <% else -%>
 # Copy node modules
 COPY --from=node /rails/node_modules /rails/node_modules

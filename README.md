@@ -23,6 +23,10 @@ bin/rails generate dockerfile
 ### General option:
 
 * `--force` - overwrite existing files
+* `--skip` - keep existing files
+
+If neither are specified, you will be prompted if a file exists with
+different contents.  If both are specified, `--force` takes precedence.
 
 ### Runtime Optimizations:
 

@@ -294,7 +294,7 @@ class DockerfileGenerator < Rails::Generators::Base
       fly_attach_consul
     end
 
-    if File.exist?("fly.toml") && (fly_processes || !options.prepare || options.swap)
+    if File.exist?("fly.toml") && (fly_processes || !options.prepare || options.swap || deploy_database == "sqlite3")
       if File.stat("fly.toml").size > 0
         template "fly.toml.erb", "fly.toml"
       else
@@ -1144,6 +1144,12 @@ private
         toml.sub!(/\[deploy\].*?(\n\n|\n?\z)/m, deploy)
       else
         toml += deploy
+      end
+    end
+
+    if deploy_database == "sqlite3"
+      if not toml.include? "[mounts]"
+        toml += "[mounts]\n  source=\"data\"\n  destination=\"/data\"\n\n"
       end
     end
 

@@ -35,6 +35,7 @@ class DockerfileGenerator < Rails::Generators::Base
     "rollbar" => false,
     "root" => false,
     "sqlite3" => false,
+    "sqlserver" => false,
     "sentry" => false,
     "sudo" => false,
     "swap" => nil,
@@ -126,6 +127,9 @@ class DockerfileGenerator < Rails::Generators::Base
 
   class_option :sqlite3, aliases: "--sqlite", type: :boolean, default: OPTION_DEFAULTS.sqlite3,
     desc: "include sqlite3 libraries"
+
+  class_option :sqlserver, aliases: "--sqlserver", type: :boolean, default: OPTION_DEFAULTS.sqlserver,
+    desc: "include SQL server libraries"
 
   class_option :litefs, type: :boolean, default: OPTION_DEFAULTS.litefs,
     desc: "replicate sqlite3 databases using litefs"
@@ -916,6 +920,8 @@ private
       "postgresql"
     elsif options.mysql? || @mysql || has_mysql_gem?
       "mysql"
+    elsif options.sqlserver || @sqlserver
+      "sqlserver"
     else
       "sqlite3"
     end

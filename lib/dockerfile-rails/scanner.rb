@@ -53,6 +53,7 @@ module DockerfileRails
       @sqlite3 = true if @gemfile.include? "sqlite3"
       @postgresql = true if @gemfile.include? "pg"
       @mysql = true if @gemfile.include?("mysql2") || using_trilogy?
+      @sqlserver = true if @gemfile.include?("activerecord-sqlserver-adapter")
 
       ### node modules ###
 

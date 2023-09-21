@@ -65,6 +65,7 @@ additional support may be needed:
 * `--postgresql` - add postgresql libraries
 * `--redis` - add redis libraries
 * `--sqlite3` - add sqlite3 libraries
+* `--sqlserver` - add SQL Server libraries
 
 ### Add a package/environment variable/build argument:
 

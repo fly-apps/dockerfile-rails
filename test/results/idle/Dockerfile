@@ -16,6 +16,16 @@ ENV RAILS_ENV="production" \
 RUN gem update --system --no-document && \
     gem install -N bundler
 
+# Install packages
+RUN apt-get update -qq && \
+    apt-get install --no-install-recommends -y curl gnupg && \
+    curl https://oss-binaries.phusionpassenger.com/auto-software-signing-gpg-key.txt | \
+      gpg --dearmor > /etc/apt/trusted.gpg.d/phusion.gpg && \
+    bash -c 'echo deb https://oss-binaries.phusionpassenger.com/apt/passenger $(source /etc/os-release; echo $VERSION_CODENAME) main > /etc/apt/sources.list.d/passenger.list' && \
+    apt-get update -qq && \
+    apt-get install --no-install-recommends -y passenger && \
+    rm -rf /var/lib/apt/lists /var/cache/apt/archives
+
 
 # Throw-away build stage to reduce size of final image
 FROM base as build

@@ -34,8 +34,8 @@ ENV <%= base_env.join(" \\\n    ") %>
 RUN gem update --system --no-document && \
     gem install -N <%= base_gems.join(" ") %>
 
-<% unless base_requirements.empty? -%>
-# Install packages needed to install <%= base_requirements %>
+<% unless base_packages.empty? -%>
+# Install packages<% unless base_requirements.empty? -%> needed to install <%= base_requirements %><% end %>
 <%= render partial: 'apt_install', locals: {packages: base_packages, clean: true, repos: base_repos} %>
 
 <% end -%>

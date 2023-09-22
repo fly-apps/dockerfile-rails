@@ -564,6 +564,7 @@ private
     # add databases: sqlite3, postgres, mysql
     packages << "pkg-config" if options.sqlite3? || @sqlite3
     packages << "libpq-dev" if options.postgresql? || @postgresql
+    packages << "freetds-dev" if options.sqlserver? || @sqlserver
 
     if (options.mysql? || @mysql) && !using_trilogy?
       packages << "default-libmysqlclient-dev"
@@ -619,6 +620,7 @@ private
     # start with databases: sqlite3, postgres, mysql
     packages << "postgresql-client" if options.postgresql? || @postgresql
     packages << "default-mysql-client" if options.mysql? || @mysql
+    packages << "freetds-bin" if options.sqlserver? || @sqlserver
     packages << "libjemalloc2" if options.jemalloc? && !options.fullstaq?
     if options.sqlite3? || @sqlite3
       packages << "libsqlite3-0" unless packages.include? "sqlite3"

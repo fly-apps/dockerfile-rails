@@ -44,7 +44,7 @@ RUN --mount=type=cache,id=bld-gem-cache,sharing=locked,target=/srv/vendor \
 COPY --link . .
 
 # Precompiling assets for production without requiring secret RAILS_MASTER_KEY
-RUN SECRET_KEY_BASE=DUMMY ./bin/rails assets:precompile
+RUN SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile
 
 
 # Final stage for app image
@@ -66,13 +66,11 @@ ARG UID=xxx \
 RUN groupadd -f -g $GID rails && \
     useradd -u $UID -g $GID rails --create-home --shell /bin/bash && \
     mkdir /data && \
-    chown -R rails:rails db log tmp /data
+    chown -R rails:rails db log storage tmp /data
 USER rails:rails
 
 # Deployment options
-ENV DATABASE_URL="sqlite3:///data/production.sqlite3" \
-    RAILS_LOG_TO_STDOUT="1" \
-    RAILS_SERVE_STATIC_FILES="true"
+ENV DATABASE_URL="sqlite3:///data/production.sqlite3"
 
 # Entrypoint prepares the database.
 ENTRYPOINT ["/rails/bin/docker-entrypoint"]

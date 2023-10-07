@@ -33,7 +33,7 @@ RUN bundle install && \
 COPY --link . .
 
 # Precompiling assets for production without requiring secret RAILS_MASTER_KEY
-RUN SECRET_KEY_BASE=DUMMY ./bin/rails assets:precompile
+RUN SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile
 
 
 # Final stage for app image
@@ -85,13 +85,12 @@ COPY --from=build /rails /rails
 RUN useradd rails --create-home --shell /bin/bash && \
     chown rails:rails /var/lib/nginx /var/log/nginx/* && \
     mkdir /data && \
-    chown -R rails:rails db log tmp /data
+    chown -R rails:rails db log storage tmp /data
 USER rails:rails
 
 # Deployment options
 ENV DATABASE_URL="sqlite3:///data/production.sqlite3" \
-    PORT="3001" \
-    RAILS_LOG_TO_STDOUT="1"
+    PORT="3001"
 
 # Entrypoint prepares the database.
 ENTRYPOINT ["/rails/bin/docker-entrypoint"]

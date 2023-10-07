@@ -60,7 +60,7 @@ COPY --link . .
 RUN bundle exec bootsnap precompile app/ lib/
 
 # Precompiling assets for production without requiring secret RAILS_MASTER_KEY
-RUN SECRET_KEY_BASE=DUMMY ./bin/rails assets:precompile
+RUN SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile
 
 
 # Final stage for app image
@@ -82,9 +82,7 @@ RUN useradd rails --create-home --shell /bin/bash && \
 USER rails:rails
 
 # Deployment options
-ENV DATABASE_URL="sqlite3:///data/production.sqlite3" \
-    RAILS_LOG_TO_STDOUT="1" \
-    RAILS_SERVE_STATIC_FILES="true"
+ENV DATABASE_URL="sqlite3:///data/production.sqlite3"
 
 # Entrypoint prepares the database.
 ENTRYPOINT ["/rails/bin/docker-entrypoint"]

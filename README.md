@@ -15,10 +15,14 @@ For more background:
 
 ## Usage
 
+Install from the root of your Rails project by running the following.
+
 ```
 bundle add dockerfile-rails --optimistic --group development
 bin/rails generate dockerfile
 ```
+
+The `--optomistic` flag will make sure you always get the latest `dockerfile-rails` gem when you run `bundle update && rails g dockerfile`.
 
 ### General option:
 

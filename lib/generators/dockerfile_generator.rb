@@ -968,7 +968,7 @@ private
 
     version
   rescue
-    "latest"
+    "1.22.19"
   end
 
 

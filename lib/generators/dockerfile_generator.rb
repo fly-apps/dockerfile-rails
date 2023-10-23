@@ -1107,12 +1107,15 @@ private
     return unless toml.include?("primary_region") # v2
 
     # see if flyctl is in the path
-    paths = ENV["PATH"].split(File::PATH_SEPARATOR)
-    cmds = %w(flyctl)
-    exts = ENV["PATHEXT"] ? ENV["PATHEXT"].split(";") : [""]
-    flyctl = Enumerator.product(paths, cmds, exts).
-      map { |path, cmd, ext| File.join(path, "#{cmd}#{ext}") }.
-      find { |path| File.executable? path }
+    flyctl = (lambda do
+      cmd = 'flyctl'
+      ENV["PATH"].split(File::PATH_SEPARATOR).each do |path|
+        (ENV["PATHEXT"] ? ENV["PATHEXT"].split(";") : [""]).each do |ext|
+          path = File.join(path, "#{cmd}#{ext}")
+          return path if File.executable? path
+        end
+      end
+    end).call
     return unless flyctl
 
     # see if secret is already set?

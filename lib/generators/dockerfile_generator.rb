@@ -1108,7 +1108,7 @@ private
 
     # see if flyctl is in the path
     flyctl = (lambda do
-      cmd = 'flyctl'
+      cmd = "flyctl"
       ENV["PATH"].split(File::PATH_SEPARATOR).each do |path|
         (ENV["PATHEXT"] ? ENV["PATHEXT"].split(";") : [""]).each do |ext|
           path = File.join(path, "#{cmd}#{ext}")

@@ -1115,6 +1115,8 @@ private
           return path if File.executable? path
         end
       end
+
+      nil
     end).call
     return unless flyctl
 

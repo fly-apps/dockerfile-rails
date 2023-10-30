@@ -8,7 +8,7 @@ RUN <% if options.cache? %>--mount=type=cache,id=bld-bun-cache,target=/root/.bun
     <% end %>bun install<% if options.lock? %> --frozen-lockfile<% end %>
 <% elsif sources.join.include? 'yarn' -%>
 RUN <% if options.cache? %>--mount=type=cache,id=bld-yarn-cache,target=/root/.yarn \
-    YARN_CACHE_FOLDER=/root/.yarn <% end %>yarn install<% if options.lock? %> --frozen-lockfile<% end %>
+    YARN_CACHE_FOLDER=/root/.yarn <% end %>yarn install<% if options.lock? %> --<% if yarn_version < '2' -%>frozen-lockfile<% else %>immutable<% end %><% end %>
 <% else -%>
 RUN <% if options.cache? %>--mount=type=cache,id=bld-npm-cache,target=/root/.npm \
     <% end %>npm install

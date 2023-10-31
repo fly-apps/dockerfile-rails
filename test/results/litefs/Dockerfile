@@ -57,9 +57,10 @@ COPY --from=build /usr/local/bundle /usr/local/bundle
 COPY --from=build /rails /rails
 
 # Run and own only the runtime files as a non-root user for security
-RUN useradd rails --create-home --shell /bin/bash && \
+RUN groupadd --system --gid 1000 rails && \
+    useradd rails --uid 1000 --gid 1000 --create-home --shell /bin/bash && \
     mkdir /data /litefs && \
-    chown -R rails:rails db log storage tmp /data /litefs
+    chown -R 1000:1000 db log storage tmp /data /litefs
 
 # Authorize rails user to launch litefs
 COPY <<-"EOF" /etc/sudoers.d/rails

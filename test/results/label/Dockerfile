@@ -51,10 +51,11 @@ COPY --from=build /usr/local/bundle /usr/local/bundle
 COPY --from=build /rails /rails
 
 # Run and own only the runtime files as a non-root user for security
-RUN useradd rails --create-home --shell /bin/bash && \
+RUN groupadd --system --gid 1000 rails && \
+    useradd rails --uid 1000 --gid 1000 --create-home --shell /bin/bash && \
     mkdir /data && \
-    chown -R rails:rails db log storage tmp /data
-USER rails:rails
+    chown -R 1000:1000 db log storage tmp /data
+USER 1000:1000
 
 # Deployment options
 ENV DATABASE_URL="sqlite3:///data/production.sqlite3"

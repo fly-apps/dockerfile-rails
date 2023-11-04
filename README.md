@@ -22,7 +22,7 @@ bundle add dockerfile-rails --optimistic --group development
 bin/rails generate dockerfile
 ```
 
-The `--optomistic` flag will make sure you always get the latest `dockerfile-rails` gem when you run `bundle update && rails g dockerfile`.
+The `--optimistic` flag will make sure you always get the latest `dockerfile-rails` gem when you run `bundle update && rails g dockerfile`.
 
 ### General option:
 

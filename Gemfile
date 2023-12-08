@@ -16,4 +16,10 @@ group :rubocop do
   gem "rubocop-rails", require: false
 end
 
+group :development do
+  gem "rmagick"
+  gem "pg"
+  gem "mysql2"
+end
+
 gem "quality_extensions", "~> 1.4"

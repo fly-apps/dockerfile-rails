@@ -880,8 +880,9 @@ private
   end
 
   def binfile_fixups
+    binfiles = Dir["bin/*"].select { |f| File.file?(f) }
     # binfiles may have OS specific paths to ruby.  Normalize them.
-    shebangs = Dir["bin/*"].map do |file|
+    shebangs = binfiles.map do |file|
       IO.read(file).lines.first.encode("UTF-8", "binary", invalid: :replace, undef: :replace, replace: "")
     end.join
     rubies = shebangs.scan(%r{#!/usr/bin/env (ruby.*)}).flatten.uniq
@@ -896,14 +897,14 @@ private
     # line endings.  This avoids adding unnecessary fixups if
     # none are required, but prepares for the need to do the
     # fix line endings if other fixups are required.
-    has_cr = Dir["bin/*"].any? { |file| IO.read(file).include? "\r" }
+    has_cr = binfiles.any? { |file| IO.read(file).include? "\r" }
     if has_cr || (Gem.win_platform? && !binfixups.empty?) || options.windows?
       binfixups.unshift 'sed -i "s/\r$//g" bin/*'
     end
 
     # Windows file systems may not have the concept of executable.
     # In such cases, fix up during the build.
-    if Dir["bin/*"].any? { |file| !File.executable?(file) } || options.windows?
+    if binfiles.any? { |file| !File.executable?(file) } || options.windows?
       binfixups.unshift "chmod +x bin/*"
     end
 

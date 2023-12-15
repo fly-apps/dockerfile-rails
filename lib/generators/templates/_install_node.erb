@@ -22,7 +22,7 @@ ARG YARN_VERSION=<%= yarn_version %>
 <% end -%>
 <% if node_version && node_version != 'lts' -%>
 <% if options.alpine? -%>
-RUN curl -sL https://unofficial-builds.nodejs.org/download/release/v21.2.0/node-v${NODE_VERSION}-linux-x64-musl.tar.gz | tar xz -C /tmp/ && \
+RUN curl -sL https://unofficial-builds.nodejs.org/download/release/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-x64-musl.tar.gz | tar xz -C /tmp/ && \
     cp -rp /tmp/node-v${NODE_VERSION}-linux-x64-musl/* /usr/local/ && \
 <% else -%>
 ENV PATH=/usr/local/node/bin:$PATH

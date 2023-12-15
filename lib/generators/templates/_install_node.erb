@@ -21,9 +21,14 @@ ARG NODE_VERSION=<%= node_version %>
 ARG YARN_VERSION=<%= yarn_version %>
 <% end -%>
 <% if node_version && node_version != 'lts' -%>
+<% if options.alpine? -%>
+RUN curl -sL https://unofficial-builds.nodejs.org/download/release/v21.2.0/node-v${NODE_VERSION}-linux-x64-musl.tar.gz | tar xz -C /tmp/ && \
+    cp -rp /tmp/node-v${NODE_VERSION}-linux-x64-musl/* /usr/local/ && \
+<% else -%>
 ENV PATH=/usr/local/node/bin:$PATH
 RUN curl -sL https://github.com/nodenv/node-build/archive/master.tar.gz | tar xz -C /tmp/ && \
     /tmp/node-build-master/bin/node-build "${NODE_VERSION}" /usr/local/node && \
+<% end -%>
 <% end -%>
 <% if yarn_version -%>
 <% if yarn_version < '2' -%>
@@ -37,7 +42,11 @@ RUN curl -sL https://github.com/nodenv/node-build/archive/master.tar.gz | tar xz
     corepack prepare yarn@$YARN_VERSION --activate<% if node_version -%> && \<% end %>
 <% end -%>
 <% end -%>
-<% if node_version -%>
+<% if node_version && node_version != 'lts' -%>
+<% if options.alpine? -%>
+    rm -rf /tmp/node-v${NODE_VERSION}-linux-x64-musl
+<% else -%>
     rm -rf /tmp/node-build-master
+<% end -%>
 <% end -%>
 <% end -%>

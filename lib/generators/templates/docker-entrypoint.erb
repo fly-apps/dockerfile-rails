@@ -1,4 +1,8 @@
+<% if options.alpine? -%>
+#!/bin/sh -e
+<% else -%>
 #!/bin/bash -e
+<% end -%>
 
 <% if options.swap && !File.exist?("fly.toml")-%>
 <% if run_as_root? or using_passenger? -%>

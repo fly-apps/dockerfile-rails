@@ -1,12 +1,12 @@
 <% if options.cache? -%>
 RUN --mount=type=cache,id=dev-apt-cache,sharing=locked,target=/var/cache/apt \
     --mount=type=cache,id=dev-apt-lib,sharing=locked,target=/var/lib/apt \
-    <%= repos %>apt-get update -qq && \
-    apt-get install --no-install-recommends -y <%= packages.join(" ") %>
+    <%= repos %><%= pkg_update %> && \
+    <%= pkg_install %> <%= packages.join(" ") %>
 <% else -%>
-RUN <%= repos %>apt-get update -qq && \
-    apt-get install --no-install-recommends -y <%= packages.join(" ") %><% if clean %> && \
-    rm -rf /var/lib/apt/lists /var/cache/apt/archives<% end %>
+RUN <%= repos %><%= pkg_update %> && \
+    <%= pkg_install %> <%= packages.join(" ") %><% if clean %> && \
+    rm -rf <%= pkg_cleanup %><% end %>
 <% end -%>
 <% if @sqlserver -%>
  # install freetds required by tiny_tds gem

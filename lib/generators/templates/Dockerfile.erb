@@ -8,9 +8,9 @@ ARG RUBY_VERSION=<%= RUBY_VERSION %>
 
 <% end -%>
 <% if options.fullstaq -%>
-FROM <%= platform %>quay.io/evl.ms/fullstaq-ruby:${RUBY_VERSION}-<%= options.jemalloc ? 'jemalloc-' : '' %><%= options.variant %><% unless options.precompile == "defer" %> as base<% end %>
+FROM <%= platform %>quay.io/evl.ms/fullstaq-ruby:${RUBY_VERSION}-<%= options.jemalloc ? 'jemalloc-' : '' %><%= variant %><% unless options.precompile == "defer" %> as base<% end %>
 <% else -%>
-FROM <%= platform %><%= options.registry %>ruby:$RUBY_VERSION-<%= options.variant %><% unless options.precompile == "defer" %> as base<% end %>
+FROM <%= platform %><%= options.registry %>ruby:$RUBY_VERSION-<%= variant %><% unless options.precompile == "defer" %> as base<% end %>
 <% end -%>
 
 <% unless options.label.empty? -%>
@@ -87,6 +87,12 @@ ENV <%= build_env.join(" \\\n    ") %>
 <% end -%>
 # Install application gems
 COPY<% if options.link? %> --link<% end %> Gemfile Gemfile.lock ./
+<% if options.alpine? and deploy_packages.include? 'sqlite-libs' -%>
+# Workaround sqlite/alpine issue: https://github.com/sparklemotion/sqlite3-ruby/issues/434
+RUN bundle config force_ruby_platform true && \
+    bundle config set frozen false && \
+    bundle lock --add-platform ruby
+<% end -%>
 <% if options.cache? -%>
 RUN --mount=type=cache,id=bld-gem-cache,sharing=locked,target=/srv/vendor \
 <% if private_gemserver_env_variable_name -%>
@@ -225,12 +231,22 @@ RUN mkdir /data
 <% user = "rails:rails" -%>
 ARG UID=1000 \
     GID=1000
+<% if options.alpine? -%>
+RUN addgroup --system --gid $GID rails && \
+    adduser --system rails --uid $UID --ingroup rails --home /home/rails --shell /bin/sh rails && \
+<% else -%>
 RUN groupadd -f -g $GID rails && \
     useradd -u $UID -g $GID rails --create-home --shell /bin/bash && \
+<% end -%>
 <% else -%>
 <% user = "1000:1000" -%>
+<% if options.alpine? -%>
+RUN addgroup --system --gid 1000 rails && \
+    adduser --system rails --uid 1000 --ingroup rails --home /home/rails --shell /bin/sh rails && \
+<% else -%>
 RUN groupadd --system --gid 1000 rails && \
     useradd rails --uid 1000 --gid 1000 --create-home --shell /bin/bash && \
+<% end -%>
 <% end -%>
 <% if options.nginx? -%>
     chown <%= user %> /var/lib/nginx /var/log/nginx/* && \

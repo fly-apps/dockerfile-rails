@@ -8,6 +8,7 @@ class DockerfileGenerator < Rails::Generators::Base
   include DockerfileRails::Scanner
 
   BASE_DEFAULTS = {
+    "alpine" => false,
     "bin-cd" => false,
     "cache" => false,
     "ci" => false,
@@ -39,7 +40,7 @@ class DockerfileGenerator < Rails::Generators::Base
     "sentry" => false,
     "sudo" => false,
     "swap" => nil,
-    "variant" => "slim",
+    "variant" => nil,
     "windows" => false,
     "yjit" => false,
   }.yield_self { |hash| Struct.new(*hash.keys.map(&:to_sym)).new(*hash.values) }
@@ -51,6 +52,25 @@ class DockerfileGenerator < Rails::Generators::Base
   @@vars = { "base" => {}, "build" => {}, "deploy" => {} }
   @@args = { "base" => {}, "build" => {}, "deploy" => {} }
   @@instructions = { "base" => nil, "build" => nil, "deploy" => nil }
+
+  ALPINE_MAPPINGS = {
+    "build-essential" => "build-base",
+    "chromium-sandbox" => "chromium-chromedriver",
+    "default-libmysqlclient-dev" => "mysql-client",
+    "default-mysqlclient" => "mysql-client",
+    "freedts-bin" => "freedts",
+    "libicu-dev" => "icu-dev",
+    "libjemalloc" => "jemalloc-dev",
+    "libjpeg-dev" => "jpeg-dev",
+    "libmagickwand-dev" => "imagemagick-libs",
+    "libsqlite3-0" => "sqlite-dev",
+    "libtiff-dev" => "tiff-dev",
+    "libvips" => "vips-dev",
+    "node-gyp" => "gyp",
+    "pkg-config" => "pkgconfig",
+    "python" => "python3",
+    "python-is-python3" => "python3"
+  }
 
   # load defaults from config file
   if File.exist? "config/dockerfile.yml"
@@ -145,6 +165,9 @@ class DockerfileGenerator < Rails::Generators::Base
 
   class_option :registry, type: :string, default: OPTION_DEFAULTS.registry,
     desc: "docker registry to use (example: registry.docker.com/library/)"
+
+  class_option :alpine, type: :boolean, default: OPTION_DEFAULTS.alpine,
+    descr: "use alpine image"
 
   class_option :variant, type: :string, default: OPTION_DEFAULTS.variant,
     desc: "dockerhub image variant (example: slim-bullseye)"
@@ -374,6 +397,10 @@ private
     end
   end
 
+  def variant
+    options.variant || (options.alpine ? 'alpine' : 'slim')
+  end
+
   def run_as_root?
     options.root?
   end
@@ -516,6 +543,10 @@ private
     gems.sort
   end
 
+  def alpinize(packages)
+    packages.map {|package| ALPINE_MAPPINGS[package] || package}.sort.uniq
+  end
+
   def base_packages
     packages = []
     packages += @@packages["base"] if @@packages["base"]
@@ -544,7 +575,13 @@ private
     # Passenger
     packages << "passenger" if using_passenger?
 
-    packages.sort.uniq
+    if options.alpine?
+      packages << "tzdata"
+
+      alpinize(packages)
+    else
+      packages.sort.uniq
+    end
   end
 
   def base_requirements
@@ -610,7 +647,11 @@ private
       end
     end
 
-    packages.sort.uniq
+    if options.alpine?
+      alpinize(packages)
+    else
+      packages.sort.uniq
+    end
   end
 
   def deploy_packages
@@ -659,8 +700,47 @@ private
       packages << "ruby-foreman"
     end
 
-    packages.sort
+    if options.alpine?
+      packages << "sqlite-libs" if @gemfile.include? 'sqlite3'
+      packages << "libpq" if @gemfile.include? 'pg'
+
+      alpinize(packages)
+    else
+      packages.sort.uniq
+    end
   end
+
+  def pkg_update
+    if options.alpine?
+      "apk update"
+    else
+      "apt-get update -qq"
+    end
+  end
+
+  def pkg_install
+    if options.alpine?
+      "apk add"
+    else
+      "apt-get install --no-install-recommends -y"
+    end
+  end
+
+  def pkg_cache
+    if options.alpine?
+      {cache: "/var/cache/apk"}
+    else
+      {cache: "/var/cache/apt", lib: "/var/lib/apt"}
+    end
+  end
+
+  def pkg_cleanup
+    if options.alpine?
+      "/var/cache/apk/*"
+    else
+      "/var/lib/apt/lists /var/cache/apt/archives"
+    end
+  end  
 
   def base_repos
     repos = []
@@ -680,8 +760,8 @@ private
     else
       packages.sort!.uniq!
       unless packages.empty?
-        repos.unshift "apt-get update -qq &&",
-          "apt-get install --no-install-recommends -y #{packages.join(" ")} &&"
+        repos.unshift "#{pkg_update} &&",
+          "#{pkg_install} #{packages.join(" ")} &&"
       end
 
       repos.join(" \\\n    ") + " && \\\n    "
@@ -706,8 +786,8 @@ private
     else
       packages.sort!.uniq!
       unless packages.empty?
-        repos.unshift "apt-get update -qq &&",
-          "apt-get install --no-install-recommends -y #{packages.join(" ")} &&"
+        repos.unshift "#{pkg_update} &&",
+          "#{pkg_install} --no-install-recommends -y #{packages.join(" ")} &&"
       end
 
       repos.join(" \\\n    ") + " && \\\n    "
@@ -717,6 +797,7 @@ private
   def base_env
     env = {
       "RAILS_ENV" => "production",
+      "BUNDLE_PATH" => "/usr/local/bundle",
       "BUNDLE_WITHOUT" => options.ci? ? "development" : "development:test"
     }
 
@@ -734,7 +815,7 @@ private
 
     env.merge! @@vars["base"] if @@vars["base"]
 
-    env.map { |key, value| "#{key}=#{value.inspect}" }
+    env.map { |key, value| "#{key}=#{value.inspect}" }.sort
   end
 
   def build_env

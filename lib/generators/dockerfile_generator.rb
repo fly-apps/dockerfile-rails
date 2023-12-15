@@ -398,7 +398,7 @@ private
   end
 
   def variant
-    options.variant || (options.alpine ? 'alpine' : 'slim')
+    options.variant || (options.alpine ? "alpine" : "slim")
   end
 
   def run_as_root?
@@ -544,7 +544,7 @@ private
   end
 
   def alpinize(packages)
-    packages.map {|package| ALPINE_MAPPINGS[package] || package}.sort.uniq
+    packages.map { |package| ALPINE_MAPPINGS[package] || package }.sort.uniq
   end
 
   def base_packages
@@ -701,8 +701,8 @@ private
     end
 
     if options.alpine?
-      packages << "sqlite-libs" if @gemfile.include? 'sqlite3'
-      packages << "libpq" if @gemfile.include? 'pg'
+      packages << "sqlite-libs" if @gemfile.include? "sqlite3"
+      packages << "libpq" if @gemfile.include? "pg"
 
       alpinize(packages)
     else
@@ -728,9 +728,9 @@ private
 
   def pkg_cache
     if options.alpine?
-      {cache: "/var/cache/apk"}
+      { cache: "/var/cache/apk" }
     else
-      {cache: "/var/cache/apt", lib: "/var/lib/apt"}
+      { cache: "/var/cache/apt", lib: "/var/lib/apt" }
     end
   end
 
@@ -740,7 +740,7 @@ private
     else
       "/var/lib/apt/lists /var/cache/apt/archives"
     end
-  end  
+  end
 
   def base_repos
     repos = []

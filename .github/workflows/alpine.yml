@@ -1,4 +1,4 @@
-name: system_test
+name: alpine
 on: [push, pull_request]
 jobs:
   test:
@@ -10,5 +10,9 @@ jobs:
       with:
         ruby-version: '3.2'
         bundler-cache: true
+    - uses: actions/setup-node@v3
+        with:
+          node-version: 20
+          cache: "npm"
     - run: gem install rails
     - run: rake test:alpine

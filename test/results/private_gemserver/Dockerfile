@@ -8,9 +8,10 @@ FROM ruby:$RUBY_VERSION-slim as base
 WORKDIR /rails
 
 # Set production environment
-ENV RAILS_ENV="production" \
+ENV BUNDLE_DEPLOYMENT="1" \
+    BUNDLE_PATH="/usr/local/bundle" \
     BUNDLE_WITHOUT="development:test" \
-    BUNDLE_DEPLOYMENT="1"
+    RAILS_ENV="production"
 
 # Update gems and bundler
 RUN gem update --system --no-document && \
@@ -30,7 +31,7 @@ RUN --mount=type=secret,id=gemserver_credentials,dst=/kaniko/gemserver_credentia
     BUNDLE_GEMS__EXAMPLE__COM="$(cat /kaniko/gemserver_credentials)" && \
     export BUNDLE_GEMS__EXAMPLE__COM && \
     bundle install && \
-    rm -rf ~/.bundle/ $BUNDLE_PATH/ruby/*/cache $BUNDLE_PATH/ruby/*/bundler/gems/*/.git
+    rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git
 
 # Copy application code
 COPY --link . .

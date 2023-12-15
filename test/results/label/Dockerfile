@@ -10,9 +10,10 @@ LABEL runtime="rails"
 WORKDIR /rails
 
 # Set production environment
-ENV RAILS_ENV="production" \
+ENV BUNDLE_DEPLOYMENT="1" \
+    BUNDLE_PATH="/usr/local/bundle" \
     BUNDLE_WITHOUT="development:test" \
-    BUNDLE_DEPLOYMENT="1"
+    RAILS_ENV="production"
 
 # Update gems and bundler
 RUN gem update --system --no-document && \
@@ -29,7 +30,7 @@ RUN apt-get update -qq && \
 # Install application gems
 COPY --link Gemfile Gemfile.lock ./
 RUN bundle install && \
-    rm -rf ~/.bundle/ $BUNDLE_PATH/ruby/*/cache $BUNDLE_PATH/ruby/*/bundler/gems/*/.git
+    rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git
 
 # Copy application code
 COPY --link . .

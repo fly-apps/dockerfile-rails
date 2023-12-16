@@ -1,6 +1,5 @@
 <% if options.cache? -%>
-RUN --mount=type=cache,id=dev-apt-cache,sharing=locked,target=/var/cache/apt \
-    --mount=type=cache,id=dev-apt-lib,sharing=locked,target=/var/lib/apt \
+RUN <%= pkg_cache.map {|name, path| "--mount=type=cache,id=#{name},sharing=locked,target=#{path} \\"}.join("\n    ") %>
     <%= repos %><%= pkg_update %> && \
     <%= pkg_install %> <%= packages.join(" ") %>
 <% else -%>

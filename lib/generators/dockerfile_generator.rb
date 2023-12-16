@@ -728,9 +728,9 @@ private
 
   def pkg_cache
     if options.alpine?
-      { cache: "/var/cache/apk" }
+      { "dev-apk-cache" => "/var/cache/apk" }
     else
-      { cache: "/var/cache/apt", lib: "/var/lib/apt" }
+      { "dev-apt-cache" => "/var/cache/apt", "dev-apt-lib" => "/var/lib/apt" }
     end
   end
 

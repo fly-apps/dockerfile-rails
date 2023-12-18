@@ -415,7 +415,8 @@ private
 
   def using_node?
     return @using_node if @using_node != nil
-    @using_node = File.exist? "package.json"
+    return if using_bun?
+    @using_node = File.exist?("package.json")
   end
 
   def using_bun?
@@ -455,7 +456,7 @@ private
   end
 
   def parallel?
-    using_node? && options.parallel
+    (using_node? || using_bun?) && options.parallel
   end
 
   def has_mysql_gem?
@@ -645,6 +646,10 @@ private
       else
         packages << "python"
       end
+    end
+
+    if using_bun?
+      packages += %w(curl unzip)
     end
 
     if options.alpine?

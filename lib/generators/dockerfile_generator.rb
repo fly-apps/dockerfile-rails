@@ -623,7 +623,6 @@ private
 
       unless using_execjs? || using_puppeteer?
         packages << "curl"
-        packages << "unzip" if using_bun?
       end
 
       # module build process depends on Python, and debian changed

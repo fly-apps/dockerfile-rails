@@ -21,9 +21,9 @@ RUN gem update --system --no-document && \
 # Throw-away build stage to reduce size of final image
 FROM base as build
 
-# Install packages needed to build gems and node modules
+# Install packages needed to build gems
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y build-essential curl node-gyp pkg-config python-is-python3 unzip
+    apt-get install --no-install-recommends -y build-essential curl pkg-config unzip
 
 # Install Bun
 ARG BUN_VERSION=xxx

@@ -99,15 +99,15 @@ Args and environment variables can be tailored to a specific build phase by addi
 
 ### Advanced Customization:
 
-There may be times where feature detection plus flags just aren't enough.  As an example, you may wish to configure and run multiple processes.  
+There may be times where feature detection plus flags just aren't enough.  As an example, you may wish to configure and run multiple processes.
 
-* `--instructions=path` - a dockerfile fragment to be inserted into the final document. 
+* `--instructions=path` - a dockerfile fragment to be inserted into the final document.
 * `--migration=cmd` - a replacement (generally a script) for `db:prepare`/`db:migrate`.
 * `--procfile=path` - a [Procfile](https://github.com/ddollar/foreman#foreman) to use in place of launching Rails directly.
 
 Like with environment variables, packages, and build args, `--instructions` can be tailored to a specific build phase by adding `-base`, `-build`, or `-deploy` after the flag name, with the default being `-deploy`.
 
-Additionaly, if the instructions start with a [shebang](https://en.wikipedia.org/wiki/Shebang_(Unix)) instead the file being treated as a Dockerfile fragment, the file is treated as a script and a `RUN` statement is added to your Dockerfile instead.
+Additionally, if the instructions start with a [shebang](https://en.wikipedia.org/wiki/Shebang_(Unix)) instead the file being treated as a Dockerfile fragment, the file is treated as a script and a `RUN` statement is added to your Dockerfile instead.
 
 ---
 

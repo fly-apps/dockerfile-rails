@@ -65,6 +65,7 @@ class DockerfileGenerator < Rails::Generators::Base
     "libmagickwand-dev" => "imagemagick-libs",
     "libsqlite3-0" => "sqlite-dev",
     "libtiff-dev" => "tiff-dev",
+    "libjemalloc2" => "jemalloc",
     "libvips" => "vips-dev",
     "node-gyp" => "gyp",
     "pkg-config" => "pkgconfig",

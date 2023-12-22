@@ -599,6 +599,7 @@ private
     packages = %w(build-essential)
     packages += @@packages["build"] if @@packages["build"]
     packages += %w(nodejs npm) if (node_version == "lts") && (not using_execjs?)
+    packages << "libyaml-dev" if options.fullstaq?
 
     # add databases: sqlite3, postgres, mysql
     packages << "pkg-config" if options.sqlite3? || @sqlite3

@@ -2,7 +2,7 @@
 
 # Make sure RUBY_VERSION matches the Ruby version in .ruby-version and Gemfile
 ARG RUBY_VERSION=xxx
-FROM quay.io/evl.ms/fullstaq-ruby:${RUBY_VERSION}-slim as base
+FROM quay.io/evl.ms/fullstaq-ruby:${RUBY_VERSION}-malloctrim-slim as base
 
 # Rails app lives here
 WORKDIR /rails
@@ -23,7 +23,7 @@ FROM base as build
 
 # Install packages needed to build gems
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y build-essential pkg-config
+    apt-get install --no-install-recommends -y build-essential libyaml-dev pkg-config
 
 # Install application gems
 COPY Gemfile Gemfile.lock ./

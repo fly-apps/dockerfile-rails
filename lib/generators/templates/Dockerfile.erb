@@ -8,7 +8,7 @@ ARG RUBY_VERSION=<%= RUBY_VERSION %>
 
 <% end -%>
 <% if options.fullstaq -%>
-FROM <%= platform %>quay.io/evl.ms/fullstaq-ruby:${RUBY_VERSION}-<%= options.jemalloc ? 'jemalloc-' : '' %><%= variant %><% unless options.precompile == "defer" %> as base<% end %>
+FROM <%= platform %>quay.io/evl.ms/fullstaq-ruby:${RUBY_VERSION}-<%= options.jemalloc ? 'jemalloc-' : 'malloctrim-' %><%= variant %><% unless options.precompile == "defer" %> as base<% end %>
 <% else -%>
 FROM <%= platform %><%= options.registry %>ruby:$RUBY_VERSION-<%= variant %><% unless options.precompile == "defer" %> as base<% end %>
 <% end -%>

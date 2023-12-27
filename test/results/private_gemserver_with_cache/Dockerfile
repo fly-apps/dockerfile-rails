@@ -28,7 +28,7 @@ RUN --mount=type=cache,id=dev-apt-cache,sharing=locked,target=/var/cache/apt \
     apt-get install --no-install-recommends -y build-essential pkg-config
 
 # Install application gems
-COPY --link Gemfile Gemfile.lock ./
+COPY --link Gemfile Gemfile.lock .ruby-version ./
 RUN --mount=type=cache,id=bld-gem-cache,sharing=locked,target=/srv/vendor \
     --mount=type=secret,id=gemserver_credentials,dst=/kaniko/gemserver_credentials \
     BUNDLE_GEMS__EXAMPLE__COM="$(cat /kaniko/gemserver_credentials)" && \

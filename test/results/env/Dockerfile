@@ -30,7 +30,7 @@ ENV AWS_ACCESS_KEY_ID="1" \
     AWS_SECRET_ACCESS_KEY="1"
 
 # Install application gems
-COPY --link Gemfile Gemfile.lock ./
+COPY --link Gemfile Gemfile.lock .ruby-version ./
 RUN bundle install && \
     rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git
 

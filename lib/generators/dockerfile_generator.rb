@@ -425,6 +425,10 @@ private
     @using_bun = File.exist?("bun.config.js") || File.exist?("bun.lockb")
   end
 
+  def ruby_version_exists?
+    @ruby_version_exists ||= File.exist?(".ruby-version")
+  end
+
   def using_redis?
     # Note: If you have redis installed on your computer, 'rails new` will
     # automatically add redis to your Gemfile, so having it in your Gemfile is

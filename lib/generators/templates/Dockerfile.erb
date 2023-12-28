@@ -86,7 +86,7 @@ ENV <%= build_env.join(" \\\n    ") %>
 
 <% end -%>
 # Install application gems
-COPY<% if options.link? %> --link<% end %> Gemfile Gemfile.lock ./
+COPY<% if options.link? %> --link<% end %> Gemfile Gemfile.lock <% if references_ruby_version_file? %>.ruby-version <% end %>./
 <% if options.alpine? and deploy_packages.include? 'sqlite-libs' -%>
 # Workaround sqlite/alpine issue: https://github.com/sparklemotion/sqlite3-ruby/issues/434
 RUN bundle config force_ruby_platform true && \

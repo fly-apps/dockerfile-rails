@@ -26,7 +26,7 @@ RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y build-essential pkg-config
 
 # Install application gems
-COPY --link Gemfile Gemfile.lock .ruby-version ./
+COPY --link Gemfile Gemfile.lock ./
 RUN --mount=type=secret,id=gemserver_credentials,dst=/kaniko/gemserver_credentials \
     BUNDLE_GEMS__EXAMPLE__COM="$(cat /kaniko/gemserver_credentials)" && \
     export BUNDLE_GEMS__EXAMPLE__COM && \

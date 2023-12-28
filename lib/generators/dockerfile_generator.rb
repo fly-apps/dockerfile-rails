@@ -425,8 +425,8 @@ private
     @using_bun = File.exist?("bun.config.js") || File.exist?("bun.lockb")
   end
 
-  def ruby_version_exists?
-    @ruby_version_exists ||= File.exist?(".ruby-version")
+  def references_ruby_version_file?
+    @references_ruby_version_file ||= IO.read("Gemfile").include?(".ruby-version")
   end
 
   def using_redis?

@@ -26,7 +26,7 @@ RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y build-essential libyaml-dev pkg-config
 
 # Install application gems
-COPY Gemfile Gemfile.lock .ruby-version ./
+COPY Gemfile Gemfile.lock ./
 RUN bundle install && \
     rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git
 

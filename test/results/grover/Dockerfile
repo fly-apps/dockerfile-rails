@@ -42,7 +42,7 @@ ENV PATH="/usr/local/node/bin:$PATH" \
     PUPPETEER_SKIP_CHROMIUM_DOWNLOAD="true"
 
 # Install application gems
-COPY --link Gemfile Gemfile.lock .ruby-version ./
+COPY --link Gemfile Gemfile.lock ./
 RUN bundle install && \
     rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git
 

@@ -1135,7 +1135,7 @@ private
 
   def fly_processes
     return unless File.exist? "fly.toml"
-    return unless using_sidekiq? or using_solidq?
+    return unless using_sidekiq? || using_solidq?
 
     if procfile.size > 1
       list = { "app" => "foreman start --procfile=Procfile.prod" }

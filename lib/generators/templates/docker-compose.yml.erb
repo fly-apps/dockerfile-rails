@@ -90,11 +90,15 @@ services:
   redis-db:
     image: redis
 <% end -%>
-<% if using_sidekiq? and deploy_database != 'sqlite3' -%>
+<% if (using_sidekiq? or using_solidq?) and deploy_database != 'sqlite3' -%>
 
-  sidekiq:
+  <%= using_sidekiq? ? "sidekiq" : "solidq" %>:
     build: .
+<% if using_sidekiq? -%>
     command: bundle exec sidekiq
+<% else -%>
+    command: bundle exec rake solid_queue:start
+<% end -%>
     environment:
       - RAILS_MASTER_KEY=$RAILS_MASTER_KEY
       - REDIS_URL=redis://redis-db:6379

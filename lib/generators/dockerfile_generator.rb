@@ -460,6 +460,10 @@ private
     @gemfile.include?("sidekiq")
   end
 
+  def using_solidq?
+    @gemfile.include?("solid_queue")
+  end
+
   def parallel?
     (using_node? || using_bun?) && options.parallel
   end
@@ -1131,7 +1135,7 @@ private
 
   def fly_processes
     return unless File.exist? "fly.toml"
-    return unless using_sidekiq?
+    return unless using_sidekiq? or using_solidq?
 
     if procfile.size > 1
       list = { "app" => "foreman start --procfile=Procfile.prod" }
@@ -1139,7 +1143,11 @@ private
       list = { "app" => procfile.values.first }
     end
 
-    list["sidekiq"] = "bundle exec sidekiq"
+    if using_sidekiq?
+      list["sidekiq"] = "bundle exec sidekiq"
+    elsif using_solidq?
+      list["solidq"] = "bundle exec rake solid_queue:start"
+    end
 
     list
   end

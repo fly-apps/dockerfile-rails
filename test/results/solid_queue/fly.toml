@@ -1,0 +1,4 @@
+
+[processes]
+  app = "./bin/rails server"
+  solidq = "bundle exec rake solid_queue:start"

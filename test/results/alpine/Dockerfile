@@ -33,8 +33,10 @@ RUN apk update && \
 # Install JavaScript dependencies
 ARG NODE_VERSION=xxx
 ARG YARN_VERSION=xxx
+ENV PATH=/usr/local/node/bin:$PATH
 RUN curl -sL https://unofficial-builds.nodejs.org/download/release/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-x64-musl.tar.gz | tar xz -C /tmp/ && \
-    cp -rp /tmp/node-v${NODE_VERSION}-linux-x64-musl/* /usr/local/ && \
+    mkdir /usr/local/node && \
+    cp -rp /tmp/node-v${NODE_VERSION}-linux-x64-musl/* /usr/local/node/ && \
     npm install -g yarn@$YARN_VERSION && \
     rm -rf /tmp/node-v${NODE_VERSION}-linux-x64-musl
 

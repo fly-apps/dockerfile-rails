@@ -22,8 +22,10 @@ ARG YARN_VERSION=<%= yarn_version %>
 <% end -%>
 <% if node_version && node_version != 'lts' -%>
 <% if options.alpine? -%>
+ENV PATH=/usr/local/node/bin:$PATH
 RUN curl -sL https://unofficial-builds.nodejs.org/download/release/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-x64-musl.tar.gz | tar xz -C /tmp/ && \
-    cp -rp /tmp/node-v${NODE_VERSION}-linux-x64-musl/* /usr/local/ && \
+    mkdir /usr/local/node && \
+    cp -rp /tmp/node-v${NODE_VERSION}-linux-x64-musl/* /usr/local/node/ && \
 <% else -%>
 ENV PATH=/usr/local/node/bin:$PATH
 RUN curl -sL https://github.com/nodenv/node-build/archive/master.tar.gz | tar xz -C /tmp/ && \

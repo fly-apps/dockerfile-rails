@@ -73,7 +73,7 @@ RUN --mount=type=cache,id=dev-apt-cache,sharing=locked,target=/var/cache/apt \
     apt-get install --no-install-recommends -y curl libsqlite3-0
 
 # Copy built artifacts: gems, application
-COPY --from=build /usr/local/bundle /usr/local/bundle
+COPY --from=build "${BUNDLE_PATH}" "${BUNDLE_PATH}"
 COPY --from=build /rails /rails
 
 # Run and own only the runtime files as a non-root user for security

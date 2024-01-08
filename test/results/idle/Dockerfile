@@ -83,7 +83,7 @@ RUN echo "daemon off;" >> /etc/nginx/nginx.conf && \
     mkdir /var/run/passenger-instreg
 
 # Copy built artifacts: gems, application
-COPY --from=build /usr/local/bundle /usr/local/bundle
+COPY --from=build "${BUNDLE_PATH}" "${BUNDLE_PATH}"
 COPY --from=build /rails /rails
 
 # Copy passenger native support

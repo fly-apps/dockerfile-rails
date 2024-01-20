@@ -39,7 +39,7 @@ RUN curl -sL https://github.com/nodenv/node-build/archive/master.tar.gz | tar xz
 <% if node_version && (node_version.split('.').map(&:to_i) <=> [16,10,0]) < 0 -%>
     npm i -g corepack && \
 <% else -%>
-    corepack enable && \
+<% if node_version -%>   <% else %>RUN<% end %> corepack enable && \
 <% end -%>
     corepack prepare yarn@$YARN_VERSION --activate<% if node_version -%> && \<% end %>
 <% end -%>

@@ -31,7 +31,7 @@ ARG <%= base_args.map {|key, value| "#{key}=#{value.inspect}"}.join(" \\\n    ")
 ENV <%= base_env.join(" \\\n    ") %>
 
 # Update gems and bundler
-RUN gem update --system --no-document && \
+RUN gem update --system <% if RUBY_VERSION.start_with? '2' %><3.4.22 <% end %>--no-document && \
     gem install -N <%= base_gems.join(" ") %>
 
 <% unless base_packages.empty? -%>

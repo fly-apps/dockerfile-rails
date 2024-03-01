@@ -181,7 +181,7 @@ FROM base
 <% end -%>
 <% if using_litefs? -%>
 # Install, configure litefs
-COPY --from=flyio/litefs:0.4.0 /usr/local/bin/litefs /usr/local/bin/litefs
+COPY --from=flyio/litefs:0.5 /usr/local/bin/litefs /usr/local/bin/litefs
 COPY<% if options.link? %> --link<% end %> config/litefs.yml /etc/litefs.yml
 
 <% end -%>

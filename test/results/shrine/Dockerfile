@@ -14,7 +14,7 @@ ENV BUNDLE_DEPLOYMENT="1" \
     RAILS_ENV="production"
 
 # Update gems and bundler
-RUN gem update --system 3.4.22 --no-document && \
+RUN gem update --system --no-document && \
     gem install -N bundler
 
 
@@ -34,7 +34,7 @@ RUN bundle install && \
 COPY --link . .
 
 # Precompiling assets for production without requiring secret RAILS_MASTER_KEY
-RUN SECRET_KEY_BASE=DUMMY ./bin/rails assets:precompile
+RUN SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile
 
 
 # Final stage for app image
@@ -53,13 +53,11 @@ COPY --from=build /rails /rails
 RUN groupadd --system --gid 1000 rails && \
     useradd rails --uid 1000 --gid 1000 --create-home --shell /bin/bash && \
     mkdir /data && \
-    chown -R 1000:1000 db log tmp /data
+    chown -R 1000:1000 db log storage tmp /data
 USER 1000:1000
 
 # Deployment options
-ENV DATABASE_URL="sqlite3:///data/production.sqlite3" \
-    RAILS_LOG_TO_STDOUT="1" \
-    RAILS_SERVE_STATIC_FILES="true"
+ENV DATABASE_URL="sqlite3:///data/production.sqlite3"
 
 # Entrypoint prepares the database.
 ENTRYPOINT ["/rails/bin/docker-entrypoint"]

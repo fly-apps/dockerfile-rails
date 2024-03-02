@@ -1162,6 +1162,12 @@ private
       more += "\n" + lines.join
     end
 
+    # Ignore files uploaded using Shrine in development. This is the location used in their documentation.
+    # https://shrinerb.com/docs/getting-started
+    if @gemfile.include?('shrine')
+      more += "\n/public/uploads/*\n"
+    end
+
     more
   end
 

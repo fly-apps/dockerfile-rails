@@ -1136,7 +1136,7 @@ private
       }
     elsif options.thruster? || @gemfile.include?("thruster")
       {
-        rails: "thruster ./bin/rails server"
+        rails: "bundle exec thrust ./bin/rails server"
       }
     else
       {

@@ -1134,7 +1134,7 @@ private
         nginx: '/usr/sbin/nginx -g "daemon off;"',
         rails: "./bin/rails server -p 3001"
       }
-    elsif options.thruster?
+    elsif options.thruster? || @gemfile.include?("thruster")
       {
         rails: "thruster ./bin/rails server"
       }
@@ -1311,7 +1311,6 @@ private
       end
     end
 
-    puts @gemfile.inspect
     unless options.nginx? || using_passenger? || options.thruster? || @gemfile.include?("thruster")
       unless toml.include? "[statics]"
         toml += "[[statics]]\n  guest_path = \"/rails/public\"\n  url_prefix = \"/\"\n\n"

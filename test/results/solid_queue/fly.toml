@@ -2,3 +2,8 @@
 [processes]
   app = "./bin/rails server"
   solidq = "bundle exec rake solid_queue:start"
+
+[[statics]]
+  guest_path = "/rails/public"
+  url_prefix = "/"
+

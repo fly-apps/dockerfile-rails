@@ -5,3 +5,7 @@
   source="data"
   destination="/data"
 
+[[statics]]
+  guest_path = "/rails/public"
+  url_prefix = "/"
+

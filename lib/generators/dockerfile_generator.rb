@@ -40,6 +40,7 @@ class DockerfileGenerator < Rails::Generators::Base
     "sentry" => false,
     "sudo" => false,
     "swap" => nil,
+    "thruster" => false,
     "variant" => nil,
     "windows" => false,
     "yjit" => false,
@@ -184,6 +185,9 @@ class DockerfileGenerator < Rails::Generators::Base
 
   class_option :label, type: :hash, default: {},
     desc: "Add Docker label(s)"
+
+  class_option :thruster, type: :boolean, default: OPTION_DEFAULTS.thruster,
+    desc: "use Thruster HTTP/2 proxy"
 
   class_option :nginx, type: :boolean, default: OPTION_DEFAULTS.nginx,
     desc: "Serve static files with nginx"
@@ -505,6 +509,10 @@ private
     if options.sentry?
       system "bundle add sentry-ruby --skip-install" unless @gemfile.include? "sentry-ruby"
       system "bundle add sentry-rails --skip-install" unless @gemfile.include? "sentry-rails"
+    end
+
+    if options.thruster?
+      system "bundle add thruster --skip-install" unless @gemfile.include? "thruster"
     end
 
     if options.rollbar?
@@ -1126,6 +1134,10 @@ private
         nginx: '/usr/sbin/nginx -g "daemon off;"',
         rails: "./bin/rails server -p 3001"
       }
+    elsif options.thruster?
+      {
+        rails: "thruster ./bin/rails server"
+      }
     else
       {
         rails: "./bin/rails server"
@@ -1249,7 +1261,7 @@ private
           list.map { |name, cmd| "  #{name} = #{cmd.inspect}" }.join("\n") + '\1')
       else
         toml += "\n[processes]\n" +
-          list.map { |name, cmd| "  #{name} = #{cmd.inspect}\n" }.join
+          list.map { |name, cmd| "  #{name} = #{cmd.inspect}\n" }.join + "\n"
 
         app = list.has_key?("app") ? "app" : list.keys.first
 
@@ -1291,7 +1303,18 @@ private
 
       if match
         size = ((match[1].to_i * (suffixes[match[2]] || 1)) / 1048576.0).round
-        toml += "swap_size_mb = #{size}"
+        if toml.include? "swap_size_mb"
+          toml.sub!(/swap_size_mb.*/, "swap_size_mb = #{size}")
+        else
+          toml += "swap_size_mb = #{size}\n\n"
+        end
+      end
+    end
+
+    puts @gemfile.inspect
+    unless options.nginx? || using_passenger? || options.thruster? || @gemfile.include?("thruster")
+      unless toml.include? "[statics]"
+        toml += "[[statics]]\n  guest_path = \"/rails/public\"\n  url_prefix = \"/\"\n\n"
       end
     end
 

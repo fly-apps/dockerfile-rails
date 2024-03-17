@@ -1311,9 +1311,11 @@ private
       end
     end
 
+    # Add statics if not already present and not using a web server and workdir doesn't contain a variable
     unless options.nginx? || using_passenger? || options.thruster? || @gemfile.include?("thruster")
-      unless toml.include? "[statics]"
-        toml += "[[statics]]\n  guest_path = \"/rails/public\"\n  url_prefix = \"/\"\n\n"
+      workdir = (IO.read 'Dockerfile' rescue '').scan(/^\s*WORKDIR\s+(\S+)/).flatten.last
+      unless workdir && !workdir.include?('$') && toml.include?("[statics]")
+        toml += "[[statics]]\n  guest_path = \"#{workdir}/public\"\n  url_prefix = \"/\"\n\n"
       end
     end
 

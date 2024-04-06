@@ -1034,6 +1034,8 @@ private
   end
 
   def node_version
+    return unless using_node?
+
     version = nil
 
     if File.exist? ".node-version"

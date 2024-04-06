@@ -1034,7 +1034,7 @@ private
   end
 
   def node_version
-    return unless using_node?
+    return unless using_node? || using_execjs?
 
     version = nil
 

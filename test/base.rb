@@ -5,6 +5,8 @@ require "minitest/autorun"
 require "active_support"
 require "active_support/core_ext/string/inflections"
 
+require "bundler"
+
 class TestBase < Minitest::Test
   make_my_diffs_pretty!
 
@@ -25,18 +27,20 @@ class TestBase < Minitest::Test
     Dir.chdir "test/tmp"
 
     FileUtils.rm_rf @appname
-    system "rails new #{@appname} #{self.class.rails_options}"
+    Bundler.with_unbundled_env do
+      system "rails new #{@appname} #{self.class.rails_options}"
 
-    Dir.chdir @appname
+      Dir.chdir @appname
 
-    app_setup
+      app_setup
 
-    system "bundle config disable_local_branch_check true"
-    system "bundle config set --local local.dockerfile-rails #{File.expand_path('..', __dir__)}"
-    system "bundle add dockerfile-rails --git https://github.com/rubys/dockerfile-rails.git --group development"
+      system "bundle config disable_local_branch_check true"
+      system "bundle config set --local local.dockerfile-rails #{File.expand_path('..', __dir__)}"
+      system "bundle add dockerfile-rails --git https://github.com/rubys/dockerfile-rails.git --group development"
 
-    ENV["RAILS_ENV"] = "test"
-    system "bin/rails generate dockerfile #{self.class.generate_options} --force"
+      ENV["RAILS_ENV"] = "test"
+      system "bin/rails generate dockerfile #{self.class.generate_options} --force"
+    end
   end
 
   def check_dockerfile

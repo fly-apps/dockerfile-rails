@@ -128,7 +128,9 @@ Running all integration tests, or even a single individual test can be done as f
 
 ```
 rake test
-ruby test/test_minimal.rb
+
+bundle exec rake test TEST=test/test_minimal.rb
+bundle exec ruby test/test_minimal.rb
 ```
 
 To assist with this process, outputs of tests can be captured automatically.  This is useful when adding new tests and when making a change that affects many tests.  Be sure to inspect the output (e.g., by using `git diff`) before committing.

@@ -4,7 +4,7 @@ require_relative "base"
 require "json"
 
 class TestBun < TestBase
-  @rails_options = "--main --javascript bun"
+  @rails_options = "--javascript bun"
   @generate_options = "--compose"
 
   def test_bun

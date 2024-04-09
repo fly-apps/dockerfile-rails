@@ -77,6 +77,8 @@ proxy:
 # "static" which assigns a single node to be the primary and does
 # not failover.
 lease:
+  promote: true
+
   # Required. Must be either "consul" or "static".
   type: "consul"
 
@@ -114,3 +116,12 @@ lease:
     # can become leader. This buffer is intended to prevent
     # overlap in leadership due to clock skew or in-flight calls.
     lock-delay: "1s"
+
+exec:
+  # Only run migrations on candidate nodes.
+  - cmd: "./bin/rails db:prepare"
+    if-candidate: true
+
+  # Then run the application server on all nodes.
+  - cmd: "./bin/rails server"
+  

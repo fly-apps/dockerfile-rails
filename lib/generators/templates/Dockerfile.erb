@@ -286,7 +286,11 @@ ENV <%= deploy_env.join(" \\\n    ") %>
 <% else -%>
 # Entrypoint sets up the container.
 <% end -%>
+<% if using_litefs? -%>
+ENTRYPOINT ["litefs", "mount"]
+<% else -%>
 ENTRYPOINT ["/rails/bin/docker-entrypoint"]
+<% end -%>
 
 <% if procfile.size > 1 -%>
 # Build a Procfile for production use
@@ -307,7 +311,7 @@ VOLUME /data
 CMD ["foreman", "start", "--procfile=<%= options.procfile %>"]
 <% elsif procfile.size > 1 -%>
 CMD ["foreman", "start", "--procfile=Procfile.prod"]
-<% else -%>
+<% elsif !using_litefs? -%>
 CMD <%= procfile.values.first.split(" ").inspect %>
 <% end -%>
 <% end -%>

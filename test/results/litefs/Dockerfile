@@ -73,9 +73,8 @@ ENV DATABASE_URL="sqlite3:///litefs/production.sqlite3" \
     PORT="3001"
 
 # Entrypoint prepares the database.
-ENTRYPOINT ["/rails/bin/docker-entrypoint"]
+ENTRYPOINT ["litefs", "mount"]
 
 # Start the server by default, this can be overwritten at runtime
 EXPOSE 3000
 VOLUME /data
-CMD ["./bin/rails", "server"]

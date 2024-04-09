@@ -77,6 +77,8 @@ proxy:
 # "static" which assigns a single node to be the primary and does
 # not failover.
 lease:
+  promote: true
+
   # Required. Must be either "consul" or "static".
   type: "consul"
 
@@ -114,3 +116,19 @@ lease:
     # can become leader. This buffer is intended to prevent
     # overlap in leadership due to clock skew or in-flight calls.
     lock-delay: "1s"
+
+exec:
+  # Only run migrations on candidate nodes.
+  - cmd: "./bin/rails db:prepare"
+    if-candidate: true
+
+  # Then run the application server on all nodes.
+<% if !options.procfile.blank? -%>
+  - cmd: "foreman start --procfile=<%= options.procfile %>"
+<% elsif procfile.size > 1 -%>
+  - cmd: "foreman start --procfile=Procfile.prod"
+<% elsif !using_litefs? -%>
+  - cmd: <%= procfile.values.first.split(" ").inspect %>
+<% else -%>
+  - cmd: "./bin/rails server"
+<% end -%>  

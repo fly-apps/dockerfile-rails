@@ -30,7 +30,7 @@ namespace :test do
       sh "bundle config set --local local.dockerfile-rails #{__dir__}"
       sh "bundle add dockerfile-rails --group development " +
         "--git https://github.com/rubys/dockerfile-rails.git"
-      sh "bin/rails generate dockerfile"
+      sh "bin/rails generate dockerfile --force"
       cp "#{__dir__}/test/docker-entrypoint", "bin"
       IO.write "config/routes.rb",
         'Rails.application.routes.draw {get "/up", to: proc {[200, {}, ["ok"]]}}'
@@ -51,7 +51,7 @@ namespace :test do
       sh "bundle config set --local local.dockerfile-rails #{__dir__}"
       sh "bundle add dockerfile-rails --group development " +
         "--git https://github.com/rubys/dockerfile-rails.git"
-      sh "bin/rails generate dockerfile --alpine"
+      sh "bin/rails generate dockerfile --alpine --force"
       cp "#{__dir__}/test/docker-entrypoint", "bin"
       IO.write "config/routes.rb",
         'Rails.application.routes.draw {get "/up", to: proc {[200, {}, ["ok"]]}}'

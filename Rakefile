@@ -45,7 +45,7 @@ namespace :test do
   task :alpine do
     rm_rf "test/tmp/system_test"
     Dir.chdir "test/tmp" do
-      sh "rails new system_test --javascript esbuild"
+      sh "rails new system_test --javascript esbuild --main"
       Dir.chdir "system_test"
       sh "bundle config disable_local_branch_check true"
       sh "bundle config set --local local.dockerfile-rails #{__dir__}"

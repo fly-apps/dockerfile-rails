@@ -27,7 +27,7 @@ RUN apt-get update -qq && \
 
 # Install application gems
 COPY --link Gemfile Gemfile.lock ./
-RUN --mount=type=secret,id=gemserver_credentials,dst=/kaniko/gemserver_credentials \
+RUN --mount=type=secret,id=gemserver_credentials,target=/kaniko/gemserver_credentials \
     BUNDLE_GEMS__EXAMPLE__COM="$(cat /kaniko/gemserver_credentials)" && \
     export BUNDLE_GEMS__EXAMPLE__COM && \
     bundle install && \

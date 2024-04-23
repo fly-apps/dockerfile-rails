@@ -30,7 +30,7 @@ RUN --mount=type=cache,id=dev-apt-cache,sharing=locked,target=/var/cache/apt \
 # Install application gems
 COPY --link Gemfile Gemfile.lock ./
 RUN --mount=type=cache,id=bld-gem-cache,sharing=locked,target=/srv/vendor \
-    --mount=type=secret,id=gemserver_credentials,dst=/kaniko/gemserver_credentials \
+    --mount=type=secret,id=gemserver_credentials,target=/kaniko/gemserver_credentials \
     BUNDLE_GEMS__EXAMPLE__COM="$(cat /kaniko/gemserver_credentials)" && \
     export BUNDLE_GEMS__EXAMPLE__COM && \
     bundle config set app_config .bundle && \

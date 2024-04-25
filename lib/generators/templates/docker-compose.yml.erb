@@ -99,6 +99,10 @@ services:
 <% else -%>
     command: bundle exec rake solid_queue:start
 <% end -%>
+<% if private_gemserver_env_variable_name -%>
+    secrets:
+      - gemserver_credentials
+<% end -%>
     environment:
       - RAILS_MASTER_KEY=$RAILS_MASTER_KEY
       - REDIS_URL=redis://redis-db:6379

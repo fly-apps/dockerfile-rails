@@ -90,7 +90,7 @@ COPY<% if options.link? %> --link<% end %> Gemfile Gemfile.lock <% if references
 <% if options.cache? -%>
 RUN --mount=type=cache,id=bld-gem-cache,sharing=locked,target=/srv/vendor \
 <% if private_gemserver_env_variable_name -%>
-    --mount=type=secret,id=gemserver_credentials,dst=/kaniko/gemserver_credentials \
+    --mount=type=secret,id=gemserver_credentials,target=/kaniko/gemserver_credentials \
     <%= private_gemserver_env_variable_name %>="$(cat /kaniko/gemserver_credentials)" && \
     export <%= private_gemserver_env_variable_name %> && \
 <% end -%>
@@ -107,7 +107,7 @@ RUN --mount=type=cache,id=bld-gem-cache,sharing=locked,target=/srv/vendor \
 
 <% else -%>
 <% if private_gemserver_env_variable_name -%>
-RUN --mount=type=secret,id=gemserver_credentials,dst=/kaniko/gemserver_credentials \
+RUN --mount=type=secret,id=gemserver_credentials,target=/kaniko/gemserver_credentials \
     <%= private_gemserver_env_variable_name %>="$(cat /kaniko/gemserver_credentials)" && \
     export <%= private_gemserver_env_variable_name %> && \
     bundle install<% if depend_on_bootsnap? && options.precompile != "defer" -%> && \

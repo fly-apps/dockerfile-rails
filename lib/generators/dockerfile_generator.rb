@@ -364,6 +364,30 @@ class DockerfileGenerator < Rails::Generators::Base
     elsif File.exist? "config/dockerfile.yml"
       remove_file "config/dockerfile.yml"
     end
+
+    # check Dockerfile for common errors: missing packages, mismatched Ruby version
+    if options.skip? && File.exist?("Dockerfile")
+      message = nil
+      shell = Thor::Base.shell.new
+
+      dockerfile = IO.read("Dockerfile")
+      missing = Set.new(base_packages + build_packages) -
+        Set.new(dockerfile.scan(/[-\w]+/))
+
+      unless missing.empty?
+        message = "The following packages are missing from the Dockerfile: #{missing.to_a.join(", ")}"
+        STDERR.puts "\n" + shell.set_color(message, Thor::Shell::Color::RED, Thor::Shell::Color::BOLD)
+      end
+
+      ruby_version = dockerfile.match(/ARG RUBY_VERSION=(\d+\.\d+\.\d+)/)[1]
+
+      if ruby_version && ruby_version != RUBY_VERSION
+        message = "The Ruby version in the Dockerfile (#{ruby_version}) does not match the Ruby version of the Rails app (#{RUBY_VERSION})"
+        STDERR.puts "\n" + shell.set_color(message, Thor::Shell::Color::RED, Thor::Shell::Color::BOLD)
+      end
+
+      exit 42 if message
+    end
   end
 
 private

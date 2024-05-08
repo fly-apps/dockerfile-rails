@@ -14,6 +14,7 @@ class DockerfileGenerator < Rails::Generators::Base
     "ci" => false,
     "compose" => false,
     "fullstaq" => false,
+    "gemfile-updates" => true,
     "jemalloc" => false,
     "label" => {},
     "link" => true,
@@ -218,6 +219,9 @@ class DockerfileGenerator < Rails::Generators::Base
 
   class_option "private-gemserver-domain", type: :string, default: OPTION_DEFAULTS["private-gemserver-domain"],
     desc: "domain name of a private gemserver used when installing application gems"
+
+  class_option "gemfile-updates", type: :boolean, default: OPTION_DEFAULTS["gemfile-updates"],
+    desc: "include gemfile updates"
 
 
   class_option "add-base", type: :array, default: [],
@@ -510,6 +514,8 @@ private
   end
 
   def install_gems
+    return unless options["gemfile-updates"]
+
     ENV["BUNDLE_IGNORE_MESSAGES"] = "1"
 
     gemfile = IO.read("Gemfile")

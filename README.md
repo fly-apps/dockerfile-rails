@@ -104,6 +104,7 @@ There may be times where feature detection plus flags just aren't enough.  As an
 
 * `--instructions=path` - a dockerfile fragment to be inserted into the final document.
 * `--migrate=cmd` - a replacement (generally a script) for `db:prepare`/`db:migrate`.
+* `--no-gemfile-updates` - do not modify my gemfile.
 * `--procfile=path` - a [Procfile](https://github.com/ddollar/foreman#foreman) to use in place of launching Rails directly.
 
 Like with environment variables, packages, and build args, `--instructions` can be tailored to a specific build phase by adding `-base`, `-build`, or `-deploy` after the flag name, with the default being `-deploy`.

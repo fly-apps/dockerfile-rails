@@ -29,6 +29,7 @@ class DockerfileGenerator < Rails::Generators::Base
     "platform" => nil,
     "postgresql" => false,
     "precompile" => nil,
+    "precompiled-gems" => true,
     "prepare" => true,
     "private-gemserver-domain" => nil,
     "procfile" => "",
@@ -123,6 +124,9 @@ class DockerfileGenerator < Rails::Generators::Base
 
   class_option :precompile, type: :string, default: OPTION_DEFAULTS.precompile,
     desc: 'if set to "defer", assets:precompile will be done at deploy time'
+
+  class_option "precompiled-gems", type: :boolean, default: OPTION_DEFAULTS["precompiled-gems"],
+    desc: "use precompiled gems"
 
   class_option "bin-cd", type: :boolean, default: OPTION_DEFAULTS["bin-cd"],
     desc: "modify binstubs to set working directory"
@@ -222,7 +226,6 @@ class DockerfileGenerator < Rails::Generators::Base
 
   class_option "gemfile-updates", type: :boolean, default: OPTION_DEFAULTS["gemfile-updates"],
     desc: "include gemfile updates"
-
 
   class_option "add-base", type: :array, default: [],
     desc: "additional packages to install for both build and deploy"

@@ -113,7 +113,7 @@ RUN --mount=type=secret,id=gemserver_credentials,target=/kaniko/gemserver_creden
     bundle install<% if depend_on_bootsnap? && options.precompile != "defer" -%> && \
     bundle exec bootsnap precompile --gemfile<% end %> && \
 <% else -%>
-RUN bundle install<% if depend_on_bootsnap? && options.precompile != "defer" -%> && \
+RUN <% if options["precompiled-gems"] != true %>bundle config set force_ruby_platform true && \<%= "\n    " %><% end %>bundle install<% if depend_on_bootsnap? && options.precompile != "defer" -%> && \
     bundle exec bootsnap precompile --gemfile<% end %> && \
 <% end -%>
     rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git

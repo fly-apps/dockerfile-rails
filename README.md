@@ -55,7 +55,6 @@ different contents.  If both are specified, `--force` takes precedence.
 * `--no-link` - don't add [--link](https://docs.docker.com/engine/reference/builder/#copy---link) to COPY statements.  Some tools (like at the moment, [buildah](https://www.redhat.com/en/topics/containers/what-is-buildah)) don't yet support this feature.
 * `--no-lock` - don't add linux platforms, set `BUNDLE_DEPLOY`, or `--frozen-lockfile`.  May be needed at times to work around a [rubygems bug](https://github.com/rubygems/rubygems/issues/6082#issuecomment-1329756343).
 * `--sudo` - install and configure sudo to enable `sudo -iu rails` access to full environment
-* `--no-precompiled-gems` - compile all gems instead of using precompiled versions
 
 #### Error Tracking & Alerting:
 * `--rollbar` - install gem and a default initializer for [Rollbar](https://rollbar.com/#)
@@ -98,6 +97,7 @@ Args and environment variables can be tailored to a specific build phase by addi
 * `--root` - run application as root
 * `--windows` - make Dockerfile work for Windows users that may have set `git config --global core.autocrlf true`
 * `--private-gemserver-domain=gems.example.com` - set the domain name of your private gemserver.  This is used to tell bundler for what domain to use the credentials of a private gemserver provided via a docker secret
+* `--no-precompiled-gems` - compile all gems instead of using precompiled versions
 
 ### Advanced Customization:
 

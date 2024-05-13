@@ -296,7 +296,7 @@ EOF
 
 <% end -%>
 # Start the server by default, this can be overwritten at runtime
-EXPOSE 3000
+EXPOSE <%= using_thruster? ? '80' : '3000' %>
 <% if deploy_database == 'sqlite3' -%>
 VOLUME /data
 <% end -%>

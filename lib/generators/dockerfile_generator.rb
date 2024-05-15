@@ -1169,7 +1169,7 @@ private
         nginx: '/usr/sbin/nginx -g "daemon off;"',
         rails: "./bin/rails server -p 3001"
       }
-    elsif options.thruster? || @gemfile.include?("thruster")
+    elsif using_thruster?
       {
         rails: "bundle exec thrust ./bin/rails server"
       }
@@ -1178,6 +1178,10 @@ private
         rails: "./bin/rails server"
       }
     end
+  end
+
+  def using_thruster?
+    options.thruster? || @gemfile.include?("thruster")
   end
 
   def fly_processes

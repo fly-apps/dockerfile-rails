@@ -372,7 +372,8 @@ class DockerfileGenerator < Rails::Generators::Base
       remove_file "config/dockerfile.yml"
     end
 
-    # check Dockerfile for common errors: missing packages, mismatched Ruby version
+    # check Dockerfile for common errors: missing packages, mismatched Ruby version;
+    # also add DATABASE_URL to fly.toml if needed
     if options.skip? && File.exist?("Dockerfile")
       message = nil
       shell = Thor::Base.shell.new
@@ -391,6 +392,14 @@ class DockerfileGenerator < Rails::Generators::Base
       if ruby_version && ruby_version != RUBY_VERSION
         message = "The Ruby version in the Dockerfile (#{ruby_version}) does not match the Ruby version of the Rails app (#{RUBY_VERSION})"
         STDERR.puts "\n" + shell.set_color(message, Thor::Shell::Color::RED, Thor::Shell::Color::BOLD)
+      end
+
+      if (options.sqlite3? || @sqlite3) && !dockerfile.include?("DATABASE_URL") && File.exist?("fly.toml")
+        toml = IO.read("fly.toml")
+        if !toml.include?("[[env]]")
+          toml += "\n[[env]]\n  DATABASE_URL = \"sqlite3:///data/production.sqlite3\"\n"
+          File.write "fly.toml", toml
+        end
       end
 
       exit 42 if message

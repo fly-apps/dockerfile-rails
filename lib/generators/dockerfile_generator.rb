@@ -982,7 +982,7 @@ private
     instructions = IO.read @@instructions["base"]
 
     if instructions.start_with? "#!"
-      instructions = "# custom instructions\nRUN #{@instructions["base"].strip}"
+      instructions = "# custom instructions\nRUN #{@@instructions["base"].strip}"
     end
 
     instructions.html_safe
@@ -994,7 +994,7 @@ private
     instructions = IO.read @@instructions["build"]
 
     if instructions.start_with? "#!"
-      instructions = "# custom build instructions\nRUN #{@instructions["build"].strip}"
+      instructions = "# custom build instructions\nRUN #{@@instructions["build"].strip}"
     end
 
     instructions.html_safe
@@ -1006,7 +1006,7 @@ private
     instructions = IO.read @@instructions["deploy"]
 
     if instructions.start_with? "#!"
-      instructions = "# custom deploy instructions\nRUN #{@instructions["deploy"].strip}"
+      instructions = "# custom deploy instructions\nRUN #{@@instructions["deploy"].strip}"
     end
 
     instructions.html_safe

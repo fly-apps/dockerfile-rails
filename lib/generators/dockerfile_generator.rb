@@ -42,6 +42,7 @@ class DockerfileGenerator < Rails::Generators::Base
     "sentry" => false,
     "sudo" => false,
     "swap" => nil,
+    "tigris" => false,
     "thruster" => false,
     "variant" => nil,
     "windows" => false,
@@ -160,6 +161,9 @@ class DockerfileGenerator < Rails::Generators::Base
 
   class_option :litefs, type: :boolean, default: OPTION_DEFAULTS.litefs,
     desc: "replicate sqlite3 databases using litefs"
+
+  class_option :tigris, type: :boolean, default: OPTION_DEFAULTS.tigris,
+    desc: "configure active storage to use tigris"
 
   class_option :postgresql, aliases: "--postgres", type: :boolean, default: OPTION_DEFAULTS.postgresql,
     desc: "include postgresql libraries"
@@ -372,6 +376,10 @@ class DockerfileGenerator < Rails::Generators::Base
       remove_file "config/dockerfile.yml"
     end
 
+    if options.tigris?
+      configure_tigris
+    end
+
     # check Dockerfile for common errors: missing packages, mismatched Ruby version;
     # also add DATABASE_URL to fly.toml if needed
     if options.skip? && File.exist?("Dockerfile")
@@ -546,6 +554,10 @@ private
 
     if options.redis? || using_redis?
       system "bundle add redis --skip-install" unless @gemfile.include? "redis"
+    end
+
+    if options.tigris?
+      system "bundle add aws-sdk-s3 --require=false --skip-install" unless @gemfile.include? "aws-sdk-s3"
     end
 
     if options.sentry?
@@ -1297,6 +1309,49 @@ private
     # attach consul
     say_status :execute, "flyctl consul attach", :green
     system "#{flyctl} consul attach"
+  end
+
+  def configure_tigris
+    return unless options.tigris?
+
+    service = [
+      "tigris:",
+      "  service: S3",
+      '  access_key_id: <%= ENV["AWS_ACCESS_KEY_ID"] %>',
+      '  secret_access_key: <%= ENV["AWS_SECRET_ACCESS_KEY"] %>',
+      '  endpoint: <%= ENV["AWS_ENDPOINT_URL_S3"] %>',
+      '  bucket: <%= ENV["BUCKET_NAME"] %>'
+    ]
+
+    shell = Thor::Base.shell.new
+
+    if File.exist?("config/storage.yml")
+      storage = IO.read("config/storage.yml")
+      if storage.include? "tigris"
+        STDOUT.puts shell.set_color("unchanged".rjust(12), Thor::Shell::Color::BLUE, Thor::Shell::Color::BOLD) +
+          "  config/storage.yml"
+      else
+        storage = storage.strip + "\n\n" + service.join("\n") + "\n"
+        IO.write("config/storage.yml", storage)
+        STDOUT.puts shell.set_color("updated".rjust(12), Thor::Shell::Color::GREEN, Thor::Shell::Color::BOLD) +
+          "  config/storage.yml"
+      end
+    end
+
+    if File.exist?("config/environments/production.rb")
+      production = IO.read("config/environments/production.rb")
+      if !production.include?("tigris") && production.include?("config.active_storage.service")
+        production.sub!(/config.active_storage.service.*/, "config.active_storage.service = :tigris")
+        production.sub! "# Store uploaded files on the local file system",
+          "# Store uploaded files in Tigris Global Object Storage"
+        IO.write("config/environments/production.rb", production)
+        STDOUT.puts shell.set_color("updated".rjust(12), Thor::Shell::Color::GREEN, Thor::Shell::Color::BOLD) +
+          "  config/environments/production.rb"
+      else
+        STDOUT.puts shell.set_color("unchanged".rjust(12), Thor::Shell::Color::BLUE, Thor::Shell::Color::BOLD) +
+          "  config/environments/production.yml"
+      end
+    end
   end
 
   def fly_make_toml

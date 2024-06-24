@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'rails'
+require "rails"
 Rails.env = "test"
 
 require "bundler/gem_tasks"

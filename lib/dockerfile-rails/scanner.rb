@@ -17,8 +17,8 @@ module DockerfileRails
 
         # determine if the application is affected by the net-pop bug
         # https://github.com/ruby/ruby/pull/11006#issuecomment-2176562332
-        if RUBY_VERSION == '3.3.3' && @gemfile.include?("net-pop")
-          @netpopbug = parser.specs.find {|spec| spec.name == "net-pop"}.dependencies.empty?
+        if RUBY_VERSION == "3.3.3" && @gemfile.include?("net-pop")
+          @netpopbug = parser.specs.find { |spec| spec.name == "net-pop" }.dependencies.empty?
         end
       end
 
@@ -94,8 +94,8 @@ module DockerfileRails
     end
 
     ### patches ###
-    if RUBY_VERSION == '3.3.3'
-      parser = Bundler::LockfileParser.new(Bundler.read_file("Gemfile.lock"))
+    if RUBY_VERSION == "3.3.3"
+      Bundler::LockfileParser.new(Bundler.read_file("Gemfile.lock"))
 
     end
   end

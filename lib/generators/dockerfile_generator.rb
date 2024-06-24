@@ -402,6 +402,15 @@ class DockerfileGenerator < Rails::Generators::Base
         STDERR.puts "\n" + shell.set_color(message, Thor::Shell::Color::RED, Thor::Shell::Color::BOLD)
       end
 
+      if @netpopbug && !dockerfile.include?("net-pop")
+        message = "Ruby 3.3.3 net-pop bug detected."
+        STDERR.puts "\n" + shell.set_color(message, Thor::Shell::Color::RED, Thor::Shell::Color::BOLD)
+        STDERR.puts "Please see https://github.com/ruby/ruby/pull/11006"
+        STDERR.puts "Change your Ruby version, or run `bin/rails generate dockerfile`,"
+        STDERR.puts "or add the following to your Dockerfile:"
+        STDERR.puts 'RUN sed -i "/net-pop (0.1.2)/a\      net-protocol" Gemfile.lock'
+      end
+
       if (options.sqlite3? || @sqlite3) && !dockerfile.include?("DATABASE_URL") && File.exist?("fly.toml")
         toml = IO.read("fly.toml")
         if !toml.include?("[[env]]")

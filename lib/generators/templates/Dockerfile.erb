@@ -87,6 +87,9 @@ ENV <%= build_env.join(" \\\n    ") %>
 <% end -%>
 # Install application gems
 COPY<% if options.link? %> --link<% end %> Gemfile Gemfile.lock <% if references_ruby_version_file? %>.ruby-version <% end %>./
+<% if @netpopbug && Rails.env != "test" -%>
+RUN sed -i "/net-pop (0.1.2)/a\      net-protocol" Gemfile.lock
+<% end -%>
 <% if options.cache? -%>
 RUN --mount=type=cache,id=bld-gem-cache,sharing=locked,target=/srv/vendor \
 <% if private_gemserver_env_variable_name -%>

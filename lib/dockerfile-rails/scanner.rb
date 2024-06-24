@@ -14,6 +14,12 @@ module DockerfileRails
         @git ||= ENV["RAILS_ENV"] != "test" && parser.specs.any? do |spec|
           spec.source.instance_of? Bundler::Source::Git
         end
+
+        # determine if the application is affected by the net-pop bug
+        # https://github.com/ruby/ruby/pull/11006#issuecomment-2176562332
+        if RUBY_VERSION == "3.3.3" && @gemfile.include?("net-pop")
+          @netpopbug = parser.specs.find { |spec| spec.name == "net-pop" }.dependencies.empty?
+        end
       end
 
       if File.exist? "Gemfile"
@@ -85,6 +91,12 @@ module DockerfileRails
 
     def using_trilogy?
       @gemfile.include?("trilogy") || @gemfile.include?("activerecord-trilogy-adapter")
+    end
+
+    ### patches ###
+    if RUBY_VERSION == "3.3.3"
+      Bundler::LockfileParser.new(Bundler.read_file("Gemfile.lock"))
+
     end
   end
 end

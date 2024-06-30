@@ -1252,6 +1252,19 @@ private
     more
   end
 
+  def compose_web_volumes
+    volumes = %w[ log storage ]
+
+    if deploy_database == "sqlite3"
+      database = YAML.load_file("config/database.yml", aliases: true).dig("production", "database")
+      if database && database =~ /^\w/
+        volumes << File.dirname(database)
+      end
+    end
+
+    volumes.uniq.sort
+  end
+
   def max_idle
     option = options["max-idle"]
 

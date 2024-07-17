@@ -2,7 +2,7 @@
 
 # Make sure RUBY_VERSION matches the Ruby version in .ruby-version and Gemfile
 ARG RUBY_VERSION=xxx
-FROM ruby:$RUBY_VERSION-slim as base
+FROM ruby:$RUBY_VERSION-slim AS base
 
 # Rails app lives here
 WORKDIR /rails
@@ -19,14 +19,14 @@ RUN gem update --system --no-document && \
 
 
 # Throw-away build stages to reduce size of final image
-FROM base as prebuild
+FROM base AS prebuild
 
 # Install packages needed to build gems and node modules
 RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y build-essential curl node-gyp pkg-config python-is-python3
 
 
-FROM prebuild as node
+FROM prebuild AS node
 
 # Install JavaScript dependencies
 ARG NODE_VERSION=xxx
@@ -42,7 +42,7 @@ COPY --link package.json yarn.lock ./
 RUN yarn install --frozen-lockfile
 
 
-FROM prebuild as build
+FROM prebuild AS build
 
 # Install application gems
 COPY --link Gemfile Gemfile.lock ./

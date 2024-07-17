@@ -4,7 +4,7 @@
 ARG RUBY_VERSION=xxx
 ARG NODE_VERSION=xxx
 
-FROM node:$NODE_VERSION-slim as client
+FROM node:$NODE_VERSION-slim AS client
 
 WORKDIR /rails/my-app
 
@@ -19,7 +19,7 @@ COPY --link my-app .
 RUN npm run build
 
 
-FROM ruby:$RUBY_VERSION-slim as base
+FROM ruby:$RUBY_VERSION-slim AS base
 
 # Rails app lives here
 WORKDIR /rails
@@ -36,7 +36,7 @@ RUN gem update --system --no-document && \
 
 
 # Throw-away build stage to reduce size of final image
-FROM base as build
+FROM base AS build
 
 # Install packages needed to build gems
 RUN apt-get update -qq && \

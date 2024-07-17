@@ -1,6 +1,6 @@
 ARG NODE_VERSION=<%= node_version %>
 
-FROM <%= platform %>node:$NODE_VERSION-slim as client
+FROM <%= platform %>node:$NODE_VERSION-slim AS client
 
 WORKDIR /rails/<%= api_client_dir %>
 

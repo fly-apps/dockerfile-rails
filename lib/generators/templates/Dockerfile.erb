@@ -8,9 +8,9 @@ ARG RUBY_VERSION=<%= RUBY_VERSION %>
 
 <% end -%>
 <% if options.fullstaq -%>
-FROM <%= platform %>quay.io/evl.ms/fullstaq-ruby:${RUBY_VERSION}-<%= options.jemalloc ? 'jemalloc-' : 'malloctrim-' %><%= variant %><% unless options.precompile == "defer" %> as base<% end %>
+FROM <%= platform %>quay.io/evl.ms/fullstaq-ruby:${RUBY_VERSION}-<%= options.jemalloc ? 'jemalloc-' : 'malloctrim-' %><%= variant %><% unless options.precompile == "defer" %> AS base<% end %>
 <% else -%>
-FROM <%= platform %><%= options.registry %>ruby:$RUBY_VERSION-<%= variant %><% unless options.precompile == "defer" %> as base<% end %>
+FROM <%= platform %><%= options.registry %>ruby:$RUBY_VERSION-<%= variant %><% unless options.precompile == "defer" %> AS base<% end %>
 <% end -%>
 
 <% unless options.label.empty? -%>
@@ -50,7 +50,7 @@ RUN gem update --system <% if RUBY_VERSION.start_with? '2' %>3.4.22 <% end %>--n
 <% unless options.precompile == "defer" -%>
 
 # Throw-away build stage<%= parallel? ? 's' : '' %> to reduce size of final image
-FROM base as <%= parallel? ? 'pre' : '' %>build
+FROM base AS <%= parallel? ? 'pre' : '' %>build
 
 <% end -%>
 # Install packages needed to build gems<%= using_node? ? " and node modules" : "" %>
@@ -58,7 +58,7 @@ FROM base as <%= parallel? ? 'pre' : '' %>build
 
 <% if parallel? -%>
 
-FROM prebuild as <% if using_bun? %>bun<% else %>node<% end %>
+FROM prebuild AS <% if using_bun? %>bun<% else %>node<% end %>
 
 <% end -%>
 <% if using_bun? and (!using_execjs? || File.exist?('bun.lockb')) -%>
@@ -72,7 +72,7 @@ FROM prebuild as <% if using_bun? %>bun<% else %>node<% end %>
 <%= render partial: 'npm_install', locals: {sources: Dir[*%w(package.json yarn.lock bun.lockb)]} %>
 
 
-FROM prebuild as build
+FROM prebuild AS build
 
 <% end -%>
 <% unless build_args.empty? -%>

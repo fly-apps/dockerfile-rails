@@ -11,7 +11,7 @@ class TestSolidQueue < TestBase
   def app_setup
     system "bundle add solid_queue"
     FileUtils.touch "fly.toml"
-    FileUtils.touch "app/jobs/DummyJob.rb"
+    IO.write "app/jobs/DummyJob.rb", "class DummyJob < ApplicationJob; end"
   end
 
   def test_solidq

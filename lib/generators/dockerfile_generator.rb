@@ -517,12 +517,16 @@ private
     options.passenger? or options["max-idle"]
   end
 
+  def includes_jobs?
+    !(Dir["app/jobs/*.rb"] - ["app/jobs/application_job.rb"]).empty?
+  end
+
   def using_sidekiq?
-    @gemfile.include?("sidekiq")
+    @gemfile.include?("sidekiq") and includes_jobs?
   end
 
   def using_solidq?
-    @gemfile.include?("solid_queue")
+    @gemfile.include?("solid_queue") and includes_jobs?
   end
 
   def parallel?

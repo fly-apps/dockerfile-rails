@@ -11,6 +11,7 @@ class TestSolidQueue < TestBase
   def app_setup
     system "bundle add solid_queue"
     FileUtils.touch "fly.toml"
+    FileUtils.touch "app/jobs/DummyJob.rb"
   end
 
   def test_solidq

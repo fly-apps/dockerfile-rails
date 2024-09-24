@@ -331,6 +331,8 @@ class DockerfileGenerator < Rails::Generators::Base
 
     template "docker-compose.yml.erb", "docker-compose.yml" if options.compose
 
+    template "database.yml.erb", "config/database.yml" if fix_database_config
+
     if using_litefs?
       template "litefs.yml.erb", "config/litefs.yml"
 
@@ -1449,5 +1451,32 @@ private
     end
 
     toml
+  end
+
+  # if there are multiple production databases defined, allow them all to be
+  # configured via DATABASE_URL.
+  def fix_database_config
+    yaml = IO.read("config/database.yml")
+
+    production = YAML.load(yaml, aliases: true)["production"]
+    return unless production.is_a?(Hash) && production.values.all?(Hash)
+    return if production.keys == [ "primary" ]
+
+    section = yaml[/^(production:.*?)(^\S|\z)/m, 1]
+
+    replacement = section.gsub(/(  ).*?\n((\1\s+).*?\n)*/) do |subsection|
+      spaces = $3
+      name = subsection[/\w+/]
+
+      if /^ +url:/.match?(subsection)
+        subsection
+      elsif name == "primary"
+        subsection + spaces + %(url: <%= ENV["DATABASE_URL"] %>\n)
+      else
+        subsection + spaces + %(url: <%= URI.parse(ENV["DATABASE_URL"]).tap { |url| url.path += "_#{name}" } if ENV["DATABASE_URL"] %>\n)
+      end
+    end
+
+    yaml.sub(section, replacement)
   end
 end

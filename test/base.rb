@@ -110,6 +110,16 @@ class TestBase < Minitest::Test
     assert_equal expected, results
   end
 
+  def check_database_config
+    results = IO.read("config/database.yml")
+
+    IO.write("#{@results}/database.yml", results) if @capture
+
+    expected = IO.read("#{@results}/database.yml")
+
+    assert_equal expected, results
+  end
+
   def teardown
     return if ENV["TEST_KEEP"]
     Dir.chdir ".."

@@ -524,7 +524,7 @@ private
   end
 
   def using_sidekiq?
-    @gemfile.include?("sidekiq") and includes_jobs?
+    @gemfile.include?("sidekiq")
   end
 
   def using_solidq?

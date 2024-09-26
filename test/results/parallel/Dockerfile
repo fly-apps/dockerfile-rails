@@ -38,14 +38,14 @@ RUN curl -sL https://github.com/nodenv/node-build/archive/master.tar.gz | tar xz
     rm -rf /tmp/node-build-master
 
 # Install node modules
-COPY --link package.json yarn.lock ./
+COPY package.json yarn.lock ./
 RUN yarn install --frozen-lockfile
 
 
 FROM prebuild AS build
 
 # Install application gems
-COPY --link Gemfile Gemfile.lock ./
+COPY Gemfile Gemfile.lock ./
 RUN bundle install && \
     bundle exec bootsnap precompile --gemfile && \
     rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git
@@ -56,7 +56,7 @@ COPY --from=node /usr/local/node /usr/local/node
 ENV PATH=/usr/local/node/bin:$PATH
 
 # Copy application code
-COPY --link . .
+COPY . .
 
 # Precompile bootsnap code for faster boot times
 RUN bundle exec bootsnap precompile app/ lib/

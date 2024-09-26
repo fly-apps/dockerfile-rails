@@ -41,17 +41,17 @@ RUN curl -sL https://unofficial-builds.nodejs.org/download/release/v${NODE_VERSI
     rm -rf /tmp/node-v${NODE_VERSION}-linux-x64-musl
 
 # Install application gems
-COPY --link Gemfile Gemfile.lock ./
+COPY Gemfile Gemfile.lock ./
 RUN bundle install && \
     bundle exec bootsnap precompile --gemfile && \
     rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git
 
 # Install node modules
-COPY --link package.json yarn.lock ./
+COPY package.json yarn.lock ./
 RUN yarn install --frozen-lockfile
 
 # Copy application code
-COPY --link . .
+COPY . .
 
 # Precompile bootsnap code for faster boot times
 RUN bundle exec bootsnap precompile app/ lib/

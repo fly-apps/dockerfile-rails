@@ -28,7 +28,7 @@ RUN --mount=type=cache,id=dev-apt-cache,sharing=locked,target=/var/cache/apt \
     apt-get install --no-install-recommends -y build-essential pkg-config
 
 # Install application gems
-COPY --link Gemfile Gemfile.lock ./
+COPY Gemfile Gemfile.lock ./
 RUN --mount=type=cache,id=bld-gem-cache,sharing=locked,target=/srv/vendor \
     --mount=type=secret,id=gemserver_credentials,target=/kaniko/gemserver_credentials \
     BUNDLE_GEMS__EXAMPLE__COM="$(cat /kaniko/gemserver_credentials)" && \
@@ -42,7 +42,7 @@ RUN --mount=type=cache,id=bld-gem-cache,sharing=locked,target=/srv/vendor \
     cp -ar /srv/vendor .
 
 # Copy application code
-COPY --link . .
+COPY . .
 
 # Precompiling assets for production without requiring secret RAILS_MASTER_KEY
 RUN SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile

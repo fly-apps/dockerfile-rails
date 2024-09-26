@@ -26,13 +26,13 @@ RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y build-essential pkg-config
 
 # Install application gems
-COPY --link Gemfile Gemfile.lock ./
+COPY Gemfile Gemfile.lock ./
 RUN bundle install && \
     bundle exec bootsnap precompile --gemfile && \
     rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git
 
 # Copy application code
-COPY --link . .
+COPY . .
 
 # Precompile bootsnap code for faster boot times
 RUN bundle exec bootsnap precompile app/ lib/
@@ -46,7 +46,7 @@ FROM base
 
 # Install, configure litefs
 COPY --from=flyio/litefs:0.5 /usr/local/bin/litefs /usr/local/bin/litefs
-COPY --link config/litefs.yml /etc/litefs.yml
+COPY config/litefs.yml /etc/litefs.yml
 
 # Install packages needed for deployment
 RUN apt-get update -qq && \

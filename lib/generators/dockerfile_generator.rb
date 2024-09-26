@@ -17,7 +17,7 @@ class DockerfileGenerator < Rails::Generators::Base
     "gemfile-updates" => true,
     "jemalloc" => false,
     "label" => {},
-    "link" => true,
+    "link" => false,
     "litefs" => false,
     "lock" => true,
     "max-idle" => nil,
@@ -117,7 +117,7 @@ class DockerfileGenerator < Rails::Generators::Base
   class_option :ci, type: :boolean, default: OPTION_DEFAULTS.ci,
     desc: "include test gems in bundle"
 
-  class_option :link, type: :boolean, default: OPTION_DEFAULTS.lock,
+  class_option :link, type: :boolean, default: OPTION_DEFAULTS.link,
     desc: "use COPY --link whenever possible"
 
   class_option :lock, type: :boolean, default: OPTION_DEFAULTS.lock,

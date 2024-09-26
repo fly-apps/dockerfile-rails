@@ -26,7 +26,7 @@ RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y build-essential pkg-config
 
 # Install application gems
-COPY --link Gemfile Gemfile.lock ./
+COPY Gemfile Gemfile.lock ./
 RUN --mount=type=secret,id=gemserver_credentials,target=/kaniko/gemserver_credentials \
     BUNDLE_GEMS__EXAMPLE__COM="$(cat /kaniko/gemserver_credentials)" && \
     export BUNDLE_GEMS__EXAMPLE__COM && \
@@ -34,7 +34,7 @@ RUN --mount=type=secret,id=gemserver_credentials,target=/kaniko/gemserver_creden
     rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git
 
 # Copy application code
-COPY --link . .
+COPY . .
 
 # Precompiling assets for production without requiring secret RAILS_MASTER_KEY
 RUN SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile

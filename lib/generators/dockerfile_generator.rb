@@ -331,7 +331,10 @@ class DockerfileGenerator < Rails::Generators::Base
 
     template "docker-compose.yml.erb", "docker-compose.yml" if options.compose
 
-    template "database.yml.erb", "config/database.yml" if fix_database_config
+    if fix_database_config
+      template "database.yml.erb", "config/database.yml",
+        force: File.exist?("fly.toml")
+    end
 
     if using_litefs?
       template "litefs.yml.erb", "config/litefs.yml"

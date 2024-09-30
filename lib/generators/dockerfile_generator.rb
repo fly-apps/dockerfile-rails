@@ -416,11 +416,23 @@ class DockerfileGenerator < Rails::Generators::Base
         STDERR.puts 'RUN sed -i "/net-pop (0.1.2)/a\      net-protocol" Gemfile.lock'
       end
 
-      if (options.sqlite3? || @sqlite3) && !dockerfile.include?("DATABASE_URL") && File.exist?("fly.toml")
-        toml = IO.read("fly.toml")
-        if !toml.include?("[[env]]")
-          toml += "\n[[env]]\n  DATABASE_URL = \"sqlite3:///data/production.sqlite3\"\n"
-          File.write "fly.toml", toml
+      if File.exist?("fly.toml")
+        env = {}
+
+        if (options.sqlite3? || @sqlite3) && !dockerfile.include?("DATABASE_URL")
+          env["DATABASE_URL"] = "sqlite3:///data/production.sqlite3"
+        end
+
+        if using_thruster? && !dockerfile.include?("HTTP_PORT")
+          env["HTTP_PORT"] = "8080"
+        end
+
+        unless env.empty?
+          toml = IO.read("fly.toml")
+          if !toml.include?("[[env]]")
+            toml += "\n[[env]]\n" + env.map { |key, value| "  #{key} = #{value.inspect}" }.join("\n")
+            File.write "fly.toml", toml
+          end
         end
       end
 

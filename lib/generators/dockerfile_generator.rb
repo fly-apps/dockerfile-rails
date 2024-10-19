@@ -1230,7 +1230,7 @@ private
       }
     end
 
-    if using_solidq? and deploy_database == "sqlite3"
+    if using_solidq? && (deploy_database == "sqlite3")
       base.merge(solidq: "bundle exec rake solid_queue:start")
     else
       base

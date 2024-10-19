@@ -1212,22 +1212,28 @@ private
 
   def procfile
     if using_passenger?
-      {
+      base = {
         nginx: "nginx"
       }
     elsif options.nginx?
-      {
+      base = {
         nginx: '/usr/sbin/nginx -g "daemon off;"',
         rails: "./bin/rails server -p 3001"
       }
     elsif using_thruster?
-      {
+      base = {
         rails: "bundle exec thrust ./bin/rails server"
       }
     else
-      {
+      base = {
         rails: "./bin/rails server"
       }
+    end
+
+    if using_solidq? && (deploy_database == "sqlite3")
+      base.merge(solidq: "bundle exec rake solid_queue:start")
+    else
+      base
     end
   end
 
@@ -1248,7 +1254,11 @@ private
     if using_sidekiq?
       list["sidekiq"] = "bundle exec sidekiq"
     elsif using_solidq?
-      list["solidq"] = "bundle exec rake solid_queue:start"
+      if deploy_database == "sqlite3"
+        return if list.size <= 1
+      else
+        list["solidq"] = "bundle exec rake solid_queue:start"
+      end
     end
 
     list

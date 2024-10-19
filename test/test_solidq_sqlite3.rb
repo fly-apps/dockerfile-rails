@@ -4,8 +4,8 @@ require "fileutils"
 
 require_relative "base"
 
-class TestSolidQueue < TestBase
-  @rails_options = "--database=postgresql"
+class TestSolidQueueSqlite3 < TestBase
+  @rails_options = "--database=sqlite3"
   @generate_options = "--compose"
 
   def app_setup

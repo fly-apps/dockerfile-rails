@@ -1277,7 +1277,7 @@ private
     volumes = %w[ log storage ]
 
     if deploy_database == "sqlite3"
-      database = YAML.load_file("config/database.yml", aliases: true).dig("production", "database")
+      database = YAML.load_file("config/database.yml", aliases: true).dig("production", "database") rescue nil
       if database && database =~ /^\w/
         volumes << File.dirname(database)
       end

@@ -336,6 +336,10 @@ class DockerfileGenerator < Rails::Generators::Base
         force: File.exist?("fly.toml")
     end
 
+    if using_solidq? && deploy_database == "sqlite3" && File.exist?("config/puma.rb")
+      append_to_file "config/puma.rb", "\n# Run the Solid Queue's supervisor\nplugin :solid_queue\n"
+    end
+
     if using_litefs?
       template "litefs.yml.erb", "config/litefs.yml"
 
@@ -1212,28 +1216,22 @@ private
 
   def procfile
     if using_passenger?
-      base = {
+      {
         nginx: "nginx"
       }
     elsif options.nginx?
-      base = {
+      {
         nginx: '/usr/sbin/nginx -g "daemon off;"',
         rails: "./bin/rails server -p 3001"
       }
     elsif using_thruster?
-      base = {
+      {
         rails: "bundle exec thrust ./bin/rails server"
       }
     else
-      base = {
+      {
         rails: "./bin/rails server"
       }
-    end
-
-    if using_solidq? && (deploy_database == "sqlite3")
-      base.merge(solidq: "bundle exec rake solid_queue:start")
-    else
-      base
     end
   end
 

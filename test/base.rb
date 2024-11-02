@@ -120,6 +120,16 @@ class TestBase < Minitest::Test
     assert_equal expected, results
   end
 
+  def check_puma
+    results = IO.read("config/puma.rb")
+
+    IO.write("#{@results}/puma.rb", results) if @capture
+
+    expected = IO.read("#{@results}/puma.rb")
+
+    assert_equal expected, results
+  end
+
   def teardown
     return if ENV["TEST_KEEP"]
     Dir.chdir ".."

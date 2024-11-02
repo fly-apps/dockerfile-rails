@@ -5,11 +5,9 @@ require "fileutils"
 require_relative "base"
 
 class TestSolidQueueSqlite3 < TestBase
-  @rails_options = "--database=sqlite3"
-  @generate_options = "--compose"
+  @rails_options = "--database=sqlite3 --main"
 
   def app_setup
-    system "bundle add solid_queue"
     FileUtils.touch "fly.toml"
     IO.write "app/jobs/DummyJob.rb", "class DummyJob < ApplicationJob; end"
   end
@@ -17,6 +15,6 @@ class TestSolidQueueSqlite3 < TestBase
   def test_solidq
     check_dockerfile
     check_toml
-    check_compose
+    check_puma
   end
 end

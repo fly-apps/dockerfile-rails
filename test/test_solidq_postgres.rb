@@ -4,7 +4,7 @@ require "fileutils"
 
 require_relative "base"
 
-class TestSolidQueue < TestBase
+class TestSolidQueuePostgres < TestBase
   @rails_options = "--database=postgresql"
   @generate_options = "--compose"
 

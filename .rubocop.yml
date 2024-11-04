@@ -72,6 +72,8 @@ Layout/EndOfLine:
 
 Layout/EmptyLineAfterMagicComment:
   Enabled: true
+  Exclude:
+    - '**/test/**/*'
 
 Layout/EmptyLinesAroundAccessModifier:
   Enabled: true
@@ -158,6 +160,7 @@ Style/FrozenStringLiteralComment:
     - 'activestorage/db/update_migrate/**/*.rb'
     - 'actionmailbox/db/migrate/**/*.rb'
     - 'actiontext/db/migrate/**/*.rb'
+    - 'test/**/*.rb'
 
 Style/MapToHash:
   Enabled: true

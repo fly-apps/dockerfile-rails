@@ -336,6 +336,10 @@ class DockerfileGenerator < Rails::Generators::Base
         force: File.exist?("fly.toml")
     end
 
+    if using_solidq? && deploy_database == "sqlite3" && File.exist?("config/puma.rb")
+      append_to_file "config/puma.rb", "\n# Run the Solid Queue's supervisor\nplugin :solid_queue\n"
+    end
+
     if using_litefs?
       template "litefs.yml.erb", "config/litefs.yml"
 
@@ -1248,7 +1252,11 @@ private
     if using_sidekiq?
       list["sidekiq"] = "bundle exec sidekiq"
     elsif using_solidq?
-      list["solidq"] = "bundle exec rake solid_queue:start"
+      if deploy_database == "sqlite3"
+        return if list.size <= 1
+      else
+        list["solidq"] = "bundle exec rake solid_queue:start"
+      end
     end
 
     list

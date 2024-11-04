@@ -336,7 +336,7 @@ class DockerfileGenerator < Rails::Generators::Base
         force: File.exist?("fly.toml")
     end
 
-    if using_solidq? && deploy_database == "sqlite3" && File.exist?("config/puma.rb")
+    if solidq_launcher == :puma && !File.read("config/puma.rb").include?(":solid_queue")
       append_to_file "config/puma.rb", "\n# Run the Solid Queue's supervisor\nplugin :solid_queue\n"
     end
 
@@ -429,6 +429,10 @@ class DockerfileGenerator < Rails::Generators::Base
 
         if using_thruster? && !dockerfile.include?("HTTP_PORT")
           env["HTTP_PORT"] = "8080"
+        end
+
+        if solidq_launcher == :env && !dockerfile.include?("SOLID_QUEUE_IN_PUMA")
+          env["SOLID_QUEUE_IN_PUMA"] = "true"
         end
 
         unless env.empty?
@@ -548,6 +552,22 @@ private
 
   def using_solidq?
     @gemfile.include?("solid_queue") and includes_jobs?
+  end
+
+  def solidq_launcher
+    if !using_solidq?
+      :none
+    elsif deploy_database != "sqlite3"
+      :process
+    elsif File.exist? "config/puma.rb"
+      if File.read("config/puma.rb").include?("SOLID_QUEUE_IN_PUMA")
+        File.exist?("fly.toml") ? :env : :none
+      else
+        :puma
+      end
+    else
+      :procfile
+    end
   end
 
   def parallel?
@@ -990,6 +1010,10 @@ private
       env.merge! @@args["deploy"].to_h { |key, value| [key, "$#{key}"] }
     end
 
+    if solidq_launcher == :env
+      env["SOLID_QUEUE_IN_PUMA"] = "true"
+    end
+
     env.merge! @@vars["deploy"] if @@vars["deploy"]
 
     env.map { |key, value| "#{key}=#{value.inspect}" }.sort
@@ -1216,23 +1240,29 @@ private
 
   def procfile
     if using_passenger?
-      {
+      base = {
         nginx: "nginx"
       }
     elsif options.nginx?
-      {
+      base = {
         nginx: '/usr/sbin/nginx -g "daemon off;"',
         rails: "./bin/rails server -p 3001"
       }
     elsif using_thruster?
-      {
+      base = {
         rails: "bundle exec thrust ./bin/rails server"
       }
     else
-      {
+      base = {
         rails: "./bin/rails server"
       }
     end
+
+    if solidq_launcher == :procfile
+      base["solidq"] = "bundle exec rake solid_queue:start"
+    end
+
+    base
   end
 
   def using_thruster?

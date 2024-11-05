@@ -91,7 +91,7 @@ services:
   redis-db:
     image: redis
 <% end -%>
-<% if (using_sidekiq? or using_solidq?) and deploy_database != 'sqlite3' -%>
+<% if (using_sidekiq? and deploy_database != 'sqlite3') or solidq_launcher == :process -%>
 
   <%= using_sidekiq? ? "sidekiq" : "solidq" %>:
     build: .

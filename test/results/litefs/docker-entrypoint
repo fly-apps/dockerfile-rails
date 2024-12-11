@@ -4,7 +4,7 @@
 sudo -E litefs mount &
 
 # If running the rails server then create or migrate existing database
-if [ "${*}" == "bundle exec thrust ./bin/rails server" -a "$FLY_REGION" == "$PRIMARY_REGION" ]; then
+if [ "${*}" == "./bin/thrust ./bin/rails server" -a "$FLY_REGION" == "$PRIMARY_REGION" ]; then
   ./bin/rails db:prepare
 fi
 

@@ -1,5 +1,5 @@
 
 [processes]
-  app = "bundle exec thrust ./bin/rails server"
+  app = "./bin/thrust ./bin/rails server"
   sidekiq = "bundle exec sidekiq"
 

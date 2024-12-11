@@ -333,7 +333,7 @@ class DockerfileGenerator < Rails::Generators::Base
 
     if fix_database_config
       template "database.yml.erb", "config/database.yml",
-        force: File.exist?("fly.toml")
+        force: options.force? || File.exist?("fly.toml")
     end
 
     if solidq_launcher == :puma && !File.read("config/puma.rb").include?(":solid_queue")
@@ -1249,9 +1249,15 @@ private
         rails: "./bin/rails server -p 3001"
       }
     elsif using_thruster?
-      base = {
-        rails: "bundle exec thrust ./bin/rails server"
-      }
+      if File.exist? "bin/thrust"
+        base = {
+          rails: "./bin/thrust ./bin/rails server"
+        }
+      else
+        base = {
+          rails: "bundle exec thrust ./bin/rails server"
+        }
+      end
     else
       base = {
         rails: "./bin/rails server"

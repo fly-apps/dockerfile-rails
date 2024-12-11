@@ -1,3 +1,10 @@
+
+[[env]]
+  PORT = "8080"
+
+[processes]
+  app = "./bin/rails server"
+
 [deploy]
   release_command = "./bin/rails db:prepare"
 

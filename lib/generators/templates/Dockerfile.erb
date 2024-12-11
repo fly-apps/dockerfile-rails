@@ -303,7 +303,7 @@ EXPOSE <%= using_thruster? ? '80' : '3000' %>
 <% if deploy_database == 'sqlite3' -%>
 VOLUME /data
 <% end -%>
-<% unless fly_processes -%>
+<% unless fly_processes && !using_thruster? -%>
 <% if !options.procfile.blank? -%>
 CMD ["foreman", "start", "--procfile=<%= options.procfile %>"]
 <% elsif procfile.size > 1 -%>

@@ -1,5 +1,8 @@
 
+[[env]]
+  PORT = "8080"
+
 [processes]
-  app = "./bin/thrust ./bin/rails server"
+  app = "./bin/rails server"
   sidekiq = "bundle exec sidekiq"
 

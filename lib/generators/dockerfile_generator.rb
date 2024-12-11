@@ -427,8 +427,9 @@ class DockerfileGenerator < Rails::Generators::Base
           env["DATABASE_URL"] = "sqlite3:///data/production.sqlite3"
         end
 
-        if using_thruster? && !dockerfile.include?("HTTP_PORT")
-          env["HTTP_PORT"] = "8080"
+        if using_thruster? # && !dockerfile.include?("HTTP_PORT")
+          # env["HTTP_PORT"] = "8080"
+          env["PORT"] = "8080"
         end
 
         if solidq_launcher == :env && !dockerfile.include?("SOLID_QUEUE_IN_PUMA")
@@ -1277,7 +1278,7 @@ private
 
   def fly_processes
     return unless File.exist? "fly.toml"
-    return unless using_sidekiq? || using_solidq?
+    return unless using_sidekiq? || using_solidq? || using_thruster?
 
     if procfile.size > 1
       list = { "app" => "foreman start --procfile=Procfile.prod" }
@@ -1446,6 +1447,17 @@ private
 
     list = fly_processes
     if list
+      if using_thruster?
+        primary = list.keys.first
+        list[primary] = list[primary].sub(/^.*thrust /, "")
+
+        env = { "PORT" => "8080" }
+
+        if !toml.include?("[[env]]")
+          toml += "\n[[env]]\n" + env.map { |key, value| "  #{key} = #{value.inspect}" }.join("\n") + "\n"
+        end
+      end
+
       if toml.include? "[processes]"
         toml.sub!(/\[processes\].*?(\n\n|\n?\z)/m, "[processes]\n" +
           list.map { |name, cmd| "  #{name} = #{cmd.inspect}" }.join("\n") + '\1')

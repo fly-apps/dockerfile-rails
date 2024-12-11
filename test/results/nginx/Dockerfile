@@ -104,6 +104,6 @@ rails: ./bin/rails server -p 3001
 EOF
 
 # Start the server by default, this can be overwritten at runtime
-EXPOSE 3000
+EXPOSE 80
 VOLUME /data
 CMD ["foreman", "start", "--procfile=Procfile.prod"]

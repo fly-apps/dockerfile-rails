@@ -1,9 +1,5 @@
 
 [processes]
-  app = "./bin/rails server"
+  app = "bundle exec thrust ./bin/rails server"
   sidekiq = "bundle exec sidekiq"
-
-[[statics]]
-  guest_path = "/rails/public"
-  url_prefix = "/"
 

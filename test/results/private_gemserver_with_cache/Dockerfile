@@ -77,6 +77,6 @@ ENV DATABASE_URL="sqlite3:///data/production.sqlite3"
 ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 
 # Start the server by default, this can be overwritten at runtime
-EXPOSE 3000
+EXPOSE 80
 VOLUME /data
-CMD ["./bin/rails", "server"]
+CMD ["bundle", "exec", "thrust", "./bin/rails", "server"]

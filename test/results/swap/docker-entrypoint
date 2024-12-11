@@ -13,7 +13,7 @@ if [ $UID -eq 0 ]; then
 fi
 
 # If running the rails server then create or migrate existing database
-if [ "${1}" == "./bin/rails" ] && [ "${2}" == "server" ]; then
+if [ "${*}" == "bundle exec thrust ./bin/rails server" ]; then
   ./bin/rails db:prepare
 fi
 

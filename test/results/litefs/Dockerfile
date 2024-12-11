@@ -76,5 +76,5 @@ ENV DATABASE_URL="sqlite3:///litefs/production.sqlite3" \
 ENTRYPOINT ["litefs", "mount"]
 
 # Start the server by default, this can be overwritten at runtime
-EXPOSE 3000
+EXPOSE 80
 VOLUME /data

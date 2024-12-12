@@ -7,7 +7,7 @@ Rails provides a _smoke test_ for new applications that makes sure that you have
 ```bash
 rails new demo --minimal
 cd demo
-echo 'Rails.application.routes.draw { root "rails/welcome#index" }' > config/routes.rb
+echo 'Rails.application.routes.draw { root "rails/welcome#index" }' >> config/routes.rb
 bundle add dockerfile-rails --optimistic --group development
 bin/rails generate dockerfile
 docker buildx build . -t rails-demo

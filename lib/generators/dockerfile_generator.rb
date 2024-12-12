@@ -1492,7 +1492,14 @@ private
 
     if deploy_database == "sqlite3"
       if not toml.include? "[mounts]"
-        toml += "[mounts]\n  source=\"data\"\n  destination=\"/data\"\n\n"
+        toml += <<~EOF + "\n"
+          [mounts]
+            source = "data"
+            destination = "/data"
+            auto_extend_size_threshold = 80
+            auto_extend_size_increment = "1GB"
+            auto_extend_size_limit = "10GB"
+        EOF
       end
     end
 

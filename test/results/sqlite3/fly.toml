@@ -6,6 +6,9 @@
   app = "./bin/rails server"
 
 [mounts]
-  source="data"
-  destination="/data"
+  source = "data"
+  destination = "/data"
+  auto_extend_size_threshold = 80
+  auto_extend_size_increment = "1GB"
+  auto_extend_size_limit = "10GB"
 

@@ -1,3 +1,6 @@
+
+[env]
+  PORT = "8080"
 [mounts]
   source="data"
   destination="/data"

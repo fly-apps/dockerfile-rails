@@ -438,8 +438,8 @@ class DockerfileGenerator < Rails::Generators::Base
 
         unless env.empty?
           toml = IO.read("fly.toml")
-          if !toml.include?("[[env]]")
-            toml += "\n[[env]]\n" + env.map { |key, value| "  #{key} = #{value.inspect}" }.join("\n")
+          if !toml.include?("[env]")
+            toml += "\n[env]\n" + env.map { |key, value| "  #{key} = #{value.inspect}" }.join("\n")
             File.write "fly.toml", toml
           end
         end
@@ -1444,18 +1444,34 @@ private
 
   def fly_make_toml
     toml = File.read("fly.toml")
+    dockerfile = File.read("Dockerfile") rescue ""
 
     list = fly_processes
     if list
+      env = {}
+
       if using_thruster?
         primary = list.keys.first
         list[primary] = list[primary].sub(/^.*thrust /, "")
 
-        env = { "PORT" => "8080" }
+        env["PORT"] = "8080"
+      end
 
-        if !toml.include?("[[env]]")
-          toml += "\n[[env]]\n" + env.map { |key, value| "  #{key} = #{value.inspect}" }.join("\n") + "\n"
-        end
+      if (options.sqlite3? || @sqlite3) && !dockerfile.include?("DATABASE_URL")
+        env["DATABASE_URL"] = "sqlite3:///data/production.sqlite3"
+      end
+
+      if using_thruster? # && !dockerfile.include?("HTTP_PORT")
+        # env["HTTP_PORT"] = "8080"
+        env["PORT"] = "8080"
+      end
+
+      if solidq_launcher == :env && !dockerfile.include?("SOLID_QUEUE_IN_PUMA")
+        env["SOLID_QUEUE_IN_PUMA"] = "true"
+      end
+
+      unless env.empty? || toml.include?("[env]")
+        toml += "\n[env]\n" + env.map { |key, value| "  #{key} = #{value.inspect}" }.join("\n") + "\n"
       end
 
       if toml.include? "[processes]"

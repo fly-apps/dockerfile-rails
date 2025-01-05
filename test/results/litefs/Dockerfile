@@ -44,9 +44,13 @@ RUN SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile
 # Final stage for app image
 FROM base
 
+# Install, configure litefs
+COPY --from=flyio/litefs:0.5 /usr/local/bin/litefs /usr/local/bin/litefs
+COPY config/litefs.yml /etc/litefs.yml
+
 # Install packages needed for deployment
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y curl libsqlite3-0 && \
+    apt-get install --no-install-recommends -y ca-certificates curl fuse3 libsqlite3-0 sudo && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 # Copy built artifacts: gems, application
@@ -56,17 +60,21 @@ COPY --from=build /rails /rails
 # Run and own only the runtime files as a non-root user for security
 RUN groupadd --system --gid 1000 rails && \
     useradd rails --uid 1000 --gid 1000 --create-home --shell /bin/bash && \
-    mkdir /data && \
-    chown -R 1000:1000 db log storage tmp /data
-USER 1000:1000
+    mkdir /data /litefs && \
+    chown -R 1000:1000 db log storage tmp /data /litefs
+
+# Authorize rails user to launch litefs
+COPY <<-"EOF" /etc/sudoers.d/rails
+rails ALL=(root) /usr/local/bin/litefs
+EOF
 
 # Deployment options
-ENV DATABASE_URL="sqlite3:///data/production.sqlite3"
+ENV DATABASE_URL="sqlite3:///litefs/production.sqlite3" \
+    PORT="3001"
 
 # Entrypoint prepares the database.
-ENTRYPOINT ["/rails/bin/docker-entrypoint"]
+ENTRYPOINT ["litefs", "mount"]
 
 # Start the server by default, this can be overwritten at runtime
 EXPOSE 80
 VOLUME /data
-CMD ["./bin/thrust", "./bin/rails", "server"]

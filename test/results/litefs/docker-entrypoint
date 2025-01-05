@@ -1,7 +1,10 @@
 #!/bin/bash -e
 
+# mount litefs
+sudo -E litefs mount &
+
 # If running the rails server then create or migrate existing database
-if [ "${@: -1:1}" == "./bin/rails server" ]; then
+if [ "${@: -2:1}" == "./bin/rails" ] && [ "${@: -1:1}" == "server" ] && [ "$FLY_REGION" == "$PRIMARY_REGION" ]; then
   ./bin/rails db:prepare
 fi
 

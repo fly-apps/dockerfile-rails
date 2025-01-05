@@ -55,7 +55,7 @@ FROM base
 
 # Install packages needed for deployment
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y curl nginx ruby-foreman && \
+    apt-get install --no-install-recommends -y nginx ruby-foreman && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 # configure nginx

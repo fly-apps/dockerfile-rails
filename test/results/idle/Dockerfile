@@ -63,7 +63,7 @@ FROM base
 
 # Install packages needed for deployment
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y curl libnginx-mod-http-passenger nginx && \
+    apt-get install --no-install-recommends -y libnginx-mod-http-passenger nginx && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 # configure nginx and passenger

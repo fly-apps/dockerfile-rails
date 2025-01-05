@@ -680,7 +680,7 @@ private
   end
 
   def base_packages
-    packages = %w(curl)
+    packages = %w(curl) # work with the default healthcheck strategy in Kamal
     packages += @@packages["base"] if @@packages["base"]
 
     packages << "libjemalloc2" if options.jemalloc? && !options.fullstaq?
@@ -703,7 +703,7 @@ private
     end
 
     if using_puppeteer?
-      packages += %w(curl gnupg)
+      packages += %w(gnupg)
     end
 
     # charlock_holmes.  Placed here as the library itself is
@@ -762,7 +762,7 @@ private
       packages += %w(node-gyp pkg-config)
 
       unless using_execjs? || using_puppeteer?
-        packages << "curl"
+        # packages << "curl"
       end
 
       # module build process depends on Python, and debian changed
@@ -788,7 +788,7 @@ private
     end
 
     if using_bun?
-      packages += %w(curl unzip)
+      packages += %w(unzip)
     end
 
     if options.alpine?
@@ -799,7 +799,7 @@ private
   end
 
   def deploy_packages
-    packages = %w(curl) # work with the default healthcheck strategy in MRSK
+    packages = []
     packages += @@packages["deploy"] if @@packages["deploy"]
 
     # litefs
@@ -882,7 +882,7 @@ private
     packages = []
 
     if using_passenger?
-      packages += %w(gnupg curl)
+      packages += %w(curl gnupg)
       repos += [
        "curl https://oss-binaries.phusionpassenger.com/auto-software-signing-gpg-key.txt |",
        "  gpg --dearmor > /etc/apt/trusted.gpg.d/phusion.gpg &&",
@@ -908,7 +908,7 @@ private
     packages = []
 
     if using_puppeteer? && deploy_packages.include?("google-chrome-stable")
-      packages += %w(gnupg curl)
+      packages += %w(gnupg)
       repos += [
        "curl https://dl-ssl.google.com/linux/linux_signing_key.pub |",
        "  gpg --dearmor > /etc/apt/trusted.gpg.d/google-archive.gpg &&",

@@ -35,7 +35,7 @@ FROM base AS build
 
 # Install packages needed to build gems and node modules
 RUN apk update && \
-    apk add build-base curl gyp libpq-dev pkgconfig python3 && \
+    apk add build-base gyp libpq-dev pkgconfig python3 && \
     rm -rf /var/cache/apk/*
 
 # Install JavaScript dependencies
@@ -73,7 +73,7 @@ FROM base
 
 # Install packages needed for deployment
 RUN apk update && \
-    apk add curl libpq && \
+    apk add libpq && \
     rm -rf /var/cache/apk/*
 
 # Copy built artifacts: gems, application

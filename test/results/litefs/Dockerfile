@@ -50,7 +50,7 @@ COPY config/litefs.yml /etc/litefs.yml
 
 # Install packages needed for deployment
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y ca-certificates curl fuse3 libsqlite3-0 sudo && \
+    apt-get install --no-install-recommends -y ca-certificates curl fuse3 libjemalloc2 libsqlite3-0 sudo && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 # Copy built artifacts: gems, application

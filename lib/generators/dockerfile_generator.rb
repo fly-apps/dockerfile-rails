@@ -16,7 +16,7 @@ class DockerfileGenerator < Rails::Generators::Base
     "compose" => false,
     "fullstaq" => false,
     "gemfile-updates" => true,
-    "jemalloc" => false,
+    "jemalloc" => true,
     "label" => {},
     "link" => false,
     "litefs" => false,
@@ -996,8 +996,8 @@ private
     end
 
     if options.jemalloc? && !options.fullstaq?
-      env["LD_PRELOAD"] = "libjemalloc.so.2"
-      env["MALLOC_CONF"] = "dirty_decay_ms:1000,narenas:2,background_thread:true"
+      # env["LD_PRELOAD"] = "libjemalloc.so.2"
+      # env["MALLOC_CONF"] = "dirty_decay_ms:1000,narenas:2,background_thread:true"
     end
 
     if using_puppeteer?

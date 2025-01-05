@@ -1,7 +1,7 @@
 #!/bin/bash -e
 
 # If running the production procfile then create or migrate existing database
-if [ "${*}" == "foreman start --procfile=Procfile.prod" ]; then
+if [ "${@: -3:1}" == "foreman" ] && [ "${@: -2:1}" == "start" ] && [ "${@: -1:1}" == "--procfile=Procfile.prod" ]; then
   ./bin/rails db:prepare
 fi
 

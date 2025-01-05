@@ -10,7 +10,7 @@ class TestLitestack # < TestBase
     system "bundle add litestack"
   end
 
-  def test_sqlite3
+  def test_litestack
     check_dockerfile
   end
 end

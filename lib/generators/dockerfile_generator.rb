@@ -2,6 +2,7 @@
 
 require "erb"
 require "json"
+require "shellwords"
 require_relative "../dockerfile-rails/scanner.rb"
 
 class DockerfileGenerator < Rails::Generators::Base
@@ -19,6 +20,7 @@ class DockerfileGenerator < Rails::Generators::Base
     "label" => {},
     "link" => false,
     "litefs" => false,
+    "litestream" => false,
     "lock" => true,
     "max-idle" => nil,
     "migrate" => "",
@@ -161,6 +163,9 @@ class DockerfileGenerator < Rails::Generators::Base
 
   class_option :litefs, type: :boolean, default: OPTION_DEFAULTS.litefs,
     desc: "replicate sqlite3 databases using litefs"
+
+  class_option :litestream, type: :boolean, default: OPTION_DEFAULTS.litestream,
+    desc: "replicate sqlite3 databases using litesream"
 
   class_option :tigris, type: :boolean, default: OPTION_DEFAULTS.tigris,
     desc: "configure active storage to use tigris"
@@ -346,6 +351,10 @@ class DockerfileGenerator < Rails::Generators::Base
       fly_attach_consul
     end
 
+    if using_litestream?
+      template "litestream.rake.erb", "lib/tasks/litestream.rake"
+    end
+
     if File.exist?("fly.toml") && (fly_processes || !options.prepare || options.swap || deploy_database == "sqlite3")
       if File.stat("fly.toml").size > 0
         template "fly.toml.erb", "fly.toml"
@@ -488,6 +497,10 @@ private
     @gemfile.include?("litestack")
   end
 
+  def using_litestream?
+    options.litestream?
+  end
+
   def using_node?
     return @using_node if @using_node != nil
     return if using_bun?
@@ -592,6 +605,10 @@ private
 
     if options.mysql? || @mysql
       system "bundle add mysql2 --skip-install" unless has_mysql_gem?
+    end
+
+    if options.litestream?
+      system "bundle add litestream --skip-install" unless @gemfile.include? "litestream"
     end
 
     if options.redis? || using_redis?
@@ -1133,6 +1150,30 @@ private
     end
   end
 
+  def start_command
+    if !options.procfile.blank?
+      ["foreman", "start", "--procfile=#{options.procfile}"]
+    elsif procfile.size > 1
+      ["foreman", "start", "--procfile=Procfile.prod"]
+    else
+      command = Shellwords.split(procfile.values.first)
+
+      if command.first == "./bin/thrust"
+        command[1..]
+      else
+        command
+      end
+    end
+  end
+
+  def shellescape(string)
+    if %r{\A[-\w._/= ]+\z}.match?(string)
+      string.inspect
+    else
+      Shellwords.escape(string)
+    end
+  end
+
   def node_version
     return unless using_node? || using_execjs?
 
@@ -1250,6 +1291,10 @@ private
       base = {
         rails: "./bin/rails server"
       }
+    end
+
+    if using_litestream? && base[:rails]
+      base[:rails] = "./bin/rake litestream:run " + base[:rails]
     end
 
     if solidq_launcher == :procfile
@@ -1466,6 +1511,10 @@ private
       if using_thruster?
         primary = list.keys.first
         list[primary] = list[primary].sub(/^.*thrust /, "")
+      end
+
+      if using_litestream? && list["app"]
+        list["app"] = "./script/litestream #{list["app"]}"
       end
 
       if toml.include? "[processes]"

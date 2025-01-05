@@ -36,17 +36,13 @@ fi
 <% end -%>
 <% if options.prepare -%>
 <% if !options.procfile.blank? -%>
-if [ "${*}" == "foreman start --procfile=<%= options.procfile %>" ]; then
+# If running the specified procfile then create or migrate existing database
 <% elsif procfile.size > 1 -%>
 # If running the production procfile then create or migrate existing database
-if [ "${*}" == "foreman start --procfile=Procfile.prod" ]; then
-<% elsif procfile.values.first.start_with? "./bin/rails server" -%>
-# If running the rails server then create or migrate existing database
-if [ "${1}" == "./bin/rails" ] && [ "${2}" == "server" ]<% if using_litefs? %> && [ "$FLY_REGION" == "$PRIMARY_REGION" ]<%end%>; then
 <% else -%>
 # If running the rails server then create or migrate existing database
-if [ "${*}" == <%= procfile.values.first.inspect %> <% if using_litefs? %>-a "$FLY_REGION" == "$PRIMARY_REGION" <%end%>]; then
 <% end -%>
+if <%= start_command.map.with_index {|word, index| "[ \"${@: #{index - start_command.length}:1}\" == #{shellescape(word)} ]"}.join(" && ") %><% if using_litefs? %> && [ "$FLY_REGION" == "$PRIMARY_REGION" ]<%end%>; then
 <% if options.precompile == "defer" -%>
   ./bin/rails assets:precompile
 <% end -%>

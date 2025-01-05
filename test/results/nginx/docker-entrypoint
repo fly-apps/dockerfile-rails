@@ -1,5 +1,11 @@
 #!/bin/bash -e
 
+# Enable jemalloc for reduced memory usage and latency.
+if [ -z "${LD_PRELOAD+x}" ]; then
+    LD_PRELOAD=$(find /usr/lib -name libjemalloc.so.2 -print -quit)
+    export LD_PRELOAD
+fi
+
 # If running the production procfile then create or migrate existing database
 if [ "${@: -3:1}" == "foreman" ] && [ "${@: -2:1}" == "start" ] && [ "${@: -1:1}" == "--procfile=Procfile.prod" ]; then
   ./bin/rails db:prepare

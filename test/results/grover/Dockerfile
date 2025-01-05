@@ -62,7 +62,7 @@ FROM base
 
 # Install packages needed for deployment
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y chromium chromium-sandbox curl libsqlite3-0 && \
+    apt-get install --no-install-recommends -y chromium chromium-sandbox curl libjemalloc2 libsqlite3-0 && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 # Copy built artifacts: gems, application

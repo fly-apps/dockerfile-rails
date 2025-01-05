@@ -65,7 +65,7 @@ FROM base
 
 # Install packages needed for deployment
 RUN apk update && \
-    apk add curl libpq postgresql-client && \
+    apk add curl jemalloc libpq postgresql-client && \
     rm -rf /var/cache/apk/*
 
 # Copy built artifacts: gems, application

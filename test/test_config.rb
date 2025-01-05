@@ -5,7 +5,7 @@ require "yaml"
 
 class TestConfig < TestBase
   @rails_options = "--minimal"
-  @generate_options = "--fullstaq --link --force"
+  @generate_options = "--fullstaq --no-jemalloc --link --force"
 
   def app_setup
     IO.write "config/dockerfile.yml",
@@ -19,6 +19,6 @@ class TestConfig < TestBase
     assert_equal true, options["yjit"]
     assert_equal true, options["fullstaq"]
     assert_equal true, options["link"]
-    assert_nil options["jemalloc"]
+    assert_equal false, options["jemalloc"]
   end
 end

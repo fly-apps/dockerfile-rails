@@ -55,7 +55,7 @@ FROM base
 
 # Install packages needed for deployment
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y curl libnginx-mod-http-passenger libsqlite3-0 nginx && \
+    apt-get install --no-install-recommends -y curl libjemalloc2 libnginx-mod-http-passenger libsqlite3-0 nginx && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 # configure nginx and passenger

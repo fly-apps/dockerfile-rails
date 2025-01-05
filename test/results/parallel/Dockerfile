@@ -14,15 +14,20 @@ FROM ruby:$RUBY_VERSION-slim AS base
 # Rails app lives here
 WORKDIR /rails
 
+# Update gems and bundler
+RUN gem update --system --no-document && \
+    gem install -N bundler
+
+# Install base packages
+RUN apt-get update -qq && \
+    apt-get install --no-install-recommends -y curl libjemalloc2 sqlite3 && \
+    rm -rf /var/lib/apt/lists /var/cache/apt/archives
+
 # Set production environment
 ENV BUNDLE_DEPLOYMENT="1" \
     BUNDLE_PATH="/usr/local/bundle" \
     BUNDLE_WITHOUT="development:test" \
     RAILS_ENV="production"
-
-# Update gems and bundler
-RUN gem update --system --no-document && \
-    gem install -N bundler
 
 
 # Throw-away build stages to reduce size of final image
@@ -30,7 +35,8 @@ FROM base AS prebuild
 
 # Install packages needed to build gems and node modules
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y build-essential curl node-gyp pkg-config python-is-python3
+    apt-get install --no-install-recommends -y build-essential curl node-gyp pkg-config python-is-python3 && \
+    rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 
 FROM prebuild AS node
@@ -77,7 +83,7 @@ FROM base
 
 # Install packages needed for deployment
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y curl libjemalloc2 libsqlite3-0 && \
+    apt-get install --no-install-recommends -y curl && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 # Copy built artifacts: gems, application

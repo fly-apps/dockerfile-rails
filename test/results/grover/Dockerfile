@@ -14,20 +14,20 @@ FROM ruby:$RUBY_VERSION-slim AS base
 # Rails app lives here
 WORKDIR /rails
 
+# Update gems and bundler
+RUN gem update --system --no-document && \
+    gem install -N bundler
+
+# Install base packages needed to install nodejs and chrome
+RUN apt-get update -qq && \
+    apt-get install --no-install-recommends -y curl gnupg libjemalloc2 sqlite3 && \
+    rm -rf /var/lib/apt/lists /var/cache/apt/archives
+
 # Set production environment
 ENV BUNDLE_DEPLOYMENT="1" \
     BUNDLE_PATH="/usr/local/bundle" \
     BUNDLE_WITHOUT="development:test" \
     RAILS_ENV="production"
-
-# Update gems and bundler
-RUN gem update --system --no-document && \
-    gem install -N bundler
-
-# Install packages needed to install nodejs and chrome
-RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y curl gnupg && \
-    rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 # Install Node.js
 ARG NODE_VERSION=xxx
@@ -42,7 +42,8 @@ FROM base AS build
 
 # Install packages needed to build gems and node modules
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y build-essential node-gyp pkg-config python-is-python3
+    apt-get install --no-install-recommends -y build-essential node-gyp pkg-config python-is-python3 && \
+    rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 # Build options
 ENV PATH="/usr/local/node/bin:$PATH" \
@@ -69,7 +70,7 @@ FROM base
 
 # Install packages needed for deployment
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y chromium chromium-sandbox curl libjemalloc2 libsqlite3-0 && \
+    apt-get install --no-install-recommends -y chromium chromium-sandbox curl && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 # Copy built artifacts: gems, application

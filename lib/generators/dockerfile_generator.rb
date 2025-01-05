@@ -679,14 +679,25 @@ private
   end
 
   def base_packages
-    packages = []
+    packages = %w(curl)
     packages += @@packages["base"] if @@packages["base"]
+
+    packages << "libjemalloc2" if options.jemalloc? && !options.fullstaq?
+
+    # start with databases: sqlite3, postgres, mysql
+    packages << "postgresql-client" if options.postgresql? || @postgresql
+    packages << "default-mysql-client" if options.mysql? || @mysql
+    packages << "freetds-bin" if options.sqlserver? || @sqlserver
+    if options.sqlite3? || @sqlite3
+      packages << "sqlite3" unless packages.include? "sqlite3"
+    end
+
+    # ActiveStorage preview support
+    packages << "libvips" if @gemfile.include? "ruby-vips"
 
     if using_execjs?
       if node_version == "lts"
         packages += %w(nodejs npm)
-      else
-        packages += %w(curl)
       end
     end
 
@@ -742,9 +753,6 @@ private
     # add git if needed to install gems
     packages << "git" if @git
 
-    # ActiveStorage preview support
-    packages << "libvips" if @gemfile.include? "ruby-vips"
-
     # Rmagick gem
     packages += %w[pkg-config libmagickwand-dev] if @gemfile.include? "rmagick"
 
@@ -792,15 +800,6 @@ private
   def deploy_packages
     packages = %w(curl) # work with the default healthcheck strategy in MRSK
     packages += @@packages["deploy"] if @@packages["deploy"]
-
-    # start with databases: sqlite3, postgres, mysql
-    packages << "postgresql-client" if options.postgresql? || @postgresql
-    packages << "default-mysql-client" if options.mysql? || @mysql
-    packages << "freetds-bin" if options.sqlserver? || @sqlserver
-    packages << "libjemalloc2" if options.jemalloc? && !options.fullstaq?
-    if options.sqlite3? || @sqlite3
-      packages << "libsqlite3-0" unless packages.include? "sqlite3"
-    end
 
     # litefs
     packages += ["ca-certificates", "fuse3", "sudo"] if options.litefs?

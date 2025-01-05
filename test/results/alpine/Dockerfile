@@ -14,20 +14,20 @@ FROM ruby:$RUBY_VERSION-alpine AS base
 # Rails app lives here
 WORKDIR /rails
 
+# Update gems and bundler
+RUN gem update --system --no-document && \
+    gem install -N bundler
+
+# Install base packages
+RUN apk update && \
+    apk add curl jemalloc postgresql-client tzdata && \
+    rm -rf /var/cache/apk/*
+
 # Set production environment
 ENV BUNDLE_DEPLOYMENT="1" \
     BUNDLE_PATH="/usr/local/bundle" \
     BUNDLE_WITHOUT="development:test" \
     RAILS_ENV="production"
-
-# Update gems and bundler
-RUN gem update --system --no-document && \
-    gem install -N bundler
-
-# Install packages
-RUN apk update && \
-    apk add tzdata && \
-    rm -rf /var/cache/apk/*
 
 
 # Throw-away build stage to reduce size of final image
@@ -35,7 +35,8 @@ FROM base AS build
 
 # Install packages needed to build gems and node modules
 RUN apk update && \
-    apk add build-base curl gyp libpq-dev pkgconfig python3
+    apk add build-base curl gyp libpq-dev pkgconfig python3 && \
+    rm -rf /var/cache/apk/*
 
 # Install JavaScript dependencies
 ARG NODE_VERSION=xxx
@@ -72,7 +73,7 @@ FROM base
 
 # Install packages needed for deployment
 RUN apk update && \
-    apk add curl jemalloc libpq postgresql-client && \
+    apk add curl libpq && \
     rm -rf /var/cache/apk/*
 
 # Copy built artifacts: gems, application

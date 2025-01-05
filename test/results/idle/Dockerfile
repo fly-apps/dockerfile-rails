@@ -14,25 +14,25 @@ FROM ruby:$RUBY_VERSION-slim AS base
 # Rails app lives here
 WORKDIR /rails
 
-# Set production environment
-ENV BUNDLE_DEPLOYMENT="1" \
-    BUNDLE_PATH="/usr/local/bundle" \
-    BUNDLE_WITHOUT="development:test" \
-    RAILS_ENV="production"
-
 # Update gems and bundler
 RUN gem update --system --no-document && \
     gem install -N bundler
 
-# Install packages
+# Install base packages
 RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y curl gnupg && \
     curl https://oss-binaries.phusionpassenger.com/auto-software-signing-gpg-key.txt | \
       gpg --dearmor > /etc/apt/trusted.gpg.d/phusion.gpg && \
     bash -c 'echo deb https://oss-binaries.phusionpassenger.com/apt/passenger $(source /etc/os-release; echo $VERSION_CODENAME) main > /etc/apt/sources.list.d/passenger.list' && \
     apt-get update -qq && \
-    apt-get install --no-install-recommends -y passenger && \
+    apt-get install --no-install-recommends -y curl libjemalloc2 passenger sqlite3 && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
+
+# Set production environment
+ENV BUNDLE_DEPLOYMENT="1" \
+    BUNDLE_PATH="/usr/local/bundle" \
+    BUNDLE_WITHOUT="development:test" \
+    RAILS_ENV="production"
 
 
 # Throw-away build stage to reduce size of final image
@@ -40,7 +40,8 @@ FROM base AS build
 
 # Install packages needed to build gems
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y build-essential pkg-config
+    apt-get install --no-install-recommends -y build-essential pkg-config && \
+    rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 # Install application gems
 COPY Gemfile Gemfile.lock ./
@@ -62,7 +63,7 @@ FROM base
 
 # Install packages needed for deployment
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y curl libjemalloc2 libnginx-mod-http-passenger libsqlite3-0 nginx && \
+    apt-get install --no-install-recommends -y curl libnginx-mod-http-passenger nginx && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 # configure nginx and passenger

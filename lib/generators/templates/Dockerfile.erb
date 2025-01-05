@@ -36,18 +36,18 @@ WORKDIR /rails
 ARG <%= base_args.map {|key, value| "#{key}=#{value.inspect}"}.join(" \\\n    ") %>
 
 <% end -%>
-# Set production environment
-ENV <%= base_env.join(" \\\n    ") %>
-
 # Update gems and bundler
 RUN gem update --system <% if RUBY_VERSION.start_with? '2' %>3.4.22 <% end %>--no-document && \
     gem install -N <%= base_gems.join(" ") %>
 
 <% unless base_packages.empty? -%>
-# Install packages<% unless base_requirements.empty? -%> needed to install <%= base_requirements %><% end %>
+# Install base packages<% unless base_requirements.empty? -%> needed to install <%= base_requirements %><% end %>
 <%= render partial: 'apt_install', locals: {packages: base_packages, clean: true, repos: base_repos} %>
 
 <% end -%>
+# Set production environment
+ENV <%= base_env.join(" \\\n    ") %>
+
 <% if using_execjs? and node_version != 'lts' -%>
 <%= render partial: 'install_node', locals: {yarn_version: nil} %>
 
@@ -63,7 +63,7 @@ FROM base AS <%= parallel? ? 'pre' : '' %>build
 
 <% end -%>
 # Install packages needed to build gems<%= using_node? ? " and node modules" : "" %>
-<%= render partial: 'apt_install', locals: {packages: build_packages, clean: false, repos: ''} %>
+<%= render partial: 'apt_install', locals: {packages: build_packages, clean: true, repos: ''} %>
 
 <% if parallel? -%>
 

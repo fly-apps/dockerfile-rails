@@ -1518,7 +1518,7 @@ private
       end
 
       if using_litestream? && list["app"]
-        list["app"] = "./script/litestream #{list["app"]}"
+        list["app"] = "./bin/rake litestream:run #{list["app"]}"
       end
 
       if toml.include? "[processes]"

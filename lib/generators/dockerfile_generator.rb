@@ -1308,6 +1308,10 @@ private
     options.thruster? || @gemfile.include?("thruster")
   end
 
+  def using_kamal?
+    @gemfile.include?("kamal")
+  end
+
   def fly_processes
     return unless File.exist? "fly.toml"
     return unless using_sidekiq? || using_solidq? || using_thruster?

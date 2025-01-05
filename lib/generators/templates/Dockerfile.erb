@@ -1,6 +1,15 @@
-# syntax = docker/dockerfile:1
+# syntax=docker/dockerfile:1
+# check=error=true
+<% if using_kamal? -%>
 
-# Make sure RUBY_VERSION matches the Ruby version in .ruby-version and Gemfile
+# This Dockerfile is designed for production, not development. Use with Kamal or build'n'run by hand:
+# docker build -t demo .
+# docker run -d -p 80:80 -e RAILS_MASTER_KEY=<value from config/master.key> --name demo demo
+
+# For a containerized dev environment, see Dev Containers: https://guides.rubyonrails.org/getting_started_with_devcontainer.html
+<% end -%>
+
+# Make sure RUBY_VERSION matches the Ruby version in .ruby-version
 ARG RUBY_VERSION=<%= RUBY_VERSION %>
 <% if api_client_dir -%>
 <%= render partial: 'node_client' %>
@@ -298,7 +307,11 @@ COPY <<-"EOF" /rails/Procfile.prod
 EOF
 
 <% end -%>
+<% if using_thruster? -%>
+# Start server via Thruster by default, this can be overwritten at runtime
+<% else -%>
 # Start the server by default, this can be overwritten at runtime
+<% end -%>
 EXPOSE <%= using_thruster? ? '80' : '3000' %>
 <% if deploy_database == 'sqlite3' -%>
 VOLUME /data

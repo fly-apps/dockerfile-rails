@@ -122,13 +122,12 @@ RUN --mount=type=cache,id=bld-gem-cache,sharing=locked,target=/srv/vendor \
 RUN --mount=type=secret,id=gemserver_credentials,target=/kaniko/gemserver_credentials \
     <%= private_gemserver_env_variable_name %>="$(cat /kaniko/gemserver_credentials)" && \
     export <%= private_gemserver_env_variable_name %> && \
-    bundle install<% if depend_on_bootsnap? && options.precompile != "defer" -%> && \
-    bundle exec bootsnap precompile --gemfile<% end %> && \
+    bundle install && \
 <% else -%>
-RUN <% if options["precompiled-gems"] != true %>bundle config set force_ruby_platform true && \<%= "\n    " %><% end %>bundle install<% if depend_on_bootsnap? && options.precompile != "defer" -%> && \
-    bundle exec bootsnap precompile --gemfile<% end %> && \
+RUN <% if options["precompiled-gems"] != true %>bundle config set force_ruby_platform true && \<%= "\n    " %><% end %>bundle install && \
 <% end -%>
-    rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git
+    rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git<% if depend_on_bootsnap? && options.precompile != "defer" -%> && \
+    bundle exec bootsnap precompile --gemfile<% end %>
 
 <% end -%>
 <% if using_passenger? -%>

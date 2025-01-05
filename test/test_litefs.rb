@@ -6,7 +6,7 @@ class TestLitefs < TestBase
   @rails_options = "--database=sqlite3"
   @generate_options = "--litefs"
 
-  def test_sqlite3
+  def test_litefs
     check_dockerfile
     check_entrypoint
     check_litefs

@@ -9,7 +9,7 @@ swapon /swapfile
 echo 1 > /proc/sys/vm/overcommit_memory
 
 # If running the rails server then create or migrate existing database
-if [ "${*}" == "nginx" ]; then
+if [ "${@: -1:1}" == "nginx" ]; then
   ./bin/rails db:prepare
 fi
 

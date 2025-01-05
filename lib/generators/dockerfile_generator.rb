@@ -76,7 +76,8 @@ class DockerfileGenerator < Rails::Generators::Base
     "node-gyp" => "gyp",
     "pkg-config" => "pkgconfig",
     "python" => "python3",
-    "python-is-python3" => "python3"
+    "python-is-python3" => "python3",
+    "sqlite3" => "sqlite",
   }
 
   # load defaults from config file

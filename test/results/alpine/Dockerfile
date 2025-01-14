@@ -35,7 +35,7 @@ FROM base AS build
 
 # Install packages needed to build gems and node modules
 RUN apk update && \
-    apk add build-base gyp libpq-dev pkgconfig python3 && \
+    apk add build-base gyp libpq-dev pkgconfig python3 yaml-dev && \
     rm -rf /var/cache/apk/*
 
 # Install JavaScript dependencies

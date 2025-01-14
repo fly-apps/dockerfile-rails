@@ -38,7 +38,7 @@ FROM base AS build
 RUN --mount=type=cache,id=dev-apt-cache,sharing=locked,target=/var/cache/apt \
     --mount=type=cache,id=dev-apt-lib,sharing=locked,target=/var/lib/apt \
     apt-get update -qq && \
-    apt-get install --no-install-recommends -y build-essential pkg-config
+    apt-get install --no-install-recommends -y build-essential libyaml-dev pkg-config
 
 # Install application gems
 COPY Gemfile Gemfile.lock ./

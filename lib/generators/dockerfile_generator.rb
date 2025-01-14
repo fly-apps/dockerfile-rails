@@ -73,6 +73,7 @@ class DockerfileGenerator < Rails::Generators::Base
     "libtiff-dev" => "tiff-dev",
     "libjemalloc2" => "jemalloc",
     "libvips" => "vips-dev",
+    "libyaml-dev" => "yaml-dev",
     "node-gyp" => "gyp",
     "pkg-config" => "pkgconfig",
     "python" => "python3",
@@ -737,10 +738,10 @@ private
 
   def build_packages
     # start with the essentials
-    packages = %w(build-essential)
+    packages = %w(build-essential libyaml-dev)
     packages += @@packages["build"] if @@packages["build"]
     packages += %w(nodejs npm) if (node_version == "lts") && (not using_execjs?)
-    packages << "libyaml-dev" if options.fullstaq?
+    packages << "libffi-dev" if  @@packages["ffi"]
 
     # add databases: sqlite3, postgres, mysql
     packages << "pkg-config" if options.sqlite3? || @sqlite3

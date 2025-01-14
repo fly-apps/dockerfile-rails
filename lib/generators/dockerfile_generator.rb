@@ -1599,7 +1599,7 @@ private
   def fix_database_config
     yaml = IO.read("config/database.yml")
 
-    production = YAML.load(yaml, aliases: true)["production"]
+    production = YAML.load(yaml, aliases: true)["production"] rescue nil
     return unless production.is_a?(Hash) && production.values.all?(Hash)
     return if production.keys == [ "primary" ]
 

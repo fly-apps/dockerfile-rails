@@ -741,7 +741,7 @@ private
     packages = %w(build-essential libyaml-dev)
     packages += @@packages["build"] if @@packages["build"]
     packages += %w(nodejs npm) if (node_version == "lts") && (not using_execjs?)
-    packages << "libffi-dev" if  @@packages["ffi"]
+    packages << "libffi-dev" if @gemfile.include?("ffi")
 
     # add databases: sqlite3, postgres, mysql
     packages << "pkg-config" if options.sqlite3? || @sqlite3

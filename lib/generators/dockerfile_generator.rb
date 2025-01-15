@@ -511,7 +511,7 @@ private
 
   def using_bun?
     return @using_bun if @using_bun != nil
-    @using_bun = File.exist?("bun.config.js") || File.exist?("bun.lockb")
+    @using_bun = File.exist?("bun.config.js") || File.exist?("bun.lockb") || File.exist?("bun.lock")
   end
 
   def references_ruby_version_file?

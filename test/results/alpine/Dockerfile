@@ -19,9 +19,7 @@ RUN gem update --system --no-document && \
     gem install -N bundler
 
 # Install base packages
-RUN apk update && \
-    apk add curl jemalloc postgresql-client tzdata && \
-    rm -rf /var/cache/apk/*
+RUN apk add --no-cache curl jemalloc postgresql-client tzdata
 
 # Set production environment
 ENV BUNDLE_DEPLOYMENT="1" \
@@ -34,9 +32,7 @@ ENV BUNDLE_DEPLOYMENT="1" \
 FROM base AS build
 
 # Install packages needed to build gems and node modules
-RUN apk update && \
-    apk add build-base gyp libpq-dev pkgconfig python3 yaml-dev && \
-    rm -rf /var/cache/apk/*
+RUN apk add --no-cache build-base gyp libpq-dev pkgconfig python3 yaml-dev
 
 # Install JavaScript dependencies
 ARG NODE_VERSION=xxx
@@ -72,9 +68,7 @@ RUN SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile
 FROM base
 
 # Install packages needed for deployment
-RUN apk update && \
-    apk add libpq && \
-    rm -rf /var/cache/apk/*
+RUN apk add --no-cache libpq
 
 # Copy built artifacts: gems, application
 COPY --from=build "${BUNDLE_PATH}" "${BUNDLE_PATH}"

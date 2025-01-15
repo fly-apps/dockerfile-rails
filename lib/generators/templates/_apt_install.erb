@@ -2,6 +2,8 @@
 RUN <%= pkg_cache.map {|name, path| "--mount=type=cache,id=#{name},sharing=locked,target=#{path} \\"}.join("\n    ") %>
     <%= repos %><%= pkg_update %> && \
     <%= pkg_install %> <%= packages.join(" ") %>
+<% elsif options.alpine? && clean -%>
+RUN apk add --no-cache <%= packages.join(" ") %>
 <% else -%>
 RUN <%= repos %><%= pkg_update %> && \
     <%= pkg_install %> <%= packages.join(" ") %><% if clean %> && \

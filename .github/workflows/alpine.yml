@@ -9,7 +9,7 @@ jobs:
     - run: sudo apt install libvips-dev
     - uses: ruby/setup-ruby@v1
       with:
-        ruby-version: '3.3'
+        ruby-version: '3.4'
         bundler-cache: true
     - run: gem install rails
     - run: rake test:alpine

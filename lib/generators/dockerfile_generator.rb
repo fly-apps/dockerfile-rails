@@ -72,7 +72,7 @@ class DockerfileGenerator < Rails::Generators::Base
     "libsqlite3-0" => "sqlite-dev",
     "libtiff-dev" => "tiff-dev",
     "libjemalloc2" => "jemalloc",
-    "libvips" => "vips-dev",
+    "libvips" => "vips",
     "libyaml-dev" => "yaml-dev",
     "node-gyp" => "gyp",
     "pkg-config" => "pkgconfig",

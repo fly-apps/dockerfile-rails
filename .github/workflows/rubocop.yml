@@ -1,4 +1,4 @@
-444e: RuboCop
+name: RuboCop
 
 on: [push, pull_request]
 

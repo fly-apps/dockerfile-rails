@@ -1255,7 +1255,7 @@ private
     client = api_client_dir
     return unless client
 
-    Dir["#{client}/{package.json,package-lock.json,yarn.lock,bun.lockb}"]
+    Dir["#{client}/{package.json,package-lock.json,yarn.lock,bun.lockb,bun.lock}"]
   end
 
   def dbprep_command

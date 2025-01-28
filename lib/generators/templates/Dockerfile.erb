@@ -70,7 +70,7 @@ FROM base AS <%= parallel? ? 'pre' : '' %>build
 FROM prebuild AS <% if using_bun? %>bun<% else %>node<% end %>
 
 <% end -%>
-<% if using_bun? and (!using_execjs? || File.exist?('bun.lockb')) -%>
+<% if using_bun? and (!using_execjs? || File.exist?('bun.lockb') || File.exist?('bun.lock')) -%>
 <%= render partial: 'install_node', locals: {bun_version: using_execjs? ? nil : bun_version} %>
 
 <% elsif using_node? and (!using_execjs? || File.exist?('yarn.lock')) -%>
@@ -78,7 +78,7 @@ FROM prebuild AS <% if using_bun? %>bun<% else %>node<% end %>
 
 <% end -%>
 <% if parallel? -%>
-<%= render partial: 'npm_install', locals: {sources: Dir[*%w(package.json yarn.lock bun.lockb)]} %>
+<%= render partial: 'npm_install', locals: {sources: Dir[*%w(package.json yarn.lock bun.lockb bun.lock)]} %>
 
 
 FROM prebuild AS build
@@ -149,7 +149,7 @@ ENV PATH=/usr/local/node/bin:$PATH
 <% end -%>
 
 <% elsif using_node? || using_bun? -%>
-<%= render partial: 'npm_install', locals: {sources: Dir[*%w(.npmrc .yarnrc package.json package-lock.json yarn.lock bun.lockb)]} %>
+<%= render partial: 'npm_install', locals: {sources: Dir[*%w(.npmrc .yarnrc package.json package-lock.json yarn.lock bun.lockb bun.lock)]} %>
 
 <% end -%>
 # Copy application code

@@ -9,7 +9,7 @@
 # For a containerized dev environment, see Dev Containers: https://guides.rubyonrails.org/getting_started_with_devcontainer.html
 <% end -%>
 
-# Make sure RUBY_VERSION matches the Ruby version in .ruby-version
+# Make sure RUBY_VERSION matches the Ruby version in <%= ruby_version_file || '.ruby-version' %>
 ARG RUBY_VERSION=<%= RUBY_VERSION %>
 <% if api_client_dir -%>
 <%= render partial: 'node_client' %>
@@ -95,7 +95,7 @@ ENV <%= build_env.join(" \\\n    ") %>
 
 <% end -%>
 # Install application gems
-COPY<% if options.link? %> --link<% end %> Gemfile Gemfile.lock <% if references_ruby_version_file? %>.ruby-version <% end %>./
+COPY<% if options.link? %> --link<% end %> Gemfile Gemfile.lock <% if references_ruby_version_file? %><%= ruby_version_file %> <% end %>./
 <% if @netpopbug && Rails.env != "test" -%>
 RUN sed -i "/net-pop (0.1.2)/a\      net-protocol" Gemfile.lock
 <% end -%>

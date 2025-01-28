@@ -515,7 +515,12 @@ private
   end
 
   def references_ruby_version_file?
-    @references_ruby_version_file ||= IO.read("Gemfile").include?(".ruby-version")
+    @references_ruby_version_file ||= ruby_version_file.present?
+  end
+
+  def ruby_version_file
+    match = IO.read("Gemfile").match(/ruby file: ["'](.*)["']/)
+    match ? match[1] : nil
   end
 
   def using_redis?

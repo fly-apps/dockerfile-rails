@@ -9,6 +9,7 @@ class TestSolidQueueSqlite3 < TestBase
 
   def app_setup
     FileUtils.touch "fly.toml"
+    FileUtils.mkdir_p "app/jobs"
     IO.write "app/jobs/DummyJob.rb", "class DummyJob < ApplicationJob; end"
   end
 

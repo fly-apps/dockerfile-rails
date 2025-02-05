@@ -67,7 +67,7 @@ are actually using.  But should you be using DATABASE_URL, for example, at runti
 additional support may be needed:
 
 * `--litefs` - use [LiteFS](https://fly.io/docs/litefs/)
-* `--litestream` - use [LiteFS](https://litestream.io/)
+* `--litestream` - use [Litestream](https://litestream.io/)
 * `--mysql` - add mysql libraries
 * `--postgresql` - add postgresql libraries
 * `--redis` - add redis libraries

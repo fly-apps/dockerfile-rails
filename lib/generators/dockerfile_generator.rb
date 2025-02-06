@@ -1164,11 +1164,11 @@ private
     else
       command = Shellwords.split(procfile.values.first)
 
-      if command.first == "./bin/thrust"
-        command[1..]
-      else
-        command
-      end
+      thrust = command.index("./bin/thrust")
+      thrust = command.index("litestream:run") if thrust.nil?
+      command = command[thrust+1...] unless thrust.nil?
+
+      command
     end
   end
 

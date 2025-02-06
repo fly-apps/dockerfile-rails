@@ -410,6 +410,11 @@ class DockerfileGenerator < Rails::Generators::Base
       missing = Set.new(base_packages + build_packages) -
         Set.new(dockerfile.scan(/[-\w]+/))
 
+      # https://github.com/docker-library/ruby/pull/497
+      # https://github.com/rails/rails/pull/54237
+      missing.delete("libyaml-dev")
+      missing.delete("yaml-dev")
+
       unless missing.empty?
         message = "The following packages are missing from the Dockerfile: #{missing.to_a.join(", ")}"
         STDERR.puts "\n" + shell.set_color(message, Thor::Shell::Color::RED, Thor::Shell::Color::BOLD)

@@ -1166,7 +1166,7 @@ private
 
       thrust = command.index("./bin/thrust")
       thrust = command.index("litestream:run") if thrust.nil?
-      command = command[thrust+1...] unless thrust.nil?
+      command = command[thrust + 1...] unless thrust.nil?
 
       command
     end

@@ -120,6 +120,16 @@ Options are saved between runs into `config/dockerfile.yml`.  To invert a boolea
 
 ## Testing
 
+Run:
+
+Installation:
+
+```
+brew install postgresql mysql zstd
+bundle config --local build.mysql2 "--with-opt-dir="$(brew --prefix zstd)""
+bundle install
+```
+
 A single invocation of `rake test:all` will run all of the tests defined.  dockerfile-rails has are three types of tests:
 
   * `rake test:rubocop` runs [rubocop](https://github.com/rubocop/rubocop) using the same options as the Rails codebase.

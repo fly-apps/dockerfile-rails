@@ -7,7 +7,7 @@ if [ -z "${LD_PRELOAD+x}" ]; then
 fi
 
 # If running the rails server then create or migrate existing database
-if [ "${@: -5:1}" == "./bin/rake" ] && [ "${@: -4:1}" == litestream:run ] && [ "${@: -3:1}" == "./bin/thrust" ] && [ "${@: -2:1}" == "./bin/rails" ] && [ "${@: -1:1}" == "server" ]; then
+if [ "${@: -2:1}" == "./bin/rails" ] && [ "${@: -1:1}" == "server" ]; then
   ./bin/rails db:prepare
 fi
 

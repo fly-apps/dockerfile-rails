@@ -310,7 +310,6 @@ class DockerfileGenerator < Rails::Generators::Base
       @@vars.delete phase if @@vars[phase].empty?
 
       @@args[phase].merge! options["arg-#{phase}"]
-      @@args[phase].delete_if { |key, value| value.blank? }
       @@args.delete phase if @@args[phase].empty?
 
       @@instructions[phase] ||= options["instructions-#{phase}"]

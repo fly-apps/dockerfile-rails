@@ -63,7 +63,7 @@ module DockerfileRails
         @mysql = true
       elsif @gemfile.include?("activerecord-sqlserver-adapter")
         @sqlserver = true
-      elsif @gemfile.include? "sqlite3" || database == "sqlite3"
+      elsif @gemfile.include?("sqlite3") || database == "sqlite3"
         # check this one last as sqlite3 may be used in development
         @sqlite3 = true
       end

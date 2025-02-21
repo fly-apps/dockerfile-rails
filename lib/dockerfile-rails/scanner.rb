@@ -43,23 +43,30 @@ module DockerfileRails
 
       ### database ###
 
+      # start by checkout config/database.yml.  It defaults to sqlite3,
+      # but we can't rely on that because DATABASE_URL can override it.
+      # if we see anything else, assume the change was intentional.
       database = YAML.load_file("config/database.yml", aliases: true).
         dig("production", "adapter") rescue nil
 
-      if database == "sqlite3"
-        @sqlite3 = true
-      elsif database == "postgresql"
+      if database == "postgresql"
         @postgresql = true
       elsif (database == "mysql") || (database == "mysql2") || (database == "trilogy")
         @mysql = true
       elsif database == "sqlserver"
         @sqlserver = true
-      end
 
-      @sqlite3 = true if @gemfile.include? "sqlite3"
-      @postgresql = true if @gemfile.include? "pg"
-      @mysql = true if @gemfile.include?("mysql2") || using_trilogy?
-      @sqlserver = true if @gemfile.include?("activerecord-sqlserver-adapter")
+      ## if not found (or sqlite3), check the Gemfile
+      elsif @gemfile.include? "pg"
+        @postgresql = true
+      elsif @gemfile.include?("mysql2") || using_trilogy?
+        @mysql = true
+      elsif @gemfile.include?("activerecord-sqlserver-adapter")
+        @sqlserver = true
+      elsif @gemfile.include?("sqlite3") || database == "sqlite3"
+        # check this one last as sqlite3 may be used in development
+        @sqlite3 = true
+      end
 
       ### node modules ###
 

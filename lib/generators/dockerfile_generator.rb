@@ -410,10 +410,12 @@ class DockerfileGenerator < Rails::Generators::Base
       missing = Set.new(base_packages + build_packages) -
         Set.new(dockerfile.scan(/[-\w]+/))
 
-      # https://github.com/docker-library/ruby/pull/497
-      # https://github.com/rails/rails/pull/54237
-      missing.delete("libyaml-dev")
-      missing.delete("yaml-dev")
+      if Gem::Version.new(RUBY_VERSION) <= Gem::Version.new("3.4.1")
+        # https://github.com/docker-library/ruby/pull/497
+        # https://github.com/rails/rails/pull/54237
+        missing.delete("libyaml-dev")
+        missing.delete("yaml-dev")
+      end
 
       unless missing.empty?
         message = "The following packages are missing from the Dockerfile: #{missing.to_a.join(", ")}"

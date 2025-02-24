@@ -410,9 +410,16 @@ class DockerfileGenerator < Rails::Generators::Base
       missing = Set.new(base_packages + build_packages) -
         Set.new(dockerfile.scan(/[-\w]+/))
 
-      if Gem::Version.new(RUBY_VERSION) <= Gem::Version.new("3.4.1")
-        # https://github.com/docker-library/ruby/pull/497
-        # https://github.com/rails/rails/pull/54237
+      # libyaml-dev was removed from the lightweight Ruby images
+      # https://github.com/docker-library/ruby/pull/497
+      # https://github.com/rails/rails/pull/54237
+      # Ruby versions 3.4.2, 3.3.7, and 3.2.7 have been released removing libyaml-dev
+      # Ruby version 3.1.7 will be the release version to remove libyaml-dev
+      # Older versions no longer release new images
+      matching_ruby = [">= 3.4.2", "~> 3.3.7", "~> 3.2.7", "~> 3.1.7"].any? { |v| Gem::Requirement.new(v).satisfied_by?(Gem.ruby_version) }
+      # Only slim and alpine are missing libyaml-dev/yaml-dev
+      matching_image = /FROM ruby:.+-(alpine|slim)/i.match?(dockerfile)
+      if !matching_ruby || !matching_image
         missing.delete("libyaml-dev")
         missing.delete("yaml-dev")
       end

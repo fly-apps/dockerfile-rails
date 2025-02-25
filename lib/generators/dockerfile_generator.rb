@@ -418,7 +418,8 @@ class DockerfileGenerator < Rails::Generators::Base
       # Older versions no longer release new images
       matching_ruby = [">= 3.4.2", "~> 3.3.7", "~> 3.2.7", "~> 3.1.7"].any? { |v| Gem::Requirement.new(v).satisfied_by?(Gem.ruby_version) }
       # Only slim and alpine are missing libyaml-dev/yaml-dev
-      matching_image = /FROM ruby:.+-(alpine|slim)/i.match?(dockerfile)
+      # https://rubular.com/r/Jb4LEfrMSmxkp9
+      matching_image = /FROM (.*\/)?ruby:(.+-)?(alpine|slim)/i.match?(dockerfile)
       if !matching_ruby || !matching_image
         missing.delete("libyaml-dev")
         missing.delete("yaml-dev")

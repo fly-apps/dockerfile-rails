@@ -6,7 +6,9 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - uses: docker/setup-buildx-action@v2
-    - run: sudo apt install libvips-dev
+    - run: |
+        sudo apt-get update
+        sudo apt install libvips-dev
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: '3.4'

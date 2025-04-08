@@ -7,16 +7,16 @@ LITESTREAM_TEMPLATE = <<-EOF
 # For more details, see: https://litestream.io/reference/config/
 #
 dbs:
-<%% for db in @dbs -%>
-  - path: <%%= db %>
+<% for db in @dbs -%>
+  - path: <%= db %>
     replicas:
       - type: s3
         endpoint: $AWS_ENDPOINT_URL_S3
         bucket: $BUCKET_NAME
-        path: storage/<%%= File.basename(db) %>
+        path: storage/<%= File.basename(db) %>
         access-key-id: $AWS_ACCESS_KEY_ID
         secret-access-key: $AWS_SECRET_ACCESS_KEY
-<%% end -%>
+<% end -%>
 EOF
 
 namespace :litestream do

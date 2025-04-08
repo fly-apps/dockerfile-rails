@@ -14,5 +14,6 @@ class TestLitestream < TestBase
     check_dockerfile
     check_entrypoint
     check_toml
+    check_raketask
   end
 end

@@ -130,6 +130,16 @@ class TestBase < Minitest::Test
     assert_equal expected, results
   end
 
+  def check_raketask
+    results = IO.read("lib/tasks/litestream.rake")
+
+    IO.write("#{@results}/litestream.rake", results) if @capture
+
+    expected = IO.read("#{@results}/litestream.rake")
+
+    assert_equal expected, results
+  end
+
   def teardown
     return if ENV["TEST_KEEP"]
     Dir.chdir ".."

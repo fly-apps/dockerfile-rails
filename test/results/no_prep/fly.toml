@@ -1,10 +1,3 @@
-
-[env]
-  PORT = "8080"
-
-[processes]
-  app = "./bin/rails server"
-
 [deploy]
   release_command = "./bin/rails db:prepare"
 
@@ -14,4 +7,8 @@
   auto_extend_size_threshold = 80
   auto_extend_size_increment = "1GB"
   auto_extend_size_limit = "10GB"
+
+[[statics]]
+  guest_path = "/rails/public"
+  url_prefix = "/"
 

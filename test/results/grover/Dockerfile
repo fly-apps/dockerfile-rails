@@ -45,6 +45,7 @@ ENV PATH="/usr/local/node/bin:$PATH" \
 
 # Install application gems
 COPY Gemfile Gemfile.lock ./
+ENV MAKE="make -j$(nproc)"
 RUN bundle install && \
     rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git
 

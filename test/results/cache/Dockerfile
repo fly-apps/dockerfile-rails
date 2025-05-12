@@ -51,6 +51,7 @@ RUN curl -sL https://github.com/nodenv/node-build/archive/master.tar.gz | tar xz
 
 # Install application gems
 COPY Gemfile Gemfile.lock ./
+ENV MAKE="make -j$(nproc)"
 RUN --mount=type=cache,id=bld-gem-cache,sharing=locked,target=/srv/vendor \
     bundle config set app_config .bundle && \
     bundle config set path /srv/vendor && \

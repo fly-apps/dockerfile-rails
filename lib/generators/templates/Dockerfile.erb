@@ -96,6 +96,7 @@ ENV <%= build_env.join(" \\\n    ") %>
 <% end -%>
 # Install application gems
 COPY<% if options.link? %> --link<% end %> Gemfile Gemfile.lock <% if references_ruby_version_file? %><%= ruby_version_file %> <% end %>./
+ENV MAKE="make -j$(nproc)"
 <% if @netpopbug && Rails.env != "test" -%>
 RUN sed -i "/net-pop (0.1.2)/a\      net-protocol" Gemfile.lock
 <% end -%>

@@ -46,6 +46,7 @@ RUN curl -sL https://unofficial-builds.nodejs.org/download/release/v${NODE_VERSI
 
 # Install application gems
 COPY Gemfile Gemfile.lock ./
+ENV MAKE="make -j$(nproc)"
 RUN bundle install && \
     rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git && \
     bundle exec bootsnap precompile --gemfile

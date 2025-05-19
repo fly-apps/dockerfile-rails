@@ -52,7 +52,7 @@ RUN bundle install && \
 
 # Install node modules
 COPY package.json bun.lock ./
-RUN bun install --frozen-lockfile
+RUN bun install --frozen-lockfile --production
 
 # Copy application code
 COPY . .

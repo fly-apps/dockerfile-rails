@@ -14,9 +14,9 @@ services:
       - "3000:3000"
     environment:
     secrets:
-      - source: master_key
+      - source: RAILS_MASTER_KEY
         target: /rails/config/master.key
 
 secrets:
-  master_key:
+  RAILS_MASTER_KEY
     file: ./config/master.key

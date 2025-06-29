@@ -15,7 +15,7 @@ services:
     environment:
       - DATABASE_URL=trilogy://root:password@mysql-db/
     secrets:
-      - source: master_key
+      - source: RAILS_MASTER_KEY
         target: /rails/config/master.key
     depends_on:
       mysql-db:
@@ -36,5 +36,5 @@ services:
       retries: 30
 
 secrets:
-  master_key:
+  RAILS_MASTER_KEY
     file: ./config/master.key

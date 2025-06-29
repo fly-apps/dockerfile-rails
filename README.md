@@ -44,6 +44,7 @@ different contents.  If both are specified, `--force` takes precedence.
 
 * `--cache` - use build caching to speed up builds
 * `--parallel` - use multi-stage builds to install gems and node modules in parallel
+* `--nproc n` - run bundle install in parallel
 
 ### Add/remove a Feature:
 

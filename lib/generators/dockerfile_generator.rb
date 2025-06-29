@@ -27,6 +27,7 @@ class DockerfileGenerator < Rails::Generators::Base
     "mysql" => false,
     "nginx" => false,
     "parallel" => false,
+    "nproc" => 1,
     "passenger" => false,
     "platform" => nil,
     "postgresql" => false,
@@ -147,6 +148,9 @@ class DockerfileGenerator < Rails::Generators::Base
 
   class_option :parallel, type: :boolean, default: OPTION_DEFAULTS.parallel,
     desc: "use build stages to install gems and node modules in parallel"
+
+  class_option :nproc, type: :numeric, default: OPTION_DEFAULTS.nproc,
+    desc: "run bundle install in parallel"
 
   class_option :swap, type: :string, default: OPTION_DEFAULTS.swap,
     desc: "allocate swapspace"

@@ -15,7 +15,7 @@ services:
     environment:
       - REDIS_URL=redis://redis-db:6379
     secrets:
-      - source: master_key
+      - source: RAILS_MASTER_KEY
         target: /rails/config/master.key
     depends_on:
       redis-db:
@@ -25,5 +25,5 @@ services:
     image: redis
 
 secrets:
-  master_key:
+  RAILS_MASTER_KEY
     file: ./config/master.key

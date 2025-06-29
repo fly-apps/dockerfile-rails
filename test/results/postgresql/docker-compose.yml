@@ -15,7 +15,7 @@ services:
     environment:
       - DATABASE_URL=postgres://root:password@postgres-db/
     secrets:
-      - source: master_key
+      - source: RAILS_MASTER_KEY
         target: /rails/config/master.key
     depends_on:
       postgres-db:
@@ -35,5 +35,5 @@ services:
       retries: 30
 
 secrets:
-  master_key:
+  RAILS_MASTER_KEY
     file: ./config/master.key

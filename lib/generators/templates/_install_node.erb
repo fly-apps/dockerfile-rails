@@ -1,11 +1,7 @@
 <% if using_bun? -%>
-# Install Bun
-<% if bun_version -%>
-ARG BUN_VERSION=<%= bun_version %>
-<% end -%>
-ENV BUN_INSTALL=/usr/local/bun
-ENV PATH=/usr/local/bun/bin:$PATH
-RUN curl -fsSL https://bun.sh/install | bash<% if bun_version %> -s -- "bun-v${BUN_VERSION}"<% end %>
+# Copy Bun from official image
+COPY --from=bun /usr/local/bin/bun /usr/local/bin/bun
+ENV PATH=/usr/local/bin:$PATH
 <% else -%>
 <% if node_version and yarn_version -%>
 # Install JavaScript dependencies

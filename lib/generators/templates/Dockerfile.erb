@@ -71,6 +71,15 @@ FROM prebuild AS <% if using_bun? %>bun<% else %>node<% end %>
 
 <% end -%>
 <% if using_bun? and (!using_execjs? || File.exist?('bun.lockb') || File.exist?('bun.lock')) -%>
+<% if bun_version -%>
+ARG BUN_VERSION=<%= bun_version %>
+<% end -%>
+<% if options.alpine? -%>
+FROM oven/bun:<%= bun_version ? '${BUN_VERSION}' : '1' %>-alpine AS bun
+<% else -%>
+FROM oven/bun:<%= bun_version ? '${BUN_VERSION}' : '1' %>-debian AS bun
+<% end -%>
+
 <%= render partial: 'install_node', locals: {bun_version: using_execjs? ? nil : bun_version} %>
 
 <% elsif using_node? and (!using_execjs? || File.exist?('yarn.lock')) -%>

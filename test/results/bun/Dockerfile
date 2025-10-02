@@ -38,11 +38,12 @@ RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y build-essential libyaml-dev pkg-config unzip && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
-# Install Bun
 ARG BUN_VERSION=xxx
-ENV BUN_INSTALL=/usr/local/bun
-ENV PATH=/usr/local/bun/bin:$PATH
-RUN curl -fsSL https://bun.sh/install | bash -s -- "bun-v${BUN_VERSION}"
+FROM oven/bun:${BUN_VERSION}-debian AS bun
+
+# Copy Bun from official image
+COPY --from=bun /usr/local/bin/bun /usr/local/bin/bun
+ENV PATH=/usr/local/bin:$PATH
 
 # Install application gems
 COPY Gemfile Gemfile.lock ./

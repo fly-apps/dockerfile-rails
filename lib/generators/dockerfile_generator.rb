@@ -16,6 +16,7 @@ class DockerfileGenerator < Rails::Generators::Base
     "compose" => false,
     "fullstaq" => false,
     "gemfile-updates" => true,
+    "hardened" => false,
     "jemalloc" => true,
     "label" => {},
     "link" => false,
@@ -200,6 +201,9 @@ class DockerfileGenerator < Rails::Generators::Base
   class_option :fullstaq, type: :boolean, default: OPTION_DEFAULTS.fullstaq,
     descr: "use Fullstaq Ruby image from Quay.io"
 
+  class_option :hardened, type: :boolean, default: OPTION_DEFAULTS.hardened,
+    desc: "use hardened Ruby image from dhi.io"
+
   class_option :yjit, type: :boolean, default: OPTION_DEFAULTS.yjit,
     desc: "enable YJIT optimizing compiler"
 
@@ -293,6 +297,10 @@ class DockerfileGenerator < Rails::Generators::Base
 
   def generate_app
     source_paths.push File.expand_path("./templates", __dir__)
+
+    if options.hardened? && (options.fullstaq? || options.alpine?)
+      raise Thor::Error, "--hardened is mutually exclusive with --fullstaq and --alpine"
+    end
 
     # merge options
     options.label.replace(@@labels.merge(options.label).select { |key, value| value != "" })

@@ -190,7 +190,7 @@ docker buildx build . -t rails-demo
 docker run -p 3000:3000 -e RAILS_MASTER_KEY=$(cat config/master.key) --rm rails-demo
 ```
 
-# Demo 5 - Bunding Javascript (esbuild)
+# Demo 5 - Bundling Javascript (esbuild)
 
 While optional, bundling Javascript is a popular choice, and starting with
 Rails 7 there are three options: esbuild, rollup, and webpack.  The

@@ -18,6 +18,8 @@ ARG RUBY_VERSION=<%= RUBY_VERSION %>
 <% end -%>
 <% if options.fullstaq -%>
 FROM <%= platform %>quay.io/evl.ms/fullstaq-ruby:${RUBY_VERSION}-<%= options.jemalloc ? 'jemalloc-' : 'malloctrim-' %><%= variant %><% unless options.precompile == "defer" %> AS base<% end %>
+<% elsif options.hardened -%>
+FROM <%= platform %>dhi.io/ruby:$RUBY_VERSION-dev<% unless options.precompile == "defer" %> AS base<% end %>
 <% else -%>
 FROM <%= platform %><%= options.registry %>ruby:$RUBY_VERSION-<%= variant %><% unless options.precompile == "defer" %> AS base<% end %>
 <% end -%>

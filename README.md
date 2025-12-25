@@ -36,6 +36,7 @@ different contents.  If both are specified, `--force` takes precedence.
 
 * `--alpine` - use [alpine](https://www.alpinelinux.org/) as base image (requires [Alpine <= 3.18 OR Rails >= 8.0](https://github.com/sparklemotion/sqlite3-ruby/issues/434))
 * `--fullstaq` - use [fullstaq](https://fullstaqruby.org/) [images](https://github.com/evilmartians/fullstaq-ruby-docker) on [quay.io](https://quay.io/repository/evl.ms/fullstaq-ruby?tab=tags&tag=latest)
+* `--hardened` - use `dhi.io/ruby:$RUBY_VERSION-dev` as base image (mutually exclusive with `--alpine` or `--fullstaq`)
 * `--jemalloc` - use [jemalloc](https://jemalloc.net/) memory allocator
 * `--swap=n` - allocate swap space.  See [falloc options](https://man7.org/linux/man-pages/man1/fallocate.1.html#OPTIONS) for suffixes
 * `--yjit` - enable [YJIT](https://github.com/ruby/ruby/blob/master/doc/yjit/yjit.md) optimizing compiler
@@ -50,7 +51,7 @@ different contents.  If both are specified, `--force` takes precedence.
 
 * `--ci` - include test gems in deployed image
 * `--compose` - generate a `docker-compose.yml` file
-* `--max-idle=n` - exit afer *n* seconds of inactivity.  Supports [iso 8601](https://en.wikipedia.org/wiki/ISO_8601#Durations) and [sleep](https://man7.org/linux/man-pages/man1/sleep.1.html#DESCRIPTION) syntaxes.  Uses passenger for now, awaiting [puma](https://github.com/puma/puma/issues/2580) support.
+* `--max-idle=n` - exit after *n* seconds of inactivity.  Supports [iso 8601](https://en.wikipedia.org/wiki/ISO_8601#Durations) and [sleep](https://man7.org/linux/man-pages/man1/sleep.1.html#DESCRIPTION) syntaxes.  Uses passenger for now, awaiting [puma](https://github.com/puma/puma/issues/2580) support.
 * `--nginx` - serve static files via [nginx](https://www.nginx.com/).  May require `--root` on some targets to access `/dev/stdout`
 * `--thruster` - serve static files via [thruster](https://github.com/basecamp/thruster?tab=readme-ov-file#thruster).
 * `--link` - add [--link](https://docs.docker.com/engine/reference/builder/#copy---link) to COPY statements.  Some tools (like at the moment, [buildah](https://www.redhat.com/en/topics/containers/what-is-buildah)) don't yet support this feature.

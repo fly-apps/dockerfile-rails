@@ -22,7 +22,7 @@ RUN gem update --system --no-document && \
 RUN --mount=type=cache,id=dev-apt-cache,sharing=locked,target=/var/cache/apt \
     --mount=type=cache,id=dev-apt-lib,sharing=locked,target=/var/lib/apt \
     apt-get update -qq && \
-    apt-get install --no-install-recommends -y curl libjemalloc2 sqlite3
+    apt-get install --no-install-recommends -y curl libjemalloc2 libvips sqlite3
 
 # Set production environment
 ENV BUNDLE_DEPLOYMENT="1" \
@@ -38,7 +38,7 @@ FROM base AS build
 RUN --mount=type=cache,id=dev-apt-cache,sharing=locked,target=/var/cache/apt \
     --mount=type=cache,id=dev-apt-lib,sharing=locked,target=/var/lib/apt \
     apt-get update -qq && \
-    apt-get install --no-install-recommends -y build-essential libyaml-dev node-gyp pkg-config python-is-python3
+    apt-get install --no-install-recommends -y build-essential libffi-dev libyaml-dev node-gyp pkg-config python-is-python3
 
 # Install JavaScript dependencies
 ARG NODE_VERSION=xxx
@@ -79,6 +79,11 @@ RUN SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile
 # Final stage for app image
 FROM base
 
+# Install packages needed for deployment
+RUN --mount=type=cache,id=dev-apt-cache,sharing=locked,target=/var/cache/apt \
+    --mount=type=cache,id=dev-apt-lib,sharing=locked,target=/var/lib/apt \
+    apt-get update -qq && \
+    apt-get install --no-install-recommends -y imagemagick libvips
 
 # Copy built artifacts: gems, application
 COPY --from=build "${BUNDLE_PATH}" "${BUNDLE_PATH}"
